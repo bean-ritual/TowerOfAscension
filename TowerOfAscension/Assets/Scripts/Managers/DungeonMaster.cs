@@ -25,8 +25,8 @@ public class DungeonMaster : MonoBehaviour{
 		}
 		_instance = this;
 		_local = DUNGEONMASTER_DATA.GetGame();
-		TestUnit testUnit = new TestUnit();
-		testUnit.Spawn(_local.GetLevel(), 50, 50);
+		Unit testUnit = new TestUnit();
+		testUnit.GetSpawnable().Spawn(_local.GetLevel(), 50, 50);
 	}
 	public void Save(){
 		SaveSystem.Save(_local);

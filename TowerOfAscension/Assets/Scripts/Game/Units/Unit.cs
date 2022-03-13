@@ -10,6 +10,7 @@ public abstract class Unit{
 	public interface IPositionable{
 		void SetPosition(Level level, int x, int y);
 		void GetPosition(out int x, out int y);
+		Vector3 GetPosition(GridMap<Tile> map);
 	}
 	public interface IDirectionable{
 		void SetDirection(Direction direction);
@@ -48,6 +49,9 @@ public abstract class Unit{
 		public void GetPosition(out int x, out int y){
 			x = _NULL_X;
 			y = _NULL_Y;
+		}
+		public Vector3 GetPosition(GridMap<Tile> map){
+			return Vector3.zero;
 		}
 		public void SetDirection(Direction direction){}
 		public Direction GetDirection(){

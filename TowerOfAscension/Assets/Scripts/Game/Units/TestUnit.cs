@@ -20,6 +20,9 @@ public class TestUnit : Unit, Unit.ISpawnable{
 		x = _x;
 		y = _y;
 	}
+	public Vector3 GetPosition(GridMap<Tile> map){
+		return map.GetWorldPosition(_x, _y);
+	}
 	public void AddToRegister(Register<Unit> register){
 		register.Add(this, ref _id);
 	}
