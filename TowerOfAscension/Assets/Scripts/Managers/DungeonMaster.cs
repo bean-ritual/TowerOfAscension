@@ -18,6 +18,8 @@ public class DungeonMaster : MonoBehaviour{
 	}
 	private static DungeonMaster _instance;
 	private Game _local;
+	private bool _tick;
+	private WaitForFixedUpdate _update;
 	private void Awake(){
 		GameManager.GetInstance().RingTheDinkster();
 		if(_instance != null){
@@ -25,8 +27,28 @@ public class DungeonMaster : MonoBehaviour{
 		}
 		_instance = this;
 		_local = DUNGEONMASTER_DATA.GetGame();
+		//
+		Play();
+		//
+		ClassicGen.BluePrintSpawner spawner = new ClassicGen.BluePrintSpawner(50, 50, 0);
+		spawner.Spawn(_local.GetLevel(), null);
+		//
 		Unit testUnit = new TestUnit();
 		testUnit.GetSpawnable().Spawn(_local.GetLevel(), 50, 50);
+	}
+	public IEnumerator GameLoop(){
+		while(_tick){
+			if(!_local.Process()){
+				yield return _update;
+			}
+		}
+	}
+	public void Play(){
+		_tick = true;
+		StartCoroutine(GameLoop());
+	}
+	public void Pause(){
+		_tick = false;
 	}
 	public void Save(){
 		SaveSystem.Save(_local);

@@ -61,14 +61,17 @@ public class Level : GridMap<Tile>{
 		return _units;
 	}
 	public virtual bool NextTurn(){
-		_index = (_index + 1) % _units.GetCount();
-		return true;
+		int count = _units.GetCount();
+		if(count <= 0){
+			return false;
+		}
+		_index = (_index + 1) % count;
+		return (_index > 0);
 	}
 	public static Level GetNullLevel(){
 		return _NULL_LEVEL;
 	}
 	private static Tile CreateTile(int x, int y){
-		const Tile.Terrain _LEVEL_DEFAULT_TERRAIN = Tile.Terrain.Null;
-		return new Tile(x, y, _LEVEL_DEFAULT_TERRAIN);
+		return Tile.GetNullTile();
 	}
 }
