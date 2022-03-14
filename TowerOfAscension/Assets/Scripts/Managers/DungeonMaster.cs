@@ -30,11 +30,8 @@ public class DungeonMaster : MonoBehaviour{
 		//
 		Play();
 		//
-		ClassicGen.BluePrintSpawner spawner = new ClassicGen.BluePrintSpawner(50, 50, 0);
-		spawner.Spawn(_local.GetLevel(), null);
-		//
-		Unit testUnit = new TestUnit();
-		testUnit.GetSpawnable().Spawn(_local.GetLevel(), 50, 50);
+		ClassicGen classic = new ClassicGen(_local.GetLevel());
+		classic.AddToRegister(_local.GetLevel().GetUnits());
 	}
 	public IEnumerator GameLoop(){
 		while(_tick){

@@ -3,6 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 public class LevelMeshManager : MonoBehaviour{
+	public interface ITileMeshData{
+		int GetAtlasIndex();
+		int GetUVFactor();
+	}
 	private static LevelMeshManager _instance;
 	private Level _level;
 	private Mesh _mesh;
@@ -10,11 +14,15 @@ public class LevelMeshManager : MonoBehaviour{
 	private Vector3[] _vertices;
 	private Vector2[] _uv;
 	private int[] _triangles;
+	private bool _update;
 	[SerializeField]private MeshFilter _meshFilter;
 	[SerializeField]private MeshRenderer _meshRenderer;
 	[SerializeField]private UVAtlas.AtlasID _atlasID;
 	[SerializeField]private Material _material;
 	[SerializeField]private int _sortingOrder;
+	private void OnDestroy(){
+		_level.OnGridMapChanged -= OnGridMapChanged;
+	}
 	private void Start(){
 		_level = DungeonMaster.GetInstance().GetLevel();
 		_atlas = UVAtlas.UVATLAS_DATA.GetUVAtlas(_atlasID);
@@ -24,25 +32,29 @@ public class LevelMeshManager : MonoBehaviour{
 		_mesh = MeshUtils.CreateEmptyMesh();
 		_meshFilter.mesh = _mesh;
 		MeshUtils.CreateEmptyMeshArrays(_level.GetArea(), out _vertices, out _uv, out _triangles);
-		Build();
+		_level.OnGridMapChanged += OnGridMapChanged;
+		_update = true;
+	}
+	private void LateUpdate(){
+		if(_update){
+			Build();
+		}
 	}
 	public void Build(){
 		for(int x = 0; x < _level.GetWidth(); x++){
 			for(int y = 0; y < _level.GetHeight(); y++){
 				int index = x * _level.GetHeight() + y;
-				CalculateUV(_level.Get(x, y), out Vector2 uv00, out Vector2 uv11, out Vector3 quad);
+				Tile tile = _level.Get(x, y);
+				Vector3 quad = _level.GetVector3CellSize() * tile.GetTileMeshData().GetUVFactor();
+				_atlas.GetUVNormal(tile.GetTileMeshData().GetAtlasIndex(), out Vector2 uv00, out Vector2 uv11);
 				MeshUtils.ModifyMeshAtIndex(index, _vertices, _uv, _triangles, _level.GetWorldPosition(x, y) + (quad * _level.GetCellOffset()), quad, uv00, uv11);
 			}
 		}
 		MeshUtils.SetFinalMeshArrays(_mesh, _vertices, _uv, _triangles);
+		_update = false;
 	}
-	private void CalculateUV(Tile tile, out Vector2 uv00, out Vector2 uv11, out Vector3 quad){
-		if(tile.GetTerrain() == Tile.Terrain.Null){
-			quad = Vector3.zero;
-		}else{
-			quad = _level.GetVector3CellSize();
-		}
-		_atlas.GetUVNormal(tile.GetAtlasIndex(), out uv00, out uv11);
+	private void OnGridMapChanged(object sender, GridMap<Tile>.OnGridMapChangedEventArgs e){
+		_update = true;
 	}
 	public static LevelMeshManager GetInstance(){
 		return _instance;

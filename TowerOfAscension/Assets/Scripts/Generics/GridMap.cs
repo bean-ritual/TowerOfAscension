@@ -4,6 +4,15 @@ using System.Collections.Generic;
 using UnityEngine;
 [Serializable]
 public abstract class GridMap<TGridObject>{
+	[field:NonSerialized()]public event EventHandler<OnGridMapChangedEventArgs> OnGridMapChanged;
+	public class OnGridMapChangedEventArgs : EventArgs{
+		public int x;
+		public int y;
+		public OnGridMapChangedEventArgs(int x, int y){
+			this.x = x;
+			this.y = y;
+		}
+	}
 	private int _width;
 	private int _height;
 	private float _cellSize;
@@ -40,6 +49,7 @@ public abstract class GridMap<TGridObject>{
 			return false;
 		}
 		_map[x, y] = value;
+		OnGridMapChanged?.Invoke(this, new OnGridMapChangedEventArgs(x, y));
 		return true;
 	}
 	public virtual TGridObject Get(int x, int y){

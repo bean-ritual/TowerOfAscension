@@ -102,8 +102,8 @@ public abstract class Unit{
 	}
 	public static void Default_SetPosition(Unit self, Level level, int newX, int newY, ref int x, ref int y){
 		self.GetPositionable().GetPosition(out int oldX, out int oldY);
-		level.Get(oldX, oldY).RemoveUnit(self.GetRegisterable().GetID());
-		level.Get(newX, newY).AddUnit(self.GetRegisterable().GetID());
+		level.Get(oldX, oldY).GetHasUnits().RemoveUnit(self.GetRegisterable().GetID());
+		level.Get(newX, newY).GetHasUnits().AddUnit(self.GetRegisterable().GetID());
 		x = newX;
 		y = newY;
 	}

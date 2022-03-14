@@ -5,9 +5,21 @@ using UnityEngine;
 [Serializable]
 public class ClassicGen : 
 	Unit,
+	Register<Unit>.IRegisterable,
 	Unit.IProcessable{
 	[Serializable]
 	public abstract class Spawner{
+		public static class SPAWNER_DATA{
+			public static Spawner GetSpawner(int index, int x, int y){
+				switch(index){
+					default: return GetNullSpawner();
+					case 0: return GetRandomBluePrintSpawner(x, y);
+				}
+			}
+			public static Spawner GetRandomBluePrintSpawner(int x, int y){
+				return new BluePrintSpawner(x, y, BluePrint.BLUEPRINT_DATA.GetRandomIndex());
+			}
+		}
 		[Serializable]
 		public class NullSpawner : Spawner{
 			public NullSpawner(){}
@@ -51,9 +63,31 @@ public class ClassicGen :
 			return level.Get(_x, _y);
 		}
 	}
-	private List<Spawner> _spawners;
+	private Register<Unit>.ID _id;
+	public ClassicGen(Level level){
+		_id = Register<Unit>.ID.GetNullID();
+		_spawners = new Queue<Spawner>();
+		level.GetMidPoint(out int x, out int y);
+		AddSpawner(Spawner.SPAWNER_DATA.GetRandomBluePrintSpawner(x, y));
+	}
+	private Queue<Spawner> _spawners;
+	public virtual void AddSpawner(Spawner spawner){
+		_spawners.Enqueue(spawner);
+	}
+	public void AddToRegister(Register<Unit> register){
+		register.Add(this, ref _id);
+	}
+	public Register<Unit>.ID GetID(){
+		return _id;
+	}
 	public bool Process(Level level){
-		return true;
+		if(_spawners.Count > 0){
+			_spawners.Dequeue().Spawn(level, this);
+		}
+		return level.NextTurn();
+	}
+	public override Register<Unit>.IRegisterable GetRegisterable(){
+		return this;
 	}
 	public override Unit.IProcessable GetProcessable(){
 		return this;
