@@ -13,6 +13,27 @@ public abstract class GridMap<TGridObject>{
 			this.y = y;
 		}
 	}
+	private static readonly Vector2Int[] _CARDINALS = {
+		new Vector2Int(1, 0),
+		new Vector2Int(0, 1),
+		new Vector2Int(-1, 0),
+		new Vector2Int(0, -1),
+	};
+	private static readonly Vector2Int[] _NEIGHBOURS = {
+		new Vector2Int(1, 1),
+		new Vector2Int(1, 0),
+		new Vector2Int(0, 1),
+		new Vector2Int(-1, -1),
+		new Vector2Int(-1, 0),
+		new Vector2Int(0, -1),
+		new Vector2Int(-1, 1),
+		new Vector2Int(1, -1),
+	};
+	public const int MOVE_STRAIGHT_COST = 10;
+	public const int MOVE_DIAGONAL_COST = 14;
+	public const float RAY_LENGTH = 0.5f;
+	public const float RADIAL_DEGREE = 0.01745f;
+	//
 	private int _width;
 	private int _height;
 	private float _cellSize;
@@ -93,6 +114,9 @@ public abstract class GridMap<TGridObject>{
 	public Vector3 GetVector3CellSize(){
 		return _dimensions * _cellSize;
 	}
+	public Vector3 GetVector3CellOffset(){
+		return GetVector3CellSize() * _cellOffset;
+	}
 	public Vector3 GetCentrePosition(){
 		Vector3 position = new Vector3((_width / 2), (_height / 2)) * _cellSize;
 		return position + _origin;
@@ -101,6 +125,52 @@ public abstract class GridMap<TGridObject>{
 		x = Mathf.FloorToInt(_width / 2);
 		y = Mathf.FloorToInt(_height / 2);
 	}
+	//
+	public List<TGridObject> GetCardinals(int x, int y){
+		List<TGridObject> cardinals = new List<TGridObject>();
+		for(int i = 0; i < _CARDINALS.Length; i++){
+			Vector2Int cardinal = _CARDINALS[i];
+			cardinals.Add(Get((x + cardinal.x), (y + cardinal.y)));
+		}
+		return cardinals;
+	}
+	public List<TGridObject> GetCardinals(int x, int y, Func<TGridObject, bool> IsAvailable){
+		List<TGridObject> cardinals = new List<TGridObject>();
+		for(int i = 0; i < _CARDINALS.Length; i++){
+			Vector2Int cardinal = _CARDINALS[i];
+			TGridObject value = Get((x + cardinal.x), (y + cardinal.y));
+			if(IsAvailable(value)){
+				cardinals.Add(value);
+			}
+		}
+		return cardinals;
+	}
+	public List<TGridObject> GetNeighbours(int x, int y){
+		List<TGridObject> neighbours = new List<TGridObject>();
+		for(int i = 0; i < _NEIGHBOURS.Length; i++){
+			Vector2Int neighbour = _NEIGHBOURS[i];
+			neighbours.Add(Get((x + neighbour.x), (y + neighbour.y)));
+		}
+		return neighbours;
+	}
+	public List<TGridObject> GetNeighbours(int x, int y, Func<TGridObject, bool> IsAvailable){
+		List<TGridObject> neighbours = new List<TGridObject>();
+		for(int i = 0; i < _NEIGHBOURS.Length; i++){
+			Vector2Int neighbour = _NEIGHBOURS[i];
+			TGridObject value = Get((x + neighbour.x), (y + neighbour.y));
+			if(IsAvailable(value)){
+				neighbours.Add(value);
+			}
+		}
+		return neighbours;
+	}
+	public int CalculateDistanceCost(int startX, int startY, int endX, int endY){
+		int xDistance = Mathf.Abs(startX - endX);
+		int yDistance = Mathf.Abs(startY - endY);
+		int remaining = Mathf.Abs(xDistance - yDistance);
+		return (MOVE_DIAGONAL_COST * Mathf.Min(xDistance, yDistance)) + (MOVE_STRAIGHT_COST * remaining);
+	}
+	//
 	public bool CheckBounds(int x, int y){
 		if(x < 0){
 			return false;

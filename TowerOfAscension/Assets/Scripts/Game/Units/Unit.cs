@@ -27,18 +27,26 @@ public abstract class Unit{
 	public class NullUnit : 
 		Unit,
 		Register<Unit>.IRegisterable,
+		WorldUnit.IWorldUnit,
 		IProcessable,
 		IPositionable,
 		IDirectionable,
 		ISpawnable,
 		ILightControl
 		{
+		public event EventHandler<EventArgs> OnWorldUnitUpdate;
 		private const int _NULL_X = -1;
 		private const int _NULL_Y = -1;
 		public NullUnit(){}
 		public void AddToRegister(Register<Unit> register){}
 		public Register<Unit>.ID GetID(){
 			return Register<Unit>.ID.GetNullID();
+		}
+		public Sprite GetSprite(){
+			return SpriteSheet.NullSpriteSheet.GetNullSprite();
+		}
+		public int GetSortingOrder(){
+			return 0;
 		}
 		public bool Process(Level level){
 			return level.NextTurn();
@@ -64,6 +72,12 @@ public abstract class Unit{
 			const bool NULL_TRANSPARENCY = true;
 			return NULL_TRANSPARENCY;
 		}
+		public static int GetNullX(){
+			return _NULL_X;
+		}
+		public static int GetNullY(){
+			return _NULL_Y;
+		}
 	}
 	public enum Direction{
 		Null,
@@ -79,6 +93,9 @@ public abstract class Unit{
 	[field:NonSerialized]private static readonly NullUnit _NULL_UNIT = new NullUnit();
 	public Unit(){}
 	public virtual Register<Unit>.IRegisterable GetRegisterable(){
+		return _NULL_UNIT;
+	}
+	public virtual WorldUnit.IWorldUnit GetWorldUnit(){
 		return _NULL_UNIT;
 	}
 	public virtual IProcessable GetProcessable(){

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 [Serializable]
 public class BluePrint : GridMap<BluePrint.Print>{
+	// BLUEPRINT_DATA
 	public static class BLUEPRINT_DATA{
 		private static readonly BluePrint[] _BLUEPRINTS;
 		static BLUEPRINT_DATA(){
@@ -11,7 +12,7 @@ public class BluePrint : GridMap<BluePrint.Print>{
 				new BluePrint(
 					new int[,]{
 						{1,1,3,1,1},
-						{1,2,2,2,1},
+						{1,4,2,2,1},
 						{3,2,2,2,3},
 						{1,2,2,2,1},
 						{1,1,3,1,1},
@@ -40,6 +41,25 @@ public class BluePrint : GridMap<BluePrint.Print>{
 						new Reposition(6,1),
 					}
 				),
+				new BluePrint(
+					new int[,]{
+						{1,1,1,1},
+						{1,4,2,1},
+						{1,2,2,1},
+						{1,1,1,1},
+					},
+					Print.PRINT_DATA.GetPrint,
+					new Reposition[]{
+						new Reposition(0,1),
+						new Reposition(0,2),
+						new Reposition(1,0),
+						new Reposition(2,0),
+						new Reposition(3,1),
+						new Reposition(3,2),
+						new Reposition(1,3),
+						new Reposition(2,3),
+					}
+				),
 			};
 		}
 		public static BluePrint GetBluePrint(int index){
@@ -48,6 +68,9 @@ public class BluePrint : GridMap<BluePrint.Print>{
 			}
 			return _BLUEPRINTS[index];
 		}
+		public static BluePrint GetRandomBluePrint(){
+			return _BLUEPRINTS[GetRandomIndex()];
+		}
 		public static int GetRandomIndex(){
 			return UnityEngine.Random.Range(0, _BLUEPRINTS.Length);
 		}
@@ -55,7 +78,7 @@ public class BluePrint : GridMap<BluePrint.Print>{
 			if(index < 0){
 				return false;
 			}
-			if(index > _BLUEPRINTS.Length){
+			if(index >= _BLUEPRINTS.Length){
 				return false;
 			}
 			return true;
@@ -64,17 +87,18 @@ public class BluePrint : GridMap<BluePrint.Print>{
 			return Print.GetNullPrint();
 		}
 	}
-	//
+	// PRINT_DATA
 	[Serializable]
 	public abstract class Print{
 		public static class PRINT_DATA{
 			private static readonly Print[] _PRINTS;
 			static PRINT_DATA(){
 				_PRINTS = new Print[]{
-					new VoidPrint(),
+					new NullPrint(),
 					new WallPrint(),
 					new PathPrint(),
-					new WallPrint(new int[]{0}),
+					new WallPrint(new int[]{0,1}),
+					new PathPrint(new int[]{3}),
 				};
 			}
 			public static Print GetPrint(int index){
@@ -101,27 +125,35 @@ public class BluePrint : GridMap<BluePrint.Print>{
 			public override bool Check(Level level, ClassicGen master, int x, int y){
 				return false;
 			}
-			public override void OnSpawn(Level level, ClassicGen master, Tile tile){}
+			public override void OnSpawn(Level level, ClassicGen master, Tile tile, int x, int y){}
 		}
 		[field:NonSerialized]private static readonly NullPrint _NULL_PRINT = new NullPrint();
 		public Print(){}
 		public abstract void Spawn(Level level, ClassicGen master, int x, int y);
 		public abstract bool Check(Level level, ClassicGen master, int x, int y);
-		public abstract void OnSpawn(Level level, ClassicGen master, Tile tile);
+		public abstract void OnSpawn(Level level, ClassicGen master, Tile tile, int x, int y);
+		public static bool Default_Check(Level level, ClassicGen master, int x, int y){
+			return level.Get(x, y).GetPrintable().CanPrint(level, master, x, y);
+		}
+		public static void Default_OnSpawn(Level level, ClassicGen master, Tile tile, int x, int y, int[] spawns){
+			for(int  i = 0; i < spawns.Length; i++){
+				ClassicGen.Spawner.SPAWNER_DATA.GetSpawner(spawns[i], x, y).AddToMaster(level, master);
+			}
+		}
 		public static BluePrint.Print GetNullPrint(){
 			return _NULL_PRINT;
 		}
 	}
 	[Serializable]
-	public class VoidPrint : BluePrint.Print{
-		public VoidPrint(){}
+	public class NullPrint : BluePrint.Print{
+		public NullPrint(){}
 		public override void Spawn(Level level, ClassicGen master, int x, int y){
-			level.Get(x, y).GetPrintable().Print(level, master, this, new VoidTile(x, y));
+			level.Get(x, y).GetPrintable().Print(level, master, this, Tile.GetNullTile(), x, y);
 		}
 		public override bool Check(Level level, ClassicGen master, int x, int y){
-			return level.Get(x, y).GetPrintable().Check(level, master);
+			return level.Get(x, y).GetPrintable().CanPrint(level, master, x, y);
 		}
-		public override void OnSpawn(Level level, ClassicGen master, Tile tile){}
+		public override void OnSpawn(Level level, ClassicGen master, Tile tile, int x, int y){}
 	}
 	[Serializable]
 	public class PathPrint : BluePrint.Print{
@@ -133,16 +165,13 @@ public class BluePrint : GridMap<BluePrint.Print>{
 			_spawns = new int[0];
 		}
 		public override void Spawn(Level level, ClassicGen master, int x, int y){
-			level.Get(x, y).GetPrintable().Print(level, master, this, new PathTile(x, y));
+			level.Get(x, y).GetPrintable().Print(level, master, this, new PathTile(x, y), x, y);
 		}
 		public override bool Check(Level level, ClassicGen master, int x, int y){
-			return level.Get(x, y).GetPrintable().Check(level, master);
+			return Print.Default_Check(level, master, x, y);
 		}
-		public override void OnSpawn(Level level, ClassicGen master, Tile tile){
-			tile.GetXY(out int x, out int y);
-			for(int  i = 0; i < _spawns.Length; i++){
-				master.AddSpawner(ClassicGen.Spawner.SPAWNER_DATA.GetSpawner(_spawns[i], x, y));
-			}
+		public override void OnSpawn(Level level, ClassicGen master, Tile tile, int x, int y){
+			Print.Default_OnSpawn(level, master, tile, x, y, _spawns);
 		}
 	}
 	[Serializable]
@@ -155,16 +184,13 @@ public class BluePrint : GridMap<BluePrint.Print>{
 			_spawns = new int[0];
 		}
 		public override void Spawn(Level level, ClassicGen master, int x, int y){
-			level.Get(x, y).GetPrintable().Print(level, master, this, new WallTile(x, y));
+			level.Get(x, y).GetPrintable().Print(level, master, this, new WallTile(x, y), x, y);
 		}
 		public override bool Check(Level level, ClassicGen master, int x, int y){
-			return level.Get(x, y).GetPrintable().Check(level, master);
+			return Print.Default_Check(level, master, x, y);
 		}
-		public override void OnSpawn(Level level, ClassicGen master, Tile tile){
-			tile.GetXY(out int x, out int y);
-			for(int  i = 0; i < _spawns.Length; i++){
-				master.AddSpawner(ClassicGen.Spawner.SPAWNER_DATA.GetSpawner(_spawns[i], x, y));
-			}
+		public override void OnSpawn(Level level, ClassicGen master, Tile tile, int x, int y){
+			Print.Default_OnSpawn(level, master, tile, x, y, _spawns);
 		}
 	}
 	//
@@ -178,7 +204,7 @@ public class BluePrint : GridMap<BluePrint.Print>{
 				return false;
 			}
 		}
-		[field:NonSerialized]private static readonly NullReposition _NULL_REPOSITION= new NullReposition();
+		[field:NonSerialized]private static readonly NullReposition _NULL_REPOSITION = new NullReposition();
 		private int _x;
 		private int _y;
 		public Reposition(int x, int y){
@@ -194,6 +220,8 @@ public class BluePrint : GridMap<BluePrint.Print>{
 					bluePrint.Get(x, y).Spawn(level, master, (x + spawnX), (y + spawnY));
 				}
 			}
+			const int CONNECTOR_INDEX = 2;
+			ClassicGen.Spawner.SPAWNER_DATA.GetSpawner(CONNECTOR_INDEX, positionX, positionY).AddToMaster(level, master);
 		}
 		public virtual bool Check(Level level, BluePrint bluePrint, ClassicGen master, int positionX, int positionY){
 			int spawnX = positionX - _x;
@@ -264,6 +292,7 @@ public class BluePrint : GridMap<BluePrint.Print>{
 		}
 		if(final.Count > 0){
 			_repositions[final[UnityEngine.Random.Range(0, final.Count)]].Spawn(level, this, master, positionX, positionY);
+			master.AddBuild();
 		}
 	}
 	public bool Check(Level level, int spawnX, int spawnY){

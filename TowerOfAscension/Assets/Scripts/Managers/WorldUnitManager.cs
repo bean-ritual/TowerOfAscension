@@ -14,7 +14,9 @@ public class WorldUnitManager : MonoBehaviour{
 		_instance = this;
 	}
 	private void OnDestroy(){
-		
+		Register<Unit> units = _level.GetUnits();
+		units.OnObjectAdded -= OnObjectAdded;
+		units.OnObjectRemoved -= OnObjectRemoved;
 	}
 	private void Start(){
 		_worldUnits = new Dictionary<Unit, WorldUnit>();
@@ -23,6 +25,8 @@ public class WorldUnitManager : MonoBehaviour{
 		for(int i = 0; i < units.GetCount(); i++){
 			CreateWorldUnit(units.Get(i));
 		}
+		units.OnObjectAdded += OnObjectAdded;
+		units.OnObjectRemoved += OnObjectRemoved;
 	}
 	private void CreateWorldUnit(Unit unit){
 		GameObject go = Instantiate(_prefabWorldUnit, this.transform);
@@ -30,7 +34,16 @@ public class WorldUnitManager : MonoBehaviour{
 		worldUnit.Setup(unit);
 		_worldUnits.Add(unit, worldUnit);
 	}
+	private void RemoveWorldUnit(Unit unit){
+		
+	}
 	public static WorldUnitManager GetInstance(){
 		return _instance;
+	}
+	private void OnObjectAdded(object sender, Register<Unit>.OnObjectChangedEventArgs e){
+		CreateWorldUnit(e.value);
+	}
+	private void OnObjectRemoved(object sender, Register<Unit>.OnObjectChangedEventArgs e){
+		RemoveWorldUnit(e.value);
 	}
 }

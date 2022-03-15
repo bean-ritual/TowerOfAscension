@@ -72,6 +72,6 @@ public class Level : GridMap<Tile>{
 		return _NULL_LEVEL;
 	}
 	private static Tile CreateTile(int x, int y){
-		return new VoidTile(x, y);
+		return Tile.GetNullTile();
 	}
 }

@@ -9,15 +9,19 @@ public abstract class Tile{
 		bool RemoveUnit(Register<Unit>.ID id);
 	}
 	public interface IPrintable{
-		void Print(Level level, ClassicGen master, BluePrint.Print print, Tile tile);
-		bool Check(Level level, ClassicGen master);
+		void Print(Level level, ClassicGen master, BluePrint.Print print, Tile tile, int x, int y);
+		bool CanPrint(Level level, ClassicGen master, int x, int y);
+	}
+	public interface IConnectable{
+		bool CanConnect(Level level, ClassicGen master, int x, int y);
 	}
 	[Serializable]
 	public class NullTile : 
 		Tile,
 		LevelMeshManager.ITileMeshData,
 		Tile.IHasUnits,
-		Tile.IPrintable
+		Tile.IPrintable,
+		Tile.IConnectable
 		{
 		private const int _NULL_X = -1;
 		private const int _NULL_Y = -1;
@@ -38,8 +42,14 @@ public abstract class Tile{
 		public bool RemoveUnit(Register<Unit>.ID id){
 			return false;
 		}
-		public virtual void Print(Level level, ClassicGen master, BluePrint.Print print, Tile tile){}
-		public virtual bool Check(Level level, ClassicGen master){
+		public void Print(Level level, ClassicGen master, BluePrint.Print print, Tile tile, int x, int y){
+			level.Set(x, y, tile);
+			print.OnSpawn(level, master, tile, x, y);
+		}
+		public bool CanPrint(Level level, ClassicGen master, int x, int y){
+			return level.CheckBounds(x, y);
+		}
+		public bool CanConnect(Level level, ClassicGen master, int x, int y){
 			return false;
 		}
 	}
@@ -62,6 +72,9 @@ public abstract class Tile{
 		return _NULL_TILE;
 	}
 	public virtual IPrintable GetPrintable(){
+		return _NULL_TILE;
+	}
+	public virtual IConnectable GetConnectable(){
 		return _NULL_TILE;
 	}
 	public static Tile GetNullTile(){

@@ -29,9 +29,6 @@ public class DungeonMaster : MonoBehaviour{
 		_local = DUNGEONMASTER_DATA.GetGame();
 		//
 		Play();
-		//
-		ClassicGen classic = new ClassicGen(_local.GetLevel());
-		classic.AddToRegister(_local.GetLevel().GetUnits());
 	}
 	public IEnumerator GameLoop(){
 		while(_tick){

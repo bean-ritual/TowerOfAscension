@@ -25,6 +25,9 @@ public class Game{
 	}
 	public virtual void NewLevel(){
 		_level = new Level(100, 100);
+		_level.GetMidPoint(out int x, out int y);
+		ClassicGen classic = new ClassicGen(5);
+		classic.Spawn(_level, x, y);
 	}
 	public virtual Level GetLevel(){
 		return _level;
