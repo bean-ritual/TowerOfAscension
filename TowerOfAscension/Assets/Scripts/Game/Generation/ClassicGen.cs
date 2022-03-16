@@ -7,25 +7,29 @@ public class ClassicGen :
 	Unit,
 	WorldUnit.IWorldUnit,
 	Unit.ISpawnable,
-	Unit.IProcessable
+	Unit.IProcessable,
+	Unit.IClassicGen
 	{
 	public static class CLASSICGEN_DATA{
-		private static readonly int[] _STRUCTURE_BLUEPRINTS;
-		private static readonly int[] _DETAIL_BLUEPRINTS;
+		private static readonly BluePrint.BluePrintID[] _STRUCTURE_BLUEPRINTS;
+		private static readonly BluePrint.BluePrintID[] _DETAIL_BLUEPRINTS;
 		static CLASSICGEN_DATA(){
-			_STRUCTURE_BLUEPRINTS = new int[]{
-				0,
-				1,
+			_STRUCTURE_BLUEPRINTS = new BluePrint.BluePrintID[]{
+				BluePrint.BluePrintID.BasicRoom,
+				BluePrint.BluePrintID.BasicHallway,
+				BluePrint.BluePrintID.SmallRoom,
+				BluePrint.BluePrintID.LongHallway,
 			};
-			_DETAIL_BLUEPRINTS = new int[]{
-				2,
+			_DETAIL_BLUEPRINTS = new BluePrint.BluePrintID[]{
+				BluePrint.BluePrintID.SmallRoom,
+				BluePrint.BluePrintID.TinyRoom,
 			};
 		}
 		public static int GetRandomStructureBluePrintIndex(){
-			return _STRUCTURE_BLUEPRINTS[UnityEngine.Random.Range(0, _STRUCTURE_BLUEPRINTS.Length)];
+			return BluePrint.BLUEPRINT_DATA.GetBluePrintIndex(_STRUCTURE_BLUEPRINTS[UnityEngine.Random.Range(0, _STRUCTURE_BLUEPRINTS.Length)]);
 		}
 		public static int GetRandomDetailBluePrintIndex(){
-			return _DETAIL_BLUEPRINTS[UnityEngine.Random.Range(0, _DETAIL_BLUEPRINTS.Length)];
+			return BluePrint.BLUEPRINT_DATA.GetBluePrintIndex(_DETAIL_BLUEPRINTS[UnityEngine.Random.Range(0, _DETAIL_BLUEPRINTS.Length)]);
 		}
 	}
 	[Serializable]
@@ -63,12 +67,34 @@ public class ClassicGen :
 				return GetNullSpawner();
 			}
 		}
+		public interface IFinalize{
+			void AddBuild(int value = 1);
+			void AddExitSpawner(Spawner exit);
+			bool RemoveExitSpawner(Spawner exit);
+		}
+		public interface IExit{
+			void PositionMaster(Level level, Unit master);
+			int CalculateDistanceCost(Level level, int x, int y);
+		}
 		//
 		[Serializable]
-		public class NullSpawner : Spawner{
+		public class NullSpawner : 
+			Spawner,
+			IFinalize,
+			IExit
+			{
 			public NullSpawner(){}
-			public override void Spawn(Level level, ClassicGen master){}
-			public override void AddToMaster(Level level, ClassicGen master){}
+			public override void Spawn(Level level, Unit master){}
+			public override void AddToMaster(Level level, Unit master){}
+			public void AddBuild(int value = 1){}
+			public void AddExitSpawner(Spawner exit){}
+			public bool RemoveExitSpawner(Spawner exit){
+				return false;
+			}
+			public void PositionMaster(Level level, Unit master){}
+			public int CalculateDistanceCost(Level level, int x, int y){
+				return -1;
+			}
 		}
 		[field:NonSerialized]private static readonly NullSpawner _NULL_SPAWNER = new NullSpawner();
 		protected int _x;
@@ -78,8 +104,14 @@ public class ClassicGen :
 			_y = y;
 		}
 		public Spawner(){}
-		public abstract void Spawn(Level level, ClassicGen master);
-		public abstract void AddToMaster(Level level, ClassicGen master);
+		public abstract void Spawn(Level level, Unit master);
+		public abstract void AddToMaster(Level level, Unit master);
+		public virtual IFinalize GetFinalize(){
+			return _NULL_SPAWNER;
+		}
+		public virtual IExit GetExit(){
+			return _NULL_SPAWNER;
+		}
 		public static Spawner GetNullSpawner(){
 			return _NULL_SPAWNER;
 		}
@@ -91,60 +123,120 @@ public class ClassicGen :
 		public BluePrintSpawner(int x, int y, int index) : base(x, y){
 			_index = index;
 		}
-		public override void Spawn(Level level, ClassicGen master){
+		public override void Spawn(Level level, Unit master){
 			BluePrint.BLUEPRINT_DATA.GetBluePrint(_index).Spawn(level, master, _x, _y);
 		}
-		public override void AddToMaster(Level level, ClassicGen master){
-			const ClassicGen.GenState BLUEPRINT_STATE = ClassicGen.GenState.Structure;
-			master.AddSpawner(this, BLUEPRINT_STATE);
+		public override void AddToMaster(Level level, Unit master){
+			master.GetClassicGen().AddStructureSpawner(this);
 		}
 	}
 	[Serializable]
 	public class ContentualBluePrintSpawner : Spawner{
 		public ContentualBluePrintSpawner(int x, int y) : base(x, y){}
-		public override void Spawn(Level level, ClassicGen master){
-			BluePrint.BLUEPRINT_DATA.GetBluePrint(master.GetContentualBluePrintIndex()).Spawn(level, master, _x, _y);
+		public override void Spawn(Level level, Unit master){
+			BluePrint.BLUEPRINT_DATA.GetBluePrint(master.GetClassicGen().GetContentualBluePrintIndex()).Spawn(level, master, _x, _y);
 		}
-		public override void AddToMaster(Level level, ClassicGen master){
-			const ClassicGen.GenState BLUEPRINT_STATE = ClassicGen.GenState.Structure;
-			master.AddSpawner(this, BLUEPRINT_STATE);
+		public override void AddToMaster(Level level, Unit master){
+			master.GetClassicGen().AddStructureSpawner(this);
 		}
 	}
 	//
 	[Serializable]
 	public class ConnectorSpawner : Spawner{
 		public ConnectorSpawner(int x, int y) : base(x, y){}
-		public override void Spawn(Level level, ClassicGen master){
+		public override void Spawn(Level level, Unit master){
 			if(level.Get(_x, _y).GetConnectable().CanConnect(level, master, _x, _y)){
 				return;
 			}
-			if(level.GetCardinals(_x, _y, (Tile tile) => {return tile.GetConnectable().CanConnect(level, master, _x, _y);}).Count >= 2){
+			if(level.GetCardinals(_x, _y, (Tile tile) => {return tile.GetConnectable().CanConnect(level, master, _x, _y);}).Count == 2){
 				level.Set(_x, _y, new PathTile(_x, _y));
 				Unit door = Door.DOOR_DATA.GetLevelledDoor(0);
 				door.GetSpawnable().Spawn(level, _x, _y);
 			}
 		}
-		public override void AddToMaster(Level level, ClassicGen master){
-			const ClassicGen.GenState CONNECTOR_STATE = ClassicGen.GenState.Details;
-			master.AddSpawner(this, CONNECTOR_STATE);
+		public override void AddToMaster(Level level, Unit master){
+			master.GetClassicGen().AddDetailSpawner(this);
 		}
 	}
 	[Serializable]
-	public class ExitSpawner : Spawner{
+	public class ExitSpawner : 
+		Spawner,
+		Spawner.IExit
+		{
 		public ExitSpawner(int x, int y) : base(x, y){}
-		public override void Spawn(Level level, ClassicGen master){
+		public override void Spawn(Level level, Unit master){
 			Unit stairs = new Stairs();
 			stairs.GetSpawnable().Spawn(level, _x, _y);
+			master.GetClassicGen().GetFinalize().AddBuild();
 		}
-		public virtual void PositionMaster(Level level, ClassicGen master){
-			master.SetPosition(level, _x, _y);
-			master.RemoveExit(this);
+		public virtual void PositionMaster(Level level, Unit master){
+			master.GetPositionable().SetPosition(level, _x, _y);
+			master.GetClassicGen().GetFinalize().RemoveExitSpawner(this);
+			master.GetClassicGen().GetFinalize().AddBuild();
 		}
 		public virtual int CalculateDistanceCost(Level level, int x, int y){
 			return level.CalculateDistanceCost(x, y, _x, _y);
 		}
-		public override void AddToMaster(Level level, ClassicGen master){
-			master.AddExit(this);
+		public override void AddToMaster(Level level, Unit master){
+			master.GetClassicGen().GetFinalize().AddExitSpawner(this);
+		}
+		public override Spawner.IExit GetExit(){
+			return this;
+		}
+	}
+	[Serializable]
+	public class FinalSpawner : 
+		Spawner,
+		Spawner.IFinalize
+		{
+		private List<Spawner> _exits;
+		private int _amount;
+		private int _build;
+		public FinalSpawner(int amount){
+			_exits = new List<Spawner>();
+			_amount = amount;
+			_build = 0;
+		}
+		public override void Spawn(Level level, Unit master){
+			if(_exits.Count <= 0){
+				return;
+			}
+			_exits[UnityEngine.Random.Range(0, _exits.Count)].GetExit().PositionMaster(level, master);
+			master.GetPositionable().GetPosition(out int x, out int y);
+			GetExitToSpawn(level, master, x, y).Spawn(level, master);
+			if(_build >= (_amount + 1)){
+				master.GetClassicGen().OnFinalize(level);
+			}
+		}
+		public override void AddToMaster(Level level, Unit master){
+			//
+		}
+		public virtual Spawner GetExitToSpawn(Level level, Unit master, int x, int y){
+			Spawner exit = GetNullSpawner();
+			if(_exits.Count <= 0){
+				return exit;
+			}
+			int amount = 0;
+			for(int i = 0; i < _exits.Count; i++){
+				int distance = _exits[i].GetExit().CalculateDistanceCost(level, x, y);
+				if(distance > amount){
+					exit = _exits[i];
+					amount = distance;
+				}
+			}
+			return exit;
+		}
+		public virtual void AddBuild(int value = 1){
+			_build = (_build + value);
+		}
+		public virtual void AddExitSpawner(Spawner exit){
+			_exits.Add(exit);
+		}
+		public virtual bool RemoveExitSpawner(Spawner exit){
+			return _exits.Remove(exit);
+		}
+		public override Spawner.IFinalize GetFinalize(){
+			return this;
 		}
 	}
 	//
@@ -157,45 +249,28 @@ public class ClassicGen :
 		Complete,
 	};
 	public event EventHandler<EventArgs> OnWorldUnitUpdate;
-	private int _x = Unit.NullUnit.GetNullX();
-	private int _y = Unit.NullUnit.GetNullY();
-	private GenState _state = GenState.Null;
-	private Queue<Spawner> _structures = new Queue<Spawner>();
-	private Queue<Spawner> _details = new Queue<Spawner>();
-	private List<ExitSpawner> _exits = new List<ExitSpawner>();
-	private Register<Unit>.ID _id = Register<Unit>.ID.GetNullID();
-	//
-	private int _maxBuild;
-	private int _build = 0;
-	public ClassicGen(int maxBuild){
-		_maxBuild = maxBuild;
+	private int _x;
+	private int _y;
+	private Unit _player;
+	private GenState _state;
+	private Queue<Spawner> _structures;
+	private Queue<Spawner> _details;
+	private Spawner _finalize;
+	private Register<Unit>.ID _id;
+	private int _minBuild;
+	private int _build;
+	public ClassicGen(Unit player, int minBuild = 10, int maxExits = 1){
+		_x = Unit.NullUnit.GetNullX();
+		_y = Unit.NullUnit.GetNullY();
+		_player = player;
+		_state = GenState.Null;
+		_structures = new Queue<Spawner>();
+		_details = new Queue<Spawner>();
+		_finalize = new FinalSpawner(maxExits);
+		_id = Register<Unit>.ID.GetNullID();
+		_minBuild = minBuild;
+		_build = 0;
 	}	
-	public virtual void AddSpawner(Spawner spawner, GenState state){
-		GetSpawner(state).Enqueue(spawner);
-	}
-	public virtual void AddExit(ExitSpawner exit){
-		_exits.Add(exit);
-	}
-	public virtual void RemoveExit(ExitSpawner exit){
-		_exits.Remove(exit);
-	}
-	public virtual Queue<Spawner> GetSpawner(GenState state){
-		switch(state){
-			default: return new Queue<Spawner>();
-			case GenState.Null: return new Queue<Spawner>();
-			case GenState.Structure: return _structures;
-			case GenState.Details: return _details;
-		}
-	}
-	public virtual void AddBuild(int build = 1){
-		_build = (_build + build);
-	}
-	public virtual int GetContentualBluePrintIndex(){
-		if(_state == GenState.Details){
-			return CLASSICGEN_DATA.GetRandomDetailBluePrintIndex();
-		}
-		return CLASSICGEN_DATA.GetRandomStructureBluePrintIndex();
-	}
 	public Sprite GetSprite(){
 		return SpriteSheet.SPRITESHEET_DATA.GetSprite(SpriteSheet.SpriteID.Stairs, 1);
 	}
@@ -249,8 +324,30 @@ public class ClassicGen :
 		}
 		return level.NextTurn();
 	}
+	//
+	public virtual void AddStructureSpawner(Spawner spawner){
+		_structures.Enqueue(spawner);
+	}
+	public virtual void AddDetailSpawner(Spawner spawner){
+		_details.Enqueue(spawner);
+	}
+	public virtual void AddBuild(int value = 1){
+		_build = (_build + value);
+	}
+	public virtual void OnFinalize(Level level){
+		_state = GenState.Complete;
+		NukeSpawn(level);
+		_player.GetSpawnable().Spawn(level, _x, _y);
+	}
+	public virtual int GetContentualBluePrintIndex(){
+		if(_state == GenState.Details){
+			return CLASSICGEN_DATA.GetRandomDetailBluePrintIndex();
+		}
+		return CLASSICGEN_DATA.GetRandomStructureBluePrintIndex();
+	}
+	//
 	public void StructureState(Level level){
-		if(_build > _maxBuild || _structures.Count <= 0){
+		if(_build > _minBuild || _structures.Count <= 0){
 			_state = GenState.Details;
 			while(_structures.Count > 0){
 				_details.Enqueue(_structures.Dequeue());
@@ -267,24 +364,13 @@ public class ClassicGen :
 		_details.Dequeue().Spawn(level, this);
 	}
 	public void FinalizeState(Level level){
-		const int MIN_EXITS = 1;
-		if(_exits.Count <= MIN_EXITS){
-			_state = GenState.Null;
-			return;
-		}
-		_exits[UnityEngine.Random.Range(0, _exits.Count)].PositionMaster(level, this);
-		int index = 0;
-		int amount = 0;
-		for(int i = 0; i < _exits.Count; i++){
-			int newAmount = _exits[i].CalculateDistanceCost(level, _x, _y);
-			if(newAmount > amount){
-				amount = newAmount;
-				index = i;
-			}
-		}
-		_exits[index].Spawn(level, this);
-		_state = GenState.Complete;
+		_state = GenState.Null;
+		_finalize.Spawn(level, this);
 	}
+	public void NukeSpawn(Level level){
+		
+	}
+	//
 	public override WorldUnit.IWorldUnit GetWorldUnit(){
 		return this;
 	}
@@ -299,5 +385,11 @@ public class ClassicGen :
 	}
 	public override Unit.IProcessable GetProcessable(){
 		return this;
+	}
+	public override IClassicGen GetClassicGen(){
+		return this;
+	}
+	public override Spawner.IFinalize GetFinalize(){
+		return _finalize.GetFinalize();
 	}
 }

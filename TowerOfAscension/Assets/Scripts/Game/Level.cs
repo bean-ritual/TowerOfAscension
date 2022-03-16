@@ -31,6 +31,8 @@ public class Level : GridMap<Tile>{
 	public override Tile GetNullGridObject(){
 		return Tile.GetNullTile();
 	}
+	[field:NonSerialized]public event EventHandler<EventArgs> OnNextTurn;
+	[field:NonSerialized]public event EventHandler<EventArgs> OnLightUpdate;
 	[field:NonSerialized]private static readonly NullLevel _NULL_LEVEL = new NullLevel();
 	private static readonly Vector3 _LEVEL_ORIGIN_POSITION = Vector3.zero;
 	private static readonly Vector3 _LEVEL_CELL_DIMENSIONS = Vector3.one;
@@ -66,6 +68,7 @@ public class Level : GridMap<Tile>{
 			return false;
 		}
 		_index = (_index + 1) % count;
+		OnNextTurn?.Invoke(this, EventArgs.Empty);
 		return (_index > 0);
 	}
 	public static Level GetNullLevel(){

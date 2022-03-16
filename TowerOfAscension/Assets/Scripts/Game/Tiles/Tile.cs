@@ -9,11 +9,15 @@ public abstract class Tile{
 		bool RemoveUnit(Register<Unit>.ID id);
 	}
 	public interface IPrintable{
-		void Print(Level level, ClassicGen master, BluePrint.Print print, Tile tile, int x, int y);
-		bool CanPrint(Level level, ClassicGen master, int x, int y);
+		void Print(Level level, Unit master, BluePrint.Print print, Tile tile, int x, int y);
+		bool CanPrint(Level level, Unit master, int x, int y);
 	}
 	public interface IConnectable{
-		bool CanConnect(Level level, ClassicGen master, int x, int y);
+		bool CanConnect(Level level, Unit master, int x, int y);
+	}
+	public interface IWalkable{
+		void Walk(Level level, Unit unit);
+		bool CanWalk(Level level, Unit unit);
 	}
 	[Serializable]
 	public class NullTile : 
@@ -21,7 +25,8 @@ public abstract class Tile{
 		LevelMeshManager.ITileMeshData,
 		Tile.IHasUnits,
 		Tile.IPrintable,
-		Tile.IConnectable
+		Tile.IConnectable,
+		Tile.IWalkable
 		{
 		private const int _NULL_X = -1;
 		private const int _NULL_Y = -1;
@@ -42,14 +47,18 @@ public abstract class Tile{
 		public bool RemoveUnit(Register<Unit>.ID id){
 			return false;
 		}
-		public void Print(Level level, ClassicGen master, BluePrint.Print print, Tile tile, int x, int y){
+		public void Print(Level level, Unit master, BluePrint.Print print, Tile tile, int x, int y){
 			level.Set(x, y, tile);
 			print.OnSpawn(level, master, tile, x, y);
 		}
-		public bool CanPrint(Level level, ClassicGen master, int x, int y){
+		public bool CanPrint(Level level, Unit master, int x, int y){
 			return level.CheckBounds(x, y);
 		}
-		public bool CanConnect(Level level, ClassicGen master, int x, int y){
+		public bool CanConnect(Level level, Unit master, int x, int y){
+			return false;
+		}
+		public void Walk(Level level, Unit unit){}
+		public bool CanWalk(Level level, Unit unit){
 			return false;
 		}
 	}
@@ -75,6 +84,9 @@ public abstract class Tile{
 		return _NULL_TILE;
 	}
 	public virtual IConnectable GetConnectable(){
+		return _NULL_TILE;
+	}
+	public virtual IWalkable GetWalkable(){
 		return _NULL_TILE;
 	}
 	public static Tile GetNullTile(){

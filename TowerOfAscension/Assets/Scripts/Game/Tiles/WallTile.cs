@@ -17,11 +17,11 @@ public class WallTile :
 		const int PATH_FACTOR = 1;
 		return PATH_FACTOR;
 	}
-	public void Print(Level level, ClassicGen master, BluePrint.Print print, Tile tile, int x, int y){
+	public void Print(Level level, Unit master, BluePrint.Print print, Tile tile, int x, int y){
 		level.Set(x, y, tile);
 		print.OnSpawn(level, master, tile, x, y);
 	}
-	public bool CanPrint(Level level, ClassicGen master, int x, int y){
+	public bool CanPrint(Level level, Unit master, int x, int y){
 		return true;
 	}
 	public override LevelMeshManager.ITileMeshData GetTileMeshData(){

@@ -44,6 +44,11 @@ public class DungeonMaster : MonoBehaviour{
 	public void Pause(){
 		_tick = false;
 	}
+	public void Process(){
+		if(!_tick){
+			_local.Process();
+		}
+	}
 	public void Save(){
 		SaveSystem.Save(_local);
 	}

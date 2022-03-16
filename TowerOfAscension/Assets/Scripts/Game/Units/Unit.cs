@@ -20,8 +20,20 @@ public abstract class Unit{
 		void Spawn(Level level, int x, int y);
 		void Despawn(Level level);
 	}
+	public interface IMoveable : IPositionable{
+		void Move(Level level, Direction direction);
+		void OnMove(Level level, Tile tile);
+	}
 	public interface ILightControl{
 		bool GetTransparent();
+	}
+	public interface IClassicGen{
+		void AddStructureSpawner(ClassicGen.Spawner spawner);
+		void AddDetailSpawner(ClassicGen.Spawner spawner);
+		void AddBuild(int value = 1);
+		void OnFinalize(Level level);
+		int GetContentualBluePrintIndex();
+		ClassicGen.Spawner.IFinalize GetFinalize();
 	}
 	[Serializable]
 	public class NullUnit : 
@@ -32,7 +44,10 @@ public abstract class Unit{
 		IPositionable,
 		IDirectionable,
 		ISpawnable,
-		ILightControl
+		IMoveable,
+		ILightControl,
+		IClassicGen,
+		ClassicGen.Spawner.IFinalize
 		{
 		public event EventHandler<EventArgs> OnWorldUnitUpdate;
 		private const int _NULL_X = -1;
@@ -68,9 +83,23 @@ public abstract class Unit{
 		}
 		public void Spawn(Level level, int x, int y){}
 		public void Despawn(Level level){}
+		public void Move(Level level, Direction direction){}
+		public void OnMove(Level level, Tile tile){}
 		public bool GetTransparent(){
 			const bool NULL_TRANSPARENCY = true;
 			return NULL_TRANSPARENCY;
+		}
+		public void AddStructureSpawner(ClassicGen.Spawner spawner){}
+		public void AddDetailSpawner(ClassicGen.Spawner spawner){}
+		public void AddBuild(int value = 1){}
+		public void OnFinalize(Level level){}
+		public int GetContentualBluePrintIndex(){
+			return -1;
+		}
+		//public void AddBuild(int value = 1){}
+		public void AddExitSpawner(ClassicGen.Spawner exit){}
+		public bool RemoveExitSpawner(ClassicGen.Spawner exit){
+			return false;
 		}
 		public static int GetNullX(){
 			return _NULL_X;
@@ -110,7 +139,16 @@ public abstract class Unit{
 	public virtual ISpawnable GetSpawnable(){
 		return _NULL_UNIT;
 	}
+	public virtual IMoveable GetMoveable(){
+		return _NULL_UNIT;
+	}
 	public virtual ILightControl GetLightControl(){
+		return _NULL_UNIT;
+	}
+	public virtual IClassicGen GetClassicGen(){
+		return _NULL_UNIT;
+	}
+	public virtual ClassicGen.Spawner.IFinalize GetFinalize(){
 		return _NULL_UNIT;
 	}
 	public static void Default_Spawn(Unit self, Level level, int x, int y){
@@ -123,6 +161,11 @@ public abstract class Unit{
 		level.Get(newX, newY).GetHasUnits().AddUnit(self.GetRegisterable().GetID());
 		x = newX;
 		y = newY;
+	}
+	public static void Default_Move(Unit self, Level level, Direction direction){
+		self.GetPositionable().GetPosition(out int oldX, out int oldY);
+		DirectionToInt(direction, out int dirX, out int dirY);
+		level.Get((oldX + dirX), (oldY + dirY)).GetWalkable().Walk(level, self);
 	}
 	public static Unit GetNullUnit(){
 		return _NULL_UNIT;

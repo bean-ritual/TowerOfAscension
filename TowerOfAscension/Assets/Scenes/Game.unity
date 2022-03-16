@@ -133,6 +133,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6372892}
   - component: {fileID: 6372893}
+  - component: {fileID: 6372894}
   m_Layer: 0
   m_Name: DungeonMaster
   m_TagString: Untagged
@@ -164,6 +165,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: deac6c5e3a05b8d4691d61cdda632114, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &6372894
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6372891}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9489d1c680072b4eb4c95d9dd7e6d42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &204914975

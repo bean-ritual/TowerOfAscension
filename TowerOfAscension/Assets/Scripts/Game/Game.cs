@@ -16,9 +16,10 @@ public class Game{
 		}
 	}
 	[field:NonSerialized]private static readonly NullGame _NULL_GAME = new NullGame();
-	private Level _level;
+	private Unit _player = Unit.GetNullUnit();
+	private Level _level = Level.GetNullLevel();
 	public Game(){
-		_level = Level.GetNullLevel();
+		_player = new Hero();
 	}
 	public virtual bool Process(){
 		return _level.Process();
@@ -26,7 +27,7 @@ public class Game{
 	public virtual void NewLevel(){
 		_level = new Level(100, 100);
 		_level.GetMidPoint(out int x, out int y);
-		ClassicGen classic = new ClassicGen(5);
+		ClassicGen classic = new ClassicGen(_player, 50);
 		classic.Spawn(_level, x, y);
 	}
 	public virtual Level GetLevel(){
