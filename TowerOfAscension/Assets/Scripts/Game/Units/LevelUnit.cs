@@ -7,7 +7,8 @@ public abstract class LevelUnit :
 	Unit,
 	WorldUnit.IWorldUnit,
 	Unit.ISpawnable,
-	Unit.IProcessable
+	Unit.IProcessable,
+	Unit.ICollideable
 	{
 	public event EventHandler<EventArgs> OnWorldUnitUpdate;
 	protected SpriteSheet.SpriteID _spriteID = SpriteSheet.SpriteID.Misc;
@@ -60,6 +61,9 @@ public abstract class LevelUnit :
 	}
 	public virtual bool Process(Level level){
 		return level.NextTurn();
+	}
+	public virtual bool CheckCollision(Level level, Unit check){
+		return true;
 	}
 	public override WorldUnit.IWorldUnit GetWorldUnit(){
 		return this;

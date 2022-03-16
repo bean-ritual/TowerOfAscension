@@ -31,7 +31,11 @@ public class DungeonMaster : MonoBehaviour{
 		Play();
 	}
 	public IEnumerator GameLoop(){
+		yield return _update;
 		while(_tick){
+			if(WorldUnitManager.GetInstance().GetIsAnimating()){
+				yield return _update;
+			}
 			if(!_local.Process()){
 				yield return _update;
 			}

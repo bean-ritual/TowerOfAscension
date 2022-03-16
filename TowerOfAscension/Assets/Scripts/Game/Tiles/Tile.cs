@@ -15,7 +15,7 @@ public abstract class Tile{
 	public interface IConnectable{
 		bool CanConnect(Level level, Unit master, int x, int y);
 	}
-	public interface IWalkable{
+	public interface IWalkable : IHasUnits{
 		void Walk(Level level, Unit unit);
 		bool CanWalk(Level level, Unit unit);
 	}

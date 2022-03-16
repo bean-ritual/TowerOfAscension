@@ -4,9 +4,16 @@ using System.Collections.Generic;
 using UnityEngine;
 public class WorldUnitManager : MonoBehaviour{
 	private static WorldUnitManager _instance;
-	private Level _level;
+	private AnimationState _state;
+	private Level _level = Level.GetNullLevel();
 	private Dictionary<Unit, WorldUnit> _worldUnits;
 	[SerializeField]private GameObject _prefabWorldUnit;
+	public enum AnimationState{
+		Null,
+		Idle,
+		Awaiting,
+		Animating,
+	};
 	private void Awake(){
 		if(_instance != null){
 			Destroy(gameObject);
@@ -27,6 +34,30 @@ public class WorldUnitManager : MonoBehaviour{
 		}
 		units.OnObjectAdded += OnObjectAdded;
 		units.OnObjectRemoved += OnObjectRemoved;
+	}
+	private void LateUpdate(){
+		switch(_state){
+			default: return;
+			case AnimationState.Null: return;
+			case AnimationState.Idle: return;
+			case AnimationState.Awaiting:{
+				_state = AnimationState.Idle;
+				return;
+			}
+			case AnimationState.Animating:{
+				_state = AnimationState.Awaiting;
+				return;
+			}
+		}
+	}
+	public void OnFrameAnimation(){
+		_state = AnimationState.Animating;
+	}
+	public bool GetIsAnimating(){
+		if(_state == AnimationState.Animating || _state == AnimationState.Awaiting){
+			return true;
+		}
+		return false;
 	}
 	private void CreateWorldUnit(Unit unit){
 		GameObject go = Instantiate(_prefabWorldUnit, this.transform);

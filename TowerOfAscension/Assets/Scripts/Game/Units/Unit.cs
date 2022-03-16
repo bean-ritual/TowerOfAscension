@@ -21,8 +21,16 @@ public abstract class Unit{
 		void Despawn(Level level);
 	}
 	public interface IMoveable : IPositionable{
+		event EventHandler<EventArgs> OnMoveEvent;
 		void Move(Level level, Direction direction);
 		void OnMove(Level level, Tile tile);
+	}
+	public interface ICollideable{
+		bool CheckCollision(Level level, Unit check);
+	}
+	public interface IControllable{
+		void SetAI(AI ai);
+		AI GetAI();
 	}
 	public interface ILightControl{
 		bool GetTransparent();
@@ -45,11 +53,14 @@ public abstract class Unit{
 		IDirectionable,
 		ISpawnable,
 		IMoveable,
+		ICollideable,
+		IControllable,
 		ILightControl,
 		IClassicGen,
 		ClassicGen.Spawner.IFinalize
 		{
-		public event EventHandler<EventArgs> OnWorldUnitUpdate;
+		[field:NonSerialized]public event EventHandler<EventArgs> OnWorldUnitUpdate;
+		[field:NonSerialized]public event EventHandler<EventArgs> OnMoveEvent;
 		private const int _NULL_X = -1;
 		private const int _NULL_Y = -1;
 		public NullUnit(){}
@@ -65,8 +76,6 @@ public abstract class Unit{
 		}
 		public bool Process(Level level){
 			return level.NextTurn();
-			//const bool NULL_PROCESS = true;
-			//return NULL_PROCESS;
 		}
 		public void SetPosition(Level level, int x, int y){}
 		public void GetPosition(out int x, out int y){
@@ -85,6 +94,13 @@ public abstract class Unit{
 		public void Despawn(Level level){}
 		public void Move(Level level, Direction direction){}
 		public void OnMove(Level level, Tile tile){}
+		public bool CheckCollision(Level level, Unit check){
+			return false;
+		}
+		public void SetAI(AI ai){}
+		public AI GetAI(){
+			return AI.GetNullAI();
+		}
 		public bool GetTransparent(){
 			const bool NULL_TRANSPARENCY = true;
 			return NULL_TRANSPARENCY;
@@ -140,6 +156,12 @@ public abstract class Unit{
 		return _NULL_UNIT;
 	}
 	public virtual IMoveable GetMoveable(){
+		return _NULL_UNIT;
+	}
+	public virtual ICollideable GetCollideable(){
+		return _NULL_UNIT;
+	}
+	public virtual IControllable GetControllable(){
 		return _NULL_UNIT;
 	}
 	public virtual ILightControl GetLightControl(){
