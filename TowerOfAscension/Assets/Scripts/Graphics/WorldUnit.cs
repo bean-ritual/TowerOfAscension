@@ -7,6 +7,7 @@ public class WorldUnit : MonoBehaviour{
 		event EventHandler<EventArgs> OnWorldUnitUpdate;
 		Sprite GetSprite();
 		int GetSortingOrder();
+		bool GetWorldVisibility(Level level);
 	}
 	private Unit _unit = Unit.GetNullUnit();
 	private Level _level = Level.GetNullLevel();
@@ -18,16 +19,21 @@ public class WorldUnit : MonoBehaviour{
 	public void Setup(Unit unit){
 		UnsubscribeFromEvents();
 		_unit = unit;
-		_level = DungeonMaster.GetInstance().GetLevel();
 		_unit.GetWorldUnit().OnWorldUnitUpdate += OnWorldUnitUpdate;
 		_unit.GetMoveable().OnMoveEvent += OnMoveEvent;
-		Refresh();
+		_level = DungeonMaster.GetInstance().GetLevel();
+		_level.OnLightUpdate += OnLightUpdate;
+		RefreshAll();
 	}
-	public void Refresh(){
+	public void RefreshAll(){
 		_renderer.sprite = _unit.GetWorldUnit().GetSprite();
 		_renderer.sortingOrder = _unit.GetWorldUnit().GetSortingOrder();
 		_offset.transform.localPosition = _level.GetVector3CellOffset();
 		this.transform.localPosition = _unit.GetPositionable().GetPosition(_level);
+		RefreshVisibility();
+	}
+	public void RefreshVisibility(){
+		_offset.SetActive(_unit.GetWorldUnit().GetWorldVisibility(_level));
 	}
 	public IEnumerator MoveAnimation(int x, int y){
 		float time = 0f;
@@ -46,12 +52,16 @@ public class WorldUnit : MonoBehaviour{
 	private void UnsubscribeFromEvents(){
 		_unit.GetWorldUnit().OnWorldUnitUpdate -= OnWorldUnitUpdate;
 		_unit.GetMoveable().OnMoveEvent -= OnMoveEvent;
+		_level.OnLightUpdate -= OnLightUpdate;
 	}
 	private void OnWorldUnitUpdate(object sender, EventArgs e){
-		Refresh();
+		RefreshAll();
 	}
 	private void OnMoveEvent(object sender, EventArgs e){
 		_unit.GetPositionable().GetPosition(out int x, out int y);
 		StartCoroutine(MoveAnimation(x, y));
+	}
+	private void OnLightUpdate(object sender, EventArgs e){
+		RefreshVisibility();
 	}
 }

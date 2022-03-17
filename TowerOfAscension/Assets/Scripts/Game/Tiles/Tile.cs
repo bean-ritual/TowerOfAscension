@@ -19,29 +19,46 @@ public abstract class Tile{
 		void Walk(Level level, Unit unit);
 		bool CanWalk(Level level, Unit unit);
 	}
+	public interface ILightable{
+		void SetLight(int light);
+		int GetLight();
+	}
+	public interface IDiscoverable{
+		void Discover(Level level, Unit unit);
+	}
 	[Serializable]
 	public class NullTile : 
 		Tile,
 		LevelMeshManager.ITileMeshData,
+		LightMeshManager.ILightMeshData,
 		Tile.IHasUnits,
 		Tile.IPrintable,
 		Tile.IConnectable,
-		Tile.IWalkable
+		Tile.IWalkable,
+		Tile.ILightable,
+		Level.ILightControl,
+		Tile.IDiscoverable
 		{
 		private const int _NULL_X = -1;
 		private const int _NULL_Y = -1;
+		private const int _NULL_INDEX = -1;
+		private const int _NULL_FACTOR = 0;
 		public NullTile(){}
 		public override void GetXY(out int x, out int y){
 			x = _NULL_X;
 			y = _NULL_Y;
 		}
 		public int GetAtlasIndex(){
-			const int NULL_INDEX = -1;
-			return NULL_INDEX;
+			return _NULL_INDEX;
 		}
 		public int GetUVFactor(){
-			const int NULL_FACTOR = 0;
-			return NULL_FACTOR;
+			return _NULL_FACTOR;
+		}
+		public int GetLightAtlasIndex(){
+			return _NULL_INDEX;
+		}
+		public int GetLightUVFactor(){
+			return _NULL_FACTOR;
 		}
 		public void AddUnit(Register<Unit>.ID id){}
 		public bool RemoveUnit(Register<Unit>.ID id){
@@ -61,6 +78,14 @@ public abstract class Tile{
 		public bool CanWalk(Level level, Unit unit){
 			return false;
 		}
+		public void SetLight(int light){}
+		public int GetLight(){
+			return _NULL_INDEX;
+		}
+		public bool CheckTransparency(Level level){
+			return false;
+		}
+		public void Discover(Level level, Unit unit){}
 	}
 	[field:NonSerialized]private static readonly NullTile _NULL_TILE = new NullTile();
 	protected int _x;
@@ -77,6 +102,9 @@ public abstract class Tile{
 	public virtual LevelMeshManager.ITileMeshData GetTileMeshData(){
 		return _NULL_TILE;
 	}
+	public virtual LightMeshManager.ILightMeshData GetLightMeshData(){
+		return _NULL_TILE;
+	}
 	public virtual IHasUnits GetHasUnits(){
 		return _NULL_TILE;
 	}
@@ -87,6 +115,15 @@ public abstract class Tile{
 		return _NULL_TILE;
 	}
 	public virtual IWalkable GetWalkable(){
+		return _NULL_TILE;
+	}
+	public virtual ILightable GetLightable(){
+		return _NULL_TILE;
+	}
+	public virtual Level.ILightControl GetLightControl(){
+		return _NULL_TILE;
+	}
+	public virtual IDiscoverable GetDiscoverable(){
 		return _NULL_TILE;
 	}
 	public static Tile GetNullTile(){

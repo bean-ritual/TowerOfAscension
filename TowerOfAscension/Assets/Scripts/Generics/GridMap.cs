@@ -126,6 +126,35 @@ public abstract class GridMap<TGridObject>{
 		y = Mathf.FloorToInt(_height / 2);
 	}
 	//
+	public List<TGridObject> CalculateFov(int x, int y, int range, Func<int, TGridObject, bool> IsRayable){
+		List<TGridObject> nodes = new List<TGridObject>{Get(x, y)};
+		float angleX, angleY;
+		for(int i = 0; i < 360; i++){
+			angleX = Mathf.Cos((float) i * RADIAL_DEGREE); 
+			angleY = Mathf.Sin((float) i * RADIAL_DEGREE);
+			RaycastAngle(ref nodes, x, y, angleX, angleY, range, IsRayable);
+		}
+		return nodes;
+	}
+	public void RaycastAngle(ref List<TGridObject> nodes, int x, int y, float angleX, float angleY, int range, Func<int, TGridObject, bool> IsRayable){
+		float rayX, rayY;
+		rayX = (float)x + RAY_LENGTH;
+		rayY = (float)y + RAY_LENGTH;
+		for(int j = 0; j < range; j++){
+			rayX += angleX;
+			rayY += angleY;	
+			int nodeX, nodeY;
+			nodeX = (int)rayX;
+			nodeY = (int)rayY;
+			TGridObject current = Get(nodeX, nodeY);
+			if(!nodes.Contains(current)){
+				nodes.Add(current);
+			}
+			if(!IsRayable(j, current)){
+				return;
+			}		
+		}
+	}
 	public List<TGridObject> GetCardinals(int x, int y){
 		List<TGridObject> cardinals = new List<TGridObject>();
 		for(int i = 0; i < _CARDINALS.Length; i++){

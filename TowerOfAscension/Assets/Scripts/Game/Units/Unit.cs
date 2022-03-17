@@ -11,6 +11,7 @@ public abstract class Unit{
 		void SetPosition(Level level, int x, int y);
 		void GetPosition(out int x, out int y);
 		Vector3 GetPosition(GridMap<Tile> map);
+		Tile GetTile(Level level);
 	}
 	public interface IDirectionable{
 		void SetDirection(Direction direction);
@@ -32,9 +33,6 @@ public abstract class Unit{
 		void SetAI(AI ai);
 		AI GetAI();
 	}
-	public interface ILightControl{
-		bool GetTransparent();
-	}
 	public interface IClassicGen{
 		void AddStructureSpawner(ClassicGen.Spawner spawner);
 		void AddDetailSpawner(ClassicGen.Spawner spawner);
@@ -48,15 +46,16 @@ public abstract class Unit{
 		Unit,
 		Register<Unit>.IRegisterable,
 		WorldUnit.IWorldUnit,
-		IProcessable,
-		IPositionable,
-		IDirectionable,
-		ISpawnable,
-		IMoveable,
-		ICollideable,
-		IControllable,
-		ILightControl,
-		IClassicGen,
+		Unit.IProcessable,
+		Unit.IPositionable,
+		Unit.IDirectionable,
+		Unit.ISpawnable,
+		Unit.IMoveable,
+		Unit.ICollideable,
+		Unit.IControllable,
+		Level.ILightControl,
+		Level.ILightSource,
+		Unit.IClassicGen,
 		ClassicGen.Spawner.IFinalize
 		{
 		[field:NonSerialized]public event EventHandler<EventArgs> OnWorldUnitUpdate;
@@ -74,6 +73,9 @@ public abstract class Unit{
 		public int GetSortingOrder(){
 			return 0;
 		}
+		public bool GetWorldVisibility(Level level){
+			return false;
+		}
 		public bool Process(Level level){
 			return level.NextTurn();
 		}
@@ -84,6 +86,9 @@ public abstract class Unit{
 		}
 		public Vector3 GetPosition(GridMap<Tile> map){
 			return Vector3.zero;
+		}
+		public Tile GetTile(Level level){
+			return Tile.GetNullTile();
 		}
 		public void SetDirection(Direction direction){}
 		public Direction GetDirection(){
@@ -101,9 +106,11 @@ public abstract class Unit{
 		public AI GetAI(){
 			return AI.GetNullAI();
 		}
-		public bool GetTransparent(){
-			const bool NULL_TRANSPARENCY = true;
-			return NULL_TRANSPARENCY;
+		public bool CheckTransparency(Level level){
+			return true;
+		}
+		public int GetLightRange(Level level){
+			return 0;
 		}
 		public void AddStructureSpawner(ClassicGen.Spawner spawner){}
 		public void AddDetailSpawner(ClassicGen.Spawner spawner){}
@@ -164,7 +171,10 @@ public abstract class Unit{
 	public virtual IControllable GetControllable(){
 		return _NULL_UNIT;
 	}
-	public virtual ILightControl GetLightControl(){
+	public virtual Level.ILightControl GetLightControl(){
+		return _NULL_UNIT;
+	}
+	public virtual Level.ILightSource GetLightSource(){
 		return _NULL_UNIT;
 	}
 	public virtual IClassicGen GetClassicGen(){
@@ -176,6 +186,7 @@ public abstract class Unit{
 	public static void Default_Spawn(Unit self, Level level, int x, int y){
 		self.GetRegisterable().AddToRegister(level.GetUnits());
 		self.GetPositionable().SetPosition(level, x, y);
+		level.LightUpdate(self);
 	}
 	public static void Default_SetPosition(Unit self, Level level, int newX, int newY, ref int x, ref int y){
 		self.GetPositionable().GetPosition(out int oldX, out int oldY);

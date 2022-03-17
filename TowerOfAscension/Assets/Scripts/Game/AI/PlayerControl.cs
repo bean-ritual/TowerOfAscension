@@ -43,6 +43,7 @@ public class PlayerControl :
 	public virtual void EndTurn(Level level, Unit self){
 		if(_state == ControlState.Input){
 			_state = ControlState.Locked;
+			level.LightUpdate(self);
 			level.NextTurn();
 		}
 	}

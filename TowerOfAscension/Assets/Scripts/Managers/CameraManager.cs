@@ -3,18 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 public class CameraManager : MonoBehaviour{
-	public static CameraManager _instance;
 	private Func<Vector3> _following;
 	private Func<float> _zooming;
 	[SerializeField]private Vector3 _offset = new Vector3(0, 0, -10);
 	[SerializeField]private float _followSpeed = 0.1f;
 	[SerializeField]private Camera _camera;
-	private void Awake(){
-		if(_instance != null){
-			Destroy(gameObject);
-		}
-		_instance = this;
-	}
 	private void Update(){
 		Movement();
 		Zoom();
@@ -50,8 +43,5 @@ public class CameraManager : MonoBehaviour{
 	}
 	public Camera GetCamera(){
 		return _camera;
-	}
-	public static CameraManager GetInstance(){
-		return _instance;
 	}
 }

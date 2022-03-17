@@ -36,6 +36,9 @@ public abstract class LevelUnit :
 	public int GetSortingOrder(){
 		return _sortingOrder;
 	}
+	public virtual bool GetWorldVisibility(Level level){
+		return level.Get(_x, _y).GetLightable().GetLight() > 0;
+	}
 	public void Spawn(Level level, int x, int y){
 		Unit.Default_Spawn(this, level, x, y);
 	}
@@ -52,6 +55,9 @@ public abstract class LevelUnit :
 	}
 	public Vector3 GetPosition(GridMap<Tile> map){
 		return map.GetWorldPosition(_x, _y);
+	}
+	public Tile GetTile(Level level){
+		return level.Get(_x, _y);
 	}
 	public void AddToRegister(Register<Unit> register){
 		register.Add(this, ref _id);

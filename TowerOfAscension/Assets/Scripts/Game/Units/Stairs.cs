@@ -19,6 +19,9 @@ public class Stairs :
 	public int GetSortingOrder(){
 		return 10;
 	}
+	public bool GetWorldVisibility(Level level){
+		return true;
+	}
 	public void Spawn(Level level, int x, int y){
 		Unit.Default_Spawn(this, level, x, y);
 	}
@@ -35,6 +38,9 @@ public class Stairs :
 	}
 	public Vector3 GetPosition(GridMap<Tile> map){
 		return map.GetWorldPosition(_x, _y);
+	}
+	public Tile GetTile(Level level){
+		return level.Get(_x, _y);
 	}
 	public void AddToRegister(Register<Unit> register){
 		register.Add(this, ref _id);

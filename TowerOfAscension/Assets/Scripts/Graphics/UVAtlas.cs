@@ -7,33 +7,44 @@ public class UVAtlas{
 	public static class UVATLAS_DATA{
 		public static readonly UVAtlas[] _UV_ATLASES;
 		static UVATLAS_DATA(){
-			_UV_ATLASES = new UVAtlas[2];
-			_UV_ATLASES[0] = SafeCreateUVAtlas(
-				Resources.Load<Texture>(AtlasID.Colours.ToString()),
-				() => {
-					return new UVAtlas.UVPixel[]{
-						new UVAtlas.UVPixel(new Vector2Int(0,0), new Vector2Int(1,1)),
-						new UVAtlas.UVPixel(new Vector2Int(1,0), new Vector2Int(2,1)),
-						new UVAtlas.UVPixel(new Vector2Int(2,0), new Vector2Int(3,1)),
-						new UVAtlas.UVPixel(new Vector2Int(3,0), new Vector2Int(4,1)),
-						new UVAtlas.UVPixel(new Vector2Int(4,0), new Vector2Int(5,1)),
-						new UVAtlas.UVPixel(new Vector2Int(5,0), new Vector2Int(6,1)),
-						new UVAtlas.UVPixel(new Vector2Int(6,0), new Vector2Int(7,1)),
-						new UVAtlas.UVPixel(new Vector2Int(7,0), new Vector2Int(8,1))
-					};
-				}
-			);
-			_UV_ATLASES[1] = SafeCreateUVAtlas(
-				Resources.Load<Texture>(AtlasID.Tilemap.ToString()),
-				() => {
-					return new UVAtlas.UVPixel[]{
-						new UVAtlas.UVPixel(new Vector2Int(0,0), new Vector2Int(32,32)),
-						new UVAtlas.UVPixel(new Vector2Int(32,0), new Vector2Int(64,32)),
-						new UVAtlas.UVPixel(new Vector2Int(64,0), new Vector2Int(96,32)),
-						new UVAtlas.UVPixel(new Vector2Int(96,0), new Vector2Int(128,32))
-					};
-				}
-			);
+			_UV_ATLASES = new UVAtlas[]{
+				SafeCreateUVAtlas(
+					Resources.Load<Texture>(AtlasID.Colours.ToString()),
+					() => {
+						return new UVAtlas.UVPixel[]{
+							new UVAtlas.UVPixel(new Vector2Int(0,0), new Vector2Int(1,1)),
+							new UVAtlas.UVPixel(new Vector2Int(1,0), new Vector2Int(2,1)),
+							new UVAtlas.UVPixel(new Vector2Int(2,0), new Vector2Int(3,1)),
+							new UVAtlas.UVPixel(new Vector2Int(3,0), new Vector2Int(4,1)),
+							new UVAtlas.UVPixel(new Vector2Int(4,0), new Vector2Int(5,1)),
+							new UVAtlas.UVPixel(new Vector2Int(5,0), new Vector2Int(6,1)),
+							new UVAtlas.UVPixel(new Vector2Int(6,0), new Vector2Int(7,1)),
+							new UVAtlas.UVPixel(new Vector2Int(7,0), new Vector2Int(8,1))
+						};
+					}
+				),
+				SafeCreateUVAtlas(
+					Resources.Load<Texture>(AtlasID.Tilemap.ToString()),
+					() => {
+						return new UVAtlas.UVPixel[]{
+							new UVAtlas.UVPixel(new Vector2Int(0,0), new Vector2Int(32,32)),
+							new UVAtlas.UVPixel(new Vector2Int(32,0), new Vector2Int(64,32)),
+							new UVAtlas.UVPixel(new Vector2Int(64,0), new Vector2Int(96,32)),
+							new UVAtlas.UVPixel(new Vector2Int(96,0), new Vector2Int(128,32))
+						};
+					}
+				),
+				SafeCreateUVAtlas(
+					Resources.Load<Texture>(AtlasID.Lighting.ToString()),
+					() => {
+						return new UVAtlas.UVPixel[]{
+							new UVAtlas.UVPixel(new Vector2Int(0,0), new Vector2Int(1,1)),
+							new UVAtlas.UVPixel(new Vector2Int(1,0), new Vector2Int(2,1))
+						};
+					}
+				),
+			};
+			
 		}
 		public static UVAtlas SafeCreateUVAtlas(Texture texture, Func<UVPixel[]> SetUVPixels){
 			if(texture == null){
@@ -47,6 +58,7 @@ public class UVAtlas{
 				case AtlasID.Null: return UVAtlas.GetNullUVAtlas();
 				case AtlasID.Colours: return _UV_ATLASES[0];
 				case AtlasID.Tilemap: return _UV_ATLASES[1];
+				case AtlasID.Lighting: return _UV_ATLASES[2];
 			}
 		}
 	}
@@ -54,6 +66,7 @@ public class UVAtlas{
 		Null,
 		Colours,
 		Tilemap,
+		Lighting,
 	};
 	[Serializable]
 	public class NullUVAtlas : UVAtlas{

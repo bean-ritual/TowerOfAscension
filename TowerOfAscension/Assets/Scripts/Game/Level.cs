@@ -4,6 +4,12 @@ using System.Collections.Generic;
 using UnityEngine;
 [Serializable]
 public class Level : GridMap<Tile>{
+	public interface ILightControl{
+		bool CheckTransparency(Level level);
+	}
+	public interface ILightSource{
+		int GetLightRange(Level level);
+	}
 	[Serializable]
 	public class NullLevel : Level{
 		private const int _NULL_WIDTH = 0;
@@ -54,13 +60,30 @@ public class Level : GridMap<Tile>{
 		_index = 0;
 		_units = new UnitRegister();
 	}
-	//Return True: Continues Iteration
-	//Return False: Waiting for Input
+	//
 	public virtual bool Process(){
 		return _units.Get(_index).GetProcessable().Process(this);
 	}
-	public virtual Register<Unit> GetUnits(){
-		return _units;
+	public void LightUpdate(Unit unit){
+		int lightRange = unit.GetLightSource().GetLightRange(this);
+		if(lightRange <= 0){
+			return;
+		}
+		for(int x = 0; x < GetWidth(); x++){
+			for(int y = 0; y < GetHeight(); y++){
+				Get(x, y).GetLightable().SetLight(0);
+			}
+		}
+		unit.GetPositionable().GetPosition(out int sourceX, out int sourceY);
+		Tile origin = Get(sourceX, sourceY);
+		origin.GetLightable().SetLight(lightRange);
+		//origin.Discover();
+		List<Tile> tiles = CalculateFov(sourceX, sourceY, lightRange, (int range, Tile tile) => {
+			tile.GetLightable().SetLight(lightRange - (range - 1));
+			//tile.Discover();
+			return tile.GetLightControl().CheckTransparency(this);
+		});
+		OnLightUpdate?.Invoke(this, EventArgs.Empty);
 	}
 	public virtual bool NextTurn(){
 		int count = _units.GetCount();
@@ -70,6 +93,9 @@ public class Level : GridMap<Tile>{
 		_index = (_index + 1) % count;
 		OnNextTurn?.Invoke(this, EventArgs.Empty);
 		return (_index > 0);
+	}
+	public virtual Register<Unit> GetUnits(){
+		return _units;
 	}
 	public static Level GetNullLevel(){
 		return _NULL_LEVEL;

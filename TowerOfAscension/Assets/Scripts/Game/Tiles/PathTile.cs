@@ -6,10 +6,14 @@ using UnityEngine;
 public class PathTile : 
 	Tile,
 	LevelMeshManager.ITileMeshData,
+	LightMeshManager.ILightMeshData,
 	Tile.IWalkable,
 	Tile.IPrintable,
-	Tile.IConnectable
+	Tile.IConnectable,
+	Tile.ILightable,
+	Level.ILightControl
 	{
+	private int _light;
 	private List<Register<Unit>.ID> _ids;
 	public PathTile(int x, int y) : base(x, y){
 		_ids = new List<Register<Unit>.ID>();
@@ -21,6 +25,17 @@ public class PathTile :
 	public int GetUVFactor(){
 		const int PATH_FACTOR = 1;
 		return PATH_FACTOR;
+	}
+	public int GetLightAtlasIndex(){
+		return 0;
+	}
+	public int GetLightUVFactor(){
+		const int LIT_FACTOR = 0;
+		const int UNLIT_FACTOR = 1;
+		if(_light > 0){
+			return LIT_FACTOR;
+		}
+		return UNLIT_FACTOR;
 	}
 	public void AddUnit(Register<Unit>.ID id){
 		_ids.Add(id);
@@ -49,7 +64,25 @@ public class PathTile :
 	public bool CanConnect(Level level, Unit master, int x, int y){
 		return true;
 	}
+	public void SetLight(int light){
+		_light = light;
+	}
+	public int GetLight(){
+		return _light;
+	}
+	public bool CheckTransparency(Level level){
+		List<Unit> units = level.GetUnits().GetMultiple(_ids);
+		for(int i = 0; i < units.Count; i++){
+			if(!units[i].GetLightControl().CheckTransparency(level)){
+				return false;
+			}
+		}
+		return true;
+	}
 	public override LevelMeshManager.ITileMeshData GetTileMeshData(){
+		return this;
+	}
+	public override LightMeshManager.ILightMeshData GetLightMeshData(){
 		return this;
 	}
 	public override Tile.IWalkable GetWalkable(){
@@ -62,6 +95,12 @@ public class PathTile :
 		return this;
 	}
 	public override Tile.IConnectable GetConnectable(){
+		return this;
+	}
+	public override Tile.ILightable GetLightable(){
+		return this;
+	}
+	public override Level.ILightControl GetLightControl(){
 		return this;
 	}
 }
