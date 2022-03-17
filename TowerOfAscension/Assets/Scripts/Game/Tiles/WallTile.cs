@@ -9,10 +9,15 @@ public class WallTile :
 	LightMeshManager.ILightMeshData,
 	Tile.IPrintable,
 	Tile.ILightable,
-	Level.ILightControl
+	Level.ILightControl,
+	Tile.IDiscoverable
 	{
 	private int _light;
-	public WallTile(int x, int y) : base(x, y){}
+	private bool _discovered;
+	public WallTile(int x, int y) : base(x, y){
+		_light = 0;
+		_discovered = false;
+	}
 	public int GetAtlasIndex(){
 		const int PATH_INDEX = 2;
 		return PATH_INDEX;
@@ -22,7 +27,12 @@ public class WallTile :
 		return PATH_FACTOR;
 	}
 	public int GetLightAtlasIndex(){
-		return 0;
+		const int DARKNESS = 0;
+		const int SHADE = 1;
+		if(_discovered){
+			return SHADE;
+		}
+		return DARKNESS;
 	}
 	public int GetLightUVFactor(){
 		const int LIT_FACTOR = 0;
@@ -48,6 +58,9 @@ public class WallTile :
 	public bool CheckTransparency(Level level){
 		return false;
 	}
+	public void Discover(Level level, Unit unit){
+		_discovered = true;
+	}
 	public override LevelMeshManager.ITileMeshData GetTileMeshData(){
 		return this;
 	}
@@ -61,6 +74,9 @@ public class WallTile :
 		return this;
 	}
 	public override Level.ILightControl GetLightControl(){
+		return this;
+	}
+	public override Tile.IDiscoverable GetDiscoverable(){
 		return this;
 	}
 }

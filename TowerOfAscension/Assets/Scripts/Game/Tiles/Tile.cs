@@ -37,7 +37,8 @@ public abstract class Tile{
 		Tile.IWalkable,
 		Tile.ILightable,
 		Level.ILightControl,
-		Tile.IDiscoverable
+		Tile.IDiscoverable,
+		Unit.IInteractable
 		{
 		private const int _NULL_X = -1;
 		private const int _NULL_Y = -1;
@@ -86,6 +87,7 @@ public abstract class Tile{
 			return false;
 		}
 		public void Discover(Level level, Unit unit){}
+		public void Interact(Level level, Unit unit){}
 	}
 	[field:NonSerialized]private static readonly NullTile _NULL_TILE = new NullTile();
 	protected int _x;
@@ -124,6 +126,9 @@ public abstract class Tile{
 		return _NULL_TILE;
 	}
 	public virtual IDiscoverable GetDiscoverable(){
+		return _NULL_TILE;
+	}
+	public virtual Unit.IInteractable GetInteractable(){
 		return _NULL_TILE;
 	}
 	public static Tile GetNullTile(){

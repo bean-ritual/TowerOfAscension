@@ -13,8 +13,8 @@ public class BluePrint : GridMap<BluePrint.Print>{
 					new int[,]{
 						{1,1,3,1,1},
 						{1,4,2,2,1},
-						{3,2,2,2,3},
-						{1,2,2,2,1},
+						{3,2,2,5,3},
+						{1,2,5,2,1},
 						{1,1,3,1,1},
 					},
 					Print.PRINT_DATA.GetPrint,
@@ -45,7 +45,7 @@ public class BluePrint : GridMap<BluePrint.Print>{
 					new int[,]{
 						{1,3,1,1},
 						{1,4,2,3},
-						{3,2,2,1},
+						{3,2,5,1},
 						{1,1,3,1},
 					},
 					Print.PRINT_DATA.GetPrint,
@@ -81,7 +81,7 @@ public class BluePrint : GridMap<BluePrint.Print>{
 				new BluePrint(
 					new int[,]{
 						{1,3,1},
-						{3,2,3},
+						{3,5,3},
 						{1,3,1},
 					},
 					Print.PRINT_DATA.GetPrint,
@@ -153,6 +153,7 @@ public class BluePrint : GridMap<BluePrint.Print>{
 					new PathPrint(),
 					new WallPrint(new int[]{0,1}),
 					new PathPrint(new int[]{3}),
+					new PathPrint(new int[]{4}),
 				};
 			}
 			public static Print GetPrint(int index){

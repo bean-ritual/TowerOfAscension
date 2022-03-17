@@ -28,7 +28,7 @@ public abstract class AI{
 		self.GetPositionable().GetPosition(out int x, out int y);
 		List<Tile> tiles = level.GetNeighbours(x, y);
 		tiles[UnityEngine.Random.Range(0, tiles.Count)].GetXY(out int targetX, out int targetY);
-		self.GetMoveable().Move(level, Unit.IntToDirection(x, y, targetX, targetY));
+		self.GetMoveable().Move(level, Direction.IntToDirection(x, y, targetX, targetY));
 	}
 	public static AI GetNullAI(){
 		return _NULL_AI;

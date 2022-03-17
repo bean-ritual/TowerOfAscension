@@ -38,15 +38,15 @@ public class WorldUnit : MonoBehaviour{
 	public IEnumerator MoveAnimation(int x, int y){
 		float time = 0f;
 		float duration = 0.1f;
-		Vector3 start = transform.position;
+		Vector3 start = transform.localPosition;
 		Vector3 target = _level.GetWorldPosition(x, y);
 		while(time < duration){
-			transform.position = Vector3.Lerp(start, target, time / duration);
+			transform.localPosition = Vector3.Lerp(start, target, time / duration);
 			time += Time.deltaTime;
 			WorldUnitManager.GetInstance().OnFrameAnimation();
 			yield return null;
 		}
-		transform.position = target;
+		transform.localPosition = target;
 		WorldUnitManager.GetInstance().OnFrameAnimation();
 	}
 	private void UnsubscribeFromEvents(){
@@ -59,6 +59,10 @@ public class WorldUnit : MonoBehaviour{
 	}
 	private void OnMoveEvent(object sender, EventArgs e){
 		_unit.GetPositionable().GetPosition(out int x, out int y);
+		if(!_offset.activeSelf){
+			transform.localPosition = _level.GetWorldPosition(x, y);
+			return;
+		}
 		StartCoroutine(MoveAnimation(x, y));
 	}
 	private void OnLightUpdate(object sender, EventArgs e){

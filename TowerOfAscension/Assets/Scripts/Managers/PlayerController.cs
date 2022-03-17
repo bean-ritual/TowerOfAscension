@@ -5,9 +5,9 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 public class PlayerController : MonoBehaviour{
 	private static PlayerController _instance;
-	private Level _level;
-	private Unit _player;
-	private Unit _previous;
+	private Level _level = Level.GetNullLevel();
+	private Unit _player = Unit.GetNullUnit();
+	private Unit _previous = Unit.GetNullUnit();
 	[SerializeField]private float _cameraZoom = 7.5f;
 	[SerializeField]private float _cameraSpeed = 0.1f;
 	[SerializeField]private Vector3 _cameraOffset = new Vector3(0, 0, -10);
@@ -24,8 +24,6 @@ public class PlayerController : MonoBehaviour{
 	}
 	private void Start(){
 		_level = DungeonMaster.GetInstance().GetLevel();
-		_player = Unit.GetNullUnit();
-		_previous = Unit.GetNullUnit();
 		_level.OnNextTurn += OnNextTurn;
 		PlayerControl.OnPlayerControl += OnPlayerControl;
 	}
@@ -33,12 +31,17 @@ public class PlayerController : MonoBehaviour{
 		if(EventSystem.current.IsPointerOverGameObject()){
 			return;
 		}
-		Unit.Direction dir = MouseDirectionHandling();
+		//
+		Direction dir = MouseDirectionHandling();
+		_previous.GetPositionable().GetPosition(out int x, out int y);
+		TileTargetManager.GetInstance().SetTile(dir.GetTile(_level, x, y));
+		//
 		if(Input.GetMouseButtonDown(0)){
 			if(Input.GetKey(KeyCode.A)){
 				return;
 			}
 			if(Input.GetKey(KeyCode.LeftShift)){
+				_player.GetInteractor().Interact(_level, dir);
 				return;
 			}
 			_player.GetMoveable().Move(_level, dir);
@@ -49,10 +52,10 @@ public class PlayerController : MonoBehaviour{
 			return;
 		}
 	}
-	private Unit.Direction MouseDirectionHandling(){
+	private Direction MouseDirectionHandling(){
 		Vector3 finalPosition = WorldSpaceUtils.MouseToWorldSpace(_camera.GetCamera()) - _player.GetPositionable().GetPosition(_level) - _level.GetVector3CellOffset();
 		Vector3Int intgerPosition = Vector3Int.RoundToInt(finalPosition);
-		return Unit.IntToDirection(intgerPosition.x, intgerPosition.y);
+		return Direction.IntToDirection(intgerPosition.x, intgerPosition.y);
 	}
 	public void SetPlayer(Unit player){
 		_player = player;
@@ -75,7 +78,7 @@ public class PlayerController : MonoBehaviour{
 	private void OnNextTurn(object sender, EventArgs e){
 		ClearPlayer();
 	}
-	public static PlayerController GetPlayerController(){
+	public static PlayerController GetInstance(){
 		return _instance;
 	}
 }

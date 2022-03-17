@@ -77,10 +77,10 @@ public class Level : GridMap<Tile>{
 		unit.GetPositionable().GetPosition(out int sourceX, out int sourceY);
 		Tile origin = Get(sourceX, sourceY);
 		origin.GetLightable().SetLight(lightRange);
-		//origin.Discover();
+		unit.GetDiscoverer().Discover(this, origin);
 		List<Tile> tiles = CalculateFov(sourceX, sourceY, lightRange, (int range, Tile tile) => {
 			tile.GetLightable().SetLight(lightRange - (range - 1));
-			//tile.Discover();
+			unit.GetDiscoverer().Discover(this, tile);
 			return tile.GetLightControl().CheckTransparency(this);
 		});
 		OnLightUpdate?.Invoke(this, EventArgs.Empty);

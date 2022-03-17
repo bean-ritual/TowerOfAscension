@@ -33,12 +33,22 @@ public class DungeonMaster : MonoBehaviour{
 	public IEnumerator GameLoop(){
 		yield return _update;
 		while(_tick){
+			InputHandling();
 			if(WorldUnitManager.GetInstance().GetIsAnimating()){
 				yield return _update;
 			}
 			if(!_local.Process()){
 				yield return _update;
 			}
+		}
+	}
+	public void InputHandling(){
+		if(Input.GetKeyDown(KeyCode.F5)){
+			Save();
+		}
+		if(Input.GetKeyDown(KeyCode.F9)){
+			Load();
+			GameManager.GetInstance().Reload();
 		}
 	}
 	public void Play(){

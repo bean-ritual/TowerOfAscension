@@ -43,6 +43,7 @@ public class ClassicGen :
 					case 1: return GetPossibleConnectorSpawner(x, y);
 					case 2: return new ConnectorSpawner(x, y);
 					case 3: return new ExitSpawner(x, y);
+					case 4: return new MonsterSpawner(x, y);
 					case 10: return GetRandomBluePrintSpawner(x, y);
 					case 11: return GetStructureBluePrintSpawner(x, y);
 					case 12: return GetDetailBluePrintSpawner(x, y);
@@ -240,6 +241,17 @@ public class ClassicGen :
 		}
 	}
 	//
+	[Serializable]
+	public class MonsterSpawner : Spawner{
+		public MonsterSpawner(int x, int y) : base(x, y){}
+		public override void Spawn(Level level, Unit master){
+			Monster.MONSTER_DATA.GetLevelledMonster(0).GetSpawnable().Spawn(level, _x, _y);
+		}
+		public override void AddToMaster(Level level, Unit master){
+			master.GetClassicGen().AddDetailSpawner(this);
+		}
+	}
+	//
 	public enum GenState{
 		Null,
 		Initialize,
@@ -248,12 +260,12 @@ public class ClassicGen :
 		Finalize,
 		Complete,
 	};
-	public event EventHandler<EventArgs> OnWorldUnitUpdate;
+	[field:NonSerialized]public event EventHandler<EventArgs> OnWorldUnitUpdate;
 	private int _x;
 	private int _y;
 	private Unit _player;
 	private GenState _state;
-	private Queue<Spawner> _structures;
+	private List<Spawner> _structures;
 	private Queue<Spawner> _details;
 	private Spawner _finalize;
 	private Register<Unit>.ID _id;
@@ -264,7 +276,7 @@ public class ClassicGen :
 		_y = Unit.NullUnit.GetNullY();
 		_player = player;
 		_state = GenState.Null;
-		_structures = new Queue<Spawner>();
+		_structures = new List<Spawner>();
 		_details = new Queue<Spawner>();
 		_finalize = new FinalSpawner(maxExits);
 		_id = Register<Unit>.ID.GetNullID();
@@ -283,7 +295,7 @@ public class ClassicGen :
 	public void Spawn(Level level, int x, int y){
 		Unit.Default_Spawn(this, level, x, y);
 		_state = GenState.Structure;
-		_structures.Enqueue(Spawner.SPAWNER_DATA.GetContentualBluePrintSpawner(_x, _y));
+		_structures.Add(Spawner.SPAWNER_DATA.GetContentualBluePrintSpawner(_x, _y));
 	}
 	public void Despawn(Level level){
 		
@@ -332,7 +344,7 @@ public class ClassicGen :
 	}
 	//
 	public virtual void AddStructureSpawner(Spawner spawner){
-		_structures.Enqueue(spawner);
+		_structures.Add(spawner);
 	}
 	public virtual void AddDetailSpawner(Spawner spawner){
 		_details.Enqueue(spawner);
@@ -355,12 +367,19 @@ public class ClassicGen :
 	public void StructureState(Level level){
 		if(_build > _minBuild || _structures.Count <= 0){
 			_state = GenState.Details;
-			while(_structures.Count > 0){
-				_details.Enqueue(_structures.Dequeue());
+			for(int i = 0; i < _structures.Count; i++){
+				_details.Enqueue(_structures[i]);
 			}
+			_structures.Clear();
 			return;
 		}
-		_structures.Dequeue().Spawn(level, this);
+		//
+		int index = (_structures.Count - 1);
+		if(UnityEngine.Random.Range(0, 100) < 50){
+			index = UnityEngine.Random.Range(0, _structures.Count);
+		}
+		_structures[index].Spawn(level, this);
+		_structures.RemoveAt(index);
 	}
 	public void DetailsState(Level level){
 		if(_details.Count <= 0){

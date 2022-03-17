@@ -11,11 +11,16 @@ public class PathTile :
 	Tile.IPrintable,
 	Tile.IConnectable,
 	Tile.ILightable,
-	Level.ILightControl
+	Level.ILightControl,
+	Tile.IDiscoverable,
+	Unit.IInteractable
 	{
 	private int _light;
+	private bool _discovered;
 	private List<Register<Unit>.ID> _ids;
 	public PathTile(int x, int y) : base(x, y){
+		_light = 0;
+		_discovered = false;
 		_ids = new List<Register<Unit>.ID>();
 	}
 	public int GetAtlasIndex(){
@@ -27,7 +32,12 @@ public class PathTile :
 		return PATH_FACTOR;
 	}
 	public int GetLightAtlasIndex(){
-		return 0;
+		const int DARKNESS = 0;
+		const int SHADE = 1;
+		if(_discovered){
+			return SHADE;
+		}
+		return DARKNESS;
 	}
 	public int GetLightUVFactor(){
 		const int LIT_FACTOR = 0;
@@ -79,6 +89,15 @@ public class PathTile :
 		}
 		return true;
 	}
+	public void Discover(Level level, Unit unit){
+		_discovered = true;
+	}
+	public void Interact(Level level, Unit unit){
+		List<Unit> units = level.GetUnits().GetMultiple(_ids);
+		for(int i = 0; i < units.Count; i++){
+			units[i].GetInteractable().Interact(level, unit);
+		}
+	}
 	public override LevelMeshManager.ITileMeshData GetTileMeshData(){
 		return this;
 	}
@@ -101,6 +120,12 @@ public class PathTile :
 		return this;
 	}
 	public override Level.ILightControl GetLightControl(){
+		return this;
+	}
+	public override Tile.IDiscoverable GetDiscoverable(){
+		return this;
+	}
+	public override Unit.IInteractable GetInteractable(){
 		return this;
 	}
 }

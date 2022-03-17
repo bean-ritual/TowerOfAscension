@@ -13,10 +13,6 @@ public abstract class Unit{
 		Vector3 GetPosition(GridMap<Tile> map);
 		Tile GetTile(Level level);
 	}
-	public interface IDirectionable{
-		void SetDirection(Direction direction);
-		Direction GetDirection();
-	}
 	public interface ISpawnable : IPositionable, Register<Unit>.IRegisterable{
 		void Spawn(Level level, int x, int y);
 		void Despawn(Level level);
@@ -33,6 +29,15 @@ public abstract class Unit{
 		void SetAI(AI ai);
 		AI GetAI();
 	}
+	public interface IDiscoverer{
+		void Discover(Level level, Tile tile);
+	}
+	public interface IInteractable{
+		void Interact(Level level, Unit unit);
+	}
+	public interface IInteractor{
+		void Interact(Level level, Direction direction);
+	}
 	public interface IClassicGen{
 		void AddStructureSpawner(ClassicGen.Spawner spawner);
 		void AddDetailSpawner(ClassicGen.Spawner spawner);
@@ -48,11 +53,13 @@ public abstract class Unit{
 		WorldUnit.IWorldUnit,
 		Unit.IProcessable,
 		Unit.IPositionable,
-		Unit.IDirectionable,
 		Unit.ISpawnable,
 		Unit.IMoveable,
 		Unit.ICollideable,
 		Unit.IControllable,
+		Unit.IDiscoverer,
+		Unit.IInteractable,
+		Unit.IInteractor,
 		Level.ILightControl,
 		Level.ILightSource,
 		Unit.IClassicGen,
@@ -90,11 +97,6 @@ public abstract class Unit{
 		public Tile GetTile(Level level){
 			return Tile.GetNullTile();
 		}
-		public void SetDirection(Direction direction){}
-		public Direction GetDirection(){
-			const Direction NULL_DIRECTION = Direction.Null;
-			return NULL_DIRECTION;
-		}
 		public void Spawn(Level level, int x, int y){}
 		public void Despawn(Level level){}
 		public void Move(Level level, Direction direction){}
@@ -106,6 +108,9 @@ public abstract class Unit{
 		public AI GetAI(){
 			return AI.GetNullAI();
 		}
+		public void Discover(Level level, Tile tile){}
+		public void Interact(Level level, Unit unit){}
+		public void Interact(Level level, Direction direction){}
 		public bool CheckTransparency(Level level){
 			return true;
 		}
@@ -131,17 +136,6 @@ public abstract class Unit{
 			return _NULL_Y;
 		}
 	}
-	public enum Direction{
-		Null,
-		North,
-		South,
-		East,
-		West,
-		North_East,
-		North_West,
-		South_East,
-		South_West,
-	};
 	[field:NonSerialized]private static readonly NullUnit _NULL_UNIT = new NullUnit();
 	public Unit(){}
 	public virtual Register<Unit>.IRegisterable GetRegisterable(){
@@ -156,9 +150,6 @@ public abstract class Unit{
 	public virtual IPositionable GetPositionable(){
 		return _NULL_UNIT;
 	}
-	public virtual IDirectionable GetDirectionable(){
-		return _NULL_UNIT;
-	}
 	public virtual ISpawnable GetSpawnable(){
 		return _NULL_UNIT;
 	}
@@ -169,6 +160,15 @@ public abstract class Unit{
 		return _NULL_UNIT;
 	}
 	public virtual IControllable GetControllable(){
+		return _NULL_UNIT;
+	}
+	public virtual IDiscoverer GetDiscoverer(){
+		return _NULL_UNIT;
+	}
+	public virtual IInteractable GetInteractable(){
+		return _NULL_UNIT;
+	}
+	public virtual IInteractor GetInteractor(){
 		return _NULL_UNIT;
 	}
 	public virtual Level.ILightControl GetLightControl(){
@@ -197,106 +197,9 @@ public abstract class Unit{
 	}
 	public static void Default_Move(Unit self, Level level, Direction direction){
 		self.GetPositionable().GetPosition(out int oldX, out int oldY);
-		DirectionToInt(direction, out int dirX, out int dirY);
-		level.Get((oldX + dirX), (oldY + dirY)).GetWalkable().Walk(level, self);
+		direction.GetTile(level, oldX, oldY).GetWalkable().Walk(level, self);
 	}
 	public static Unit GetNullUnit(){
 		return _NULL_UNIT;
-	}
-	public static bool DirectionToInt(Direction direction, out int x, out int y){
-		switch(direction){
-			default:{
-				x = 0;
-				y = 0;
-				return false;
-			}
-			case Direction.Null:{
-				x = 0;
-				y = 0;
-				return false;
-			}
-			case Direction.North:{
-				x = 0;
-				y = 1;
-				return true;
-			}
-			case Direction.South:{
-				x = 0;
-				y = -1;
-				return true;
-			}
-			case Direction.East:{
-				x = 1;
-				y = 0;
-				return true;
-			}
-			case Direction.West:{
-				x = -1;
-				y = 0;
-				return true;
-			}
-			case Direction.North_East:{
-				x = 1;
-				y = 1;
-				return true;
-			}
-			case Direction.North_West:{
-				x = -1;
-				y = 1;
-				return true;
-			}
-			case Direction.South_East:{
-				x = 1;
-				y = -1;
-				return true;
-			}
-			case Direction.South_West:{
-				x = -1;
-				y = -1;
-				return true;
-			}
-		}
-	}
-	public static Direction IntToDirection(int x, int y){
-		if(y > 0){
-			if(x > 0){
-				return Direction.North_East;
-			}
-			if(x < 0){
-				return Direction.North_West;
-			}
-			return Direction.North;
-		}
-		if(y < 0){
-			if(x > 0){
-				return Direction.South_East;
-			}
-			if(x < 0){
-				return Direction.South_West;
-			}
-			return Direction.South;
-		}
-		if(x > 0){
-			if(y > 0){
-				return Direction.North_East;
-			}
-			if(y < 0){
-				return Direction.South_East;
-			}
-			return Direction.East;
-		}
-		if(x < 0){
-			if(y > 0){
-				return Direction.North_West;
-			}
-			if(y < 0){
-				return Direction.South_West;
-			}
-			return Direction.West;
-		}
-		return Direction.Null;
-	}
-	public static Direction IntToDirection(int unitX, int unitY, int targetX, int targetY){
-		return IntToDirection(targetX - unitX, targetY - unitY);
 	}
 }

@@ -10,7 +10,7 @@ public abstract class LevelUnit :
 	Unit.IProcessable,
 	Unit.ICollideable
 	{
-	public event EventHandler<EventArgs> OnWorldUnitUpdate;
+	[field:NonSerialized]public event EventHandler<EventArgs> OnWorldUnitUpdate;
 	protected SpriteSheet.SpriteID _spriteID = SpriteSheet.SpriteID.Misc;
 	protected int _spriteIndex = 0;
 	protected int _sortingOrder = 10;
@@ -84,6 +84,9 @@ public abstract class LevelUnit :
 		return this;
 	}
 	public override IProcessable GetProcessable(){
+		return this;
+	}
+	public override Unit.ICollideable GetCollideable(){
 		return this;
 	}
 }

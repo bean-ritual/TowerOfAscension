@@ -8,7 +8,7 @@ public class Stairs :
 	WorldUnit.IWorldUnit,
 	Unit.ISpawnable
 	{
-    public event EventHandler<EventArgs> OnWorldUnitUpdate;
+	[field:NonSerialized]public event EventHandler<EventArgs> OnWorldUnitUpdate;
 	private int _x = Unit.NullUnit.GetNullX();
 	private int _y = Unit.NullUnit.GetNullY();
 	private Register<Unit>.ID _id = Register<Unit>.ID.GetNullID();
