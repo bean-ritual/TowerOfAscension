@@ -3,7 +3,35 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 [Serializable]
-public abstract class GridMap<TGridObject>{
+public abstract class GridMap<TGridObject> where TGridObject : GridMap<TGridObject>.Node
+	{
+	[Serializable()]
+	public abstract class Node{
+		protected int _x;
+		protected int _y;
+		[field:NonSerialized()]public int gCost;
+		[field:NonSerialized()]public int hCost;
+		[field:NonSerialized()]public int fCost;
+		[field:NonSerialized()]public TGridObject cameFrom;
+		public Node(int x, int y){
+			_x = x;
+			_y = y;
+		}
+		public Node(){}
+		public void CalculateFCost(){
+			fCost = gCost + hCost;
+		}
+		public virtual int GetX(){
+			return _x;
+		}
+		public virtual int GetY(){
+			return _y;
+		}
+		public virtual void GetXY(out int x, out int y){
+			x = _x;
+			y = _y;
+		}
+	}
 	[field:NonSerialized()]public event EventHandler<OnGridMapChangedEventArgs> OnGridMapChanged;
 	public class OnGridMapChangedEventArgs : EventArgs{
 		public int x;
@@ -33,6 +61,9 @@ public abstract class GridMap<TGridObject>{
 	public const int MOVE_DIAGONAL_COST = 14;
 	public const float RAY_LENGTH = 0.5f;
 	public const float RADIAL_DEGREE = 0.01745f;
+	//
+	[field:NonSerialized()]private List<TGridObject> _open;
+	[field:NonSerialized()]private List<TGridObject> _closed;
 	//
 	private int _width;
 	private int _height;
@@ -196,6 +227,79 @@ public abstract class GridMap<TGridObject>{
 	public int CalculateDistanceCost(int startX, int startY, int endX, int endY){
 		int xDistance = Mathf.Abs(startX - endX);
 		int yDistance = Mathf.Abs(startY - endY);
+		int remaining = Mathf.Abs(xDistance - yDistance);
+		return (MOVE_DIAGONAL_COST * Mathf.Min(xDistance, yDistance)) + (MOVE_STRAIGHT_COST * remaining);
+	}
+	//
+	public List<TGridObject> FindPath(int startX, int startY, int endX, int endY, Func<TGridObject, bool> IsWalkable){
+		TGridObject start = Get(startX, startY);
+		TGridObject end = Get(endX, endY);
+		_open = new List<TGridObject>{start};
+		_closed = new List<TGridObject>();
+		for(int x = 0; x < GetWidth(); x++){
+			for(int y = 0; y < GetHeight(); y++){
+				TGridObject pathNode = Get(x, y);
+				pathNode.gCost = int.MaxValue;
+				pathNode.CalculateFCost();
+				pathNode.cameFrom = null;
+			}
+		}
+		start.gCost = 0;
+		start.hCost = CalculateDistanceCost(start, end);
+		start.CalculateFCost();
+		while(_open.Count > 0){
+			TGridObject current = GetLowestFCostNode(_open);
+			if(current == end){
+				return CalculatePath(end);
+			}
+			_open.Remove(current);
+			_closed.Add(current);
+			current.GetXY(out int posX, out int posY);
+			foreach(TGridObject neighbour in GetNeighbours(posX, posY)){
+				if(_closed.Contains(neighbour)){
+					continue;
+				}
+				if(!IsWalkable(neighbour)){
+					_closed.Add(neighbour);
+					continue;
+				}
+				int tentativeGCost = current.gCost + CalculateDistanceCost(current, neighbour);
+				if(tentativeGCost < neighbour.gCost){
+					neighbour.cameFrom = current;
+					neighbour.gCost = tentativeGCost;
+					neighbour.hCost = CalculateDistanceCost(neighbour, end);
+					neighbour.CalculateFCost();
+					if(!_open.Contains(neighbour)){
+						_open.Add(neighbour);
+					}
+				}
+			}
+		}
+		return new List<TGridObject>();
+	}
+	private List<TGridObject> CalculatePath(TGridObject end){
+		List<TGridObject> path = new List<TGridObject>();
+		path.Add(end);
+		TGridObject current = end;
+		while(current.cameFrom != null){
+			path.Add(current.cameFrom);
+			current = current.cameFrom;
+		}
+		path.Reverse();
+		return path;
+	}
+	private TGridObject GetLowestFCostNode(List<TGridObject> nodes){
+		TGridObject lowestFCostNode = nodes[0];
+		for(int i = 1; i < nodes.Count; i++){
+			if(nodes[i].fCost < lowestFCostNode.fCost){
+				lowestFCostNode = nodes[i];
+			}
+		}
+		return lowestFCostNode;
+	}
+	private int CalculateDistanceCost(TGridObject start, TGridObject end){
+		int xDistance = Mathf.Abs(start.GetX() - end.GetX());
+		int yDistance = Mathf.Abs(start.GetY() - end.GetY());
 		int remaining = Mathf.Abs(xDistance - yDistance);
 		return (MOVE_DIAGONAL_COST * Mathf.Min(xDistance, yDistance)) + (MOVE_STRAIGHT_COST * remaining);
 	}

@@ -38,6 +38,9 @@ public abstract class Unit{
 	public interface IInteractor{
 		void Interact(Level level, Direction direction);
 	}
+	public interface IHostileTarget{
+		bool CheckHostility(Level level, Unit unit);
+	}
 	public interface IClassicGen{
 		void AddStructureSpawner(ClassicGen.Spawner spawner);
 		void AddDetailSpawner(ClassicGen.Spawner spawner);
@@ -60,6 +63,7 @@ public abstract class Unit{
 		Unit.IDiscoverer,
 		Unit.IInteractable,
 		Unit.IInteractor,
+		Unit.IHostileTarget,
 		Level.ILightControl,
 		Level.ILightSource,
 		Unit.IClassicGen,
@@ -111,6 +115,9 @@ public abstract class Unit{
 		public void Discover(Level level, Tile tile){}
 		public void Interact(Level level, Unit unit){}
 		public void Interact(Level level, Direction direction){}
+		public bool CheckHostility(Level level, Unit unit){
+			return false;
+		}
 		public bool CheckTransparency(Level level){
 			return true;
 		}
@@ -169,6 +176,9 @@ public abstract class Unit{
 		return _NULL_UNIT;
 	}
 	public virtual IInteractor GetInteractor(){
+		return _NULL_UNIT;
+	}
+	public virtual IHostileTarget GetHostileTarget(){
 		return _NULL_UNIT;
 	}
 	public virtual Level.ILightControl GetLightControl(){

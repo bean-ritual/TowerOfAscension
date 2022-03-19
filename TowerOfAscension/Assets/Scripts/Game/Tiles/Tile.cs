@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 [Serializable]
-public abstract class Tile{
+public abstract class Tile : GridMap<Tile>.Node{
 	public interface IHasUnits{
 		void AddUnit(Register<Unit>.ID id);
 		bool RemoveUnit(Register<Unit>.ID id);
@@ -26,6 +26,9 @@ public abstract class Tile{
 	public interface IDiscoverable{
 		void Discover(Level level, Unit unit);
 	}
+	public interface ITargetable{
+		List<Unit> GetTargets(Level level, Unit unit);
+	}
 	[Serializable]
 	public class NullTile : 
 		Tile,
@@ -38,7 +41,8 @@ public abstract class Tile{
 		Tile.ILightable,
 		Level.ILightControl,
 		Tile.IDiscoverable,
-		Unit.IInteractable
+		Unit.IInteractable,
+		Unit.IHostileTarget
 		{
 		private const int _NULL_X = -1;
 		private const int _NULL_Y = -1;
@@ -88,19 +92,24 @@ public abstract class Tile{
 		}
 		public void Discover(Level level, Unit unit){}
 		public void Interact(Level level, Unit unit){}
+		public bool CheckHostility(Level level, Unit unit){
+			return false;
+		}
 	}
 	[field:NonSerialized]private static readonly NullTile _NULL_TILE = new NullTile();
-	protected int _x;
-	protected int _y;
-	public Tile(int x, int y){
-		_x = x;
-		_y = y;
+	//protected int _x;
+	//protected int _y;
+	public Tile(int x, int y) : base(x, y){
+		//_x = x;
+		//_y = y;
 	}
 	public Tile(){}
+	/*
 	public virtual void GetXY(out int x, out int y){
 		x = _x;
 		y = _y;
 	}
+	*/
 	public virtual LevelMeshManager.ITileMeshData GetTileMeshData(){
 		return _NULL_TILE;
 	}
@@ -129,6 +138,9 @@ public abstract class Tile{
 		return _NULL_TILE;
 	}
 	public virtual Unit.IInteractable GetInteractable(){
+		return _NULL_TILE;
+	}
+	public virtual Unit.IHostileTarget GetHostileTarget(){
 		return _NULL_TILE;
 	}
 	public static Tile GetNullTile(){

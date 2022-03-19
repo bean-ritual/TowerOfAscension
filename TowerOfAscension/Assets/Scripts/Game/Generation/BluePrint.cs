@@ -143,7 +143,7 @@ public class BluePrint : GridMap<BluePrint.Print>{
 	};
 	// PRINT_DATA
 	[Serializable]
-	public abstract class Print{
+	public abstract class Print : GridMap<Print>.Node{
 		public static class PRINT_DATA{
 			private static readonly Print[] _PRINTS;
 			static PRINT_DATA(){

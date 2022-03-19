@@ -13,7 +13,8 @@ public class PathTile :
 	Tile.ILightable,
 	Level.ILightControl,
 	Tile.IDiscoverable,
-	Unit.IInteractable
+	Unit.IInteractable,
+	Unit.IHostileTarget
 	{
 	private int _light;
 	private bool _discovered;
@@ -98,6 +99,15 @@ public class PathTile :
 			units[i].GetInteractable().Interact(level, unit);
 		}
 	}
+	public bool CheckHostility(Level level, Unit unit){
+		List<Unit> units = level.GetUnits().GetMultiple(_ids);
+		for(int i = 0; i < units.Count; i++){
+			if(units[i].GetHostileTarget().CheckHostility(level, unit)){
+				return true;
+			}
+		}
+		return false;
+	}
 	public override LevelMeshManager.ITileMeshData GetTileMeshData(){
 		return this;
 	}
@@ -126,6 +136,9 @@ public class PathTile :
 		return this;
 	}
 	public override Unit.IInteractable GetInteractable(){
+		return this;
+	}
+	public override Unit.IHostileTarget GetHostileTarget(){
 		return this;
 	}
 }

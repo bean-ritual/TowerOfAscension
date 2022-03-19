@@ -7,6 +7,7 @@ public class Hero :
 	AIUnit,
 	Unit.IDiscoverer,
 	Unit.IInteractor,
+	Unit.IHostileTarget,
 	Level.ILightSource
 	{
 	public Hero(){
@@ -21,6 +22,9 @@ public class Hero :
 		direction.GetTile(level, _x, _y).GetInteractable().Interact(level, this);
 		_ai.GetTurnControl().EndTurn(level, this);
 	}
+	public bool CheckHostility(Level level, Unit unit){
+		return true;
+	}
 	public int GetLightRange(Level level){
 		return 3;
 	}
@@ -30,8 +34,11 @@ public class Hero :
 	public override Unit.IInteractor GetInteractor(){
 		return this;
 	}
+	public override Unit.IHostileTarget GetHostileTarget(){
+		return this;
+	}
 	public override Level.ILightSource GetLightSource(){
-		return this;;
+		return this;
 	}
 	
 }
