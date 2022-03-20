@@ -27,8 +27,18 @@ public class Game{
 	public virtual void NewLevel(){
 		_level = new Level(100, 100);
 		_level.GetMidPoint(out int x, out int y);
-		ClassicGen classic = new ClassicGen(_player, 50);
+		ClassicGen classic = new ClassicGen(_player, 10);
 		classic.Spawn(_level, x, y);
+		const int MAX_SANITY = 1000;
+		for(int sanity = 0; sanity < MAX_SANITY; sanity++){
+			classic.Process(_level);
+			if(classic.IsFinished()){
+				UnityEngine.Debug.Log("Game :: NewLevel() :: Completed");
+				return;
+			}
+		}
+		UnityEngine.Debug.Log("Game :: NewLevel() :: Failed");
+		NewLevel();
 	}
 	public virtual Level GetLevel(){
 		return _level;

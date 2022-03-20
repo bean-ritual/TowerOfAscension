@@ -395,6 +395,12 @@ public class ClassicGen :
 	public void NukeSpawn(Level level){
 		
 	}
+	public bool IsFinished(){
+		if(_state == GenState.Complete){
+			return true;
+		}
+		return false;
+	}
 	//
 	public override WorldUnit.IWorldUnit GetWorldUnit(){
 		return this;

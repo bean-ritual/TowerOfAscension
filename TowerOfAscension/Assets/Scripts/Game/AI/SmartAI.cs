@@ -5,31 +5,33 @@ using System.Diagnostics;
 using UnityEngine;
 [Serializable]
 public class SmartAI : AI{
+	private static Register<Unit>.ID _TARGET = Register<Unit>.ID.GetNullID();
 	public override bool Process(Level level, Unit self){
-		self.GetPositionable().GetPosition(out int x, out int y);
-		List<Tile> targets = new List<Tile>();
-		level.CalculateFov(x, y, 5, (int range, Tile tile) => {
-			if(tile.GetHostileTarget().CheckHostility(level, self)){
-				targets.Add(tile);
-			}
-			return true;
-		});
-		//
-		if(targets.Count <= 0){
-			Default_Wander(self, level);
+		Unit target = level.GetUnits().Get(_TARGET);
+		if(!target.GetHostileTarget().CheckHostility(level, self)){
 			return level.NextTurn();
 		}
-		Tile tile = targets[UnityEngine.Random.Range(0, targets.Count)];
-		tile.GetXY(out int finalX, out int finalY);
-		List<Tile> route = level.FindPath(x, y, finalX, finalY, (Tile tile) => tile.GetWalkable().CanWalk(level, self));
 		//
-		if(route.Count < 1){
-			Default_Wander(self, level);
+		self.GetPositionable().GetPosition(out int selfX, out int selfY);
+		target.GetPositionable().GetPosition(out int targetX, out int targetY);
+		int distance = level.CalculateDistanceCost(selfX, selfY, targetX, targetY);
+		if(distance > 80){
 			return level.NextTurn();
 		}
-		UnityEngine.Debug.Log("test");
-		route[1].GetXY(out int walkX, out int walkY);
-		self.GetMoveable().Move(level, Direction.IntToDirection(x, x, walkX, walkY));
+		if(distance / 10 <= 1){
+			UnityEngine.Debug.Log("attack");
+			return level.NextTurn();
+		}
+		//
 		return level.NextTurn();
+	}
+	public static void SetTarget(Register<Unit>.ID id){
+		_TARGET = id;
+	}
+	public static Unit GetTarget(Level level){
+		return level.GetUnits().Get(_TARGET);
+	}
+	public static Register<Unit>.ID GetTarget(){
+		return _TARGET;
 	}
 }

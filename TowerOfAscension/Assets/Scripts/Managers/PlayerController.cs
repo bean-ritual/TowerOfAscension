@@ -33,7 +33,7 @@ public class PlayerController : MonoBehaviour{
 		}
 		//
 		Direction dir = MouseDirectionHandling();
-		_previous.GetPositionable().GetPosition(out int x, out int y);
+		_player.GetPositionable().GetPosition(out int x, out int y);
 		TileTargetManager.GetInstance().SetTile(dir.GetTile(_level, x, y));
 		//
 		if(Input.GetMouseButtonDown(0)){

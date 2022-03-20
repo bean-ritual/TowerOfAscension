@@ -186,6 +186,14 @@ public abstract class GridMap<TGridObject> where TGridObject : GridMap<TGridObje
 			}		
 		}
 	}
+	public void Linecast(ref List<TGridObject> nodes, int startX, int startY, int endX, int endY, Func<int, TGridObject, bool> IsRayable){
+		int posX = endX - startX;
+		int posY = endY - startY;
+		float range = Mathf.Sqrt((posX * 2) + (posY * 2));
+		posX = (int)(posX / range);
+		posY = (int)(posY / range);
+		RaycastAngle(ref nodes, startX, startY, posX, posY, (int)range, IsRayable);
+	}	
 	public List<TGridObject> GetCardinals(int x, int y){
 		List<TGridObject> cardinals = new List<TGridObject>();
 		for(int i = 0; i < _CARDINALS.Length; i++){
@@ -259,7 +267,7 @@ public abstract class GridMap<TGridObject> where TGridObject : GridMap<TGridObje
 				if(_closed.Contains(neighbour)){
 					continue;
 				}
-				if(!IsWalkable(neighbour)){
+				if(!IsWalkable(neighbour) && neighbour != end){
 					_closed.Add(neighbour);
 					continue;
 				}

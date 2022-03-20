@@ -7,6 +7,7 @@ public class TileTargetManager : MonoBehaviour{
 	private Level _level = Level.GetNullLevel();
 	private Tile _tile = Tile.GetNullTile();
 	[SerializeField]private Transform _target;
+	[SerializeField]private Transform _offset;
 	[SerializeField]private SpriteRenderer _renderer;
 	[SerializeField]private int _sortingOrder;
 	private void Awake(){
@@ -17,6 +18,7 @@ public class TileTargetManager : MonoBehaviour{
 	}
 	private void Start(){
 		_level = DungeonMaster.GetInstance().GetLevel();
+		_offset.localPosition = _level.GetVector3CellOffset();
 		_renderer.sortingOrder = _sortingOrder;
 		_renderer.color = Color.green;
 		SetTile(_tile);
@@ -24,7 +26,7 @@ public class TileTargetManager : MonoBehaviour{
 	public void SetTile(Tile tile){
 		_tile = tile;
 		_tile.GetXY(out int x, out int y);
-		_target.localPosition = _level.GetWorldPosition(x, y) + _level.GetVector3CellOffset();
+		_target.localPosition = _level.GetWorldPosition(x, y);
 	}
 	public static TileTargetManager GetInstance(){
 		return _instance;

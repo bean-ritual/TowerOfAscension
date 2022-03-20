@@ -38,6 +38,17 @@ public abstract class Unit{
 	public interface IInteractor{
 		void Interact(Level level, Direction direction);
 	}
+	public interface IDamageable{
+		void TakeDamage(Level level, Unit unit, int damage);
+	}
+	public interface IAttackable{
+		void Attacked(Level level, Unit unit, int attack);
+		void OnAttacked();
+	}
+	public interface IAttacker{
+		void Attack(Level level, Direction direction);
+		void OnAttack();
+	}
 	public interface IHostileTarget{
 		bool CheckHostility(Level level, Unit unit);
 	}
@@ -63,6 +74,9 @@ public abstract class Unit{
 		Unit.IDiscoverer,
 		Unit.IInteractable,
 		Unit.IInteractor,
+		Unit.IDamageable,
+		Unit.IAttackable,
+		Unit.IAttacker,
 		Unit.IHostileTarget,
 		Level.ILightControl,
 		Level.ILightSource,
@@ -115,6 +129,11 @@ public abstract class Unit{
 		public void Discover(Level level, Tile tile){}
 		public void Interact(Level level, Unit unit){}
 		public void Interact(Level level, Direction direction){}
+		public void TakeDamage(Level level, Unit unit, int damage){}
+		public void Attacked(Level level, Unit unit, int attack){}
+		public void OnAttacked(){}
+		public void Attack(Level level, Direction direction){}
+		public void OnAttack(){}
 		public bool CheckHostility(Level level, Unit unit){
 			return false;
 		}
@@ -176,6 +195,15 @@ public abstract class Unit{
 		return _NULL_UNIT;
 	}
 	public virtual IInteractor GetInteractor(){
+		return _NULL_UNIT;
+	}
+	public virtual IDamageable GetDamageable(){
+		return _NULL_UNIT;
+	}
+	public virtual IAttackable GetAttackable(){
+		return _NULL_UNIT;
+	}
+	public virtual IAttacker GetAttacker(){
 		return _NULL_UNIT;
 	}
 	public virtual IHostileTarget GetHostileTarget(){

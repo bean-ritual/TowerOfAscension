@@ -12,7 +12,7 @@ public class Monster :
 		}
 	}
 	public Monster(){
-		_ai = new SmartAI();
+		_ai = new ScanAI();
 		_spriteID = SpriteSheet.SpriteID.Rat;
 		_sortingOrder = 20;
 	}
