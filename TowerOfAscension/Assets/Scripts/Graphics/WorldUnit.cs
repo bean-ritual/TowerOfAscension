@@ -35,7 +35,7 @@ public class WorldUnit : MonoBehaviour{
 	public void RefreshVisibility(){
 		_offset.SetActive(_unit.GetWorldUnit().GetWorldVisibility(_level));
 	}
-	public IEnumerator MoveAnimation(int x, int y){
+	public IEnumerator LerpToXY(int x, int y, Action OnAnimationComplete){
 		float time = 0f;
 		float duration = 0.1f;
 		Vector3 start = transform.localPosition;
@@ -47,7 +47,20 @@ public class WorldUnit : MonoBehaviour{
 			yield return null;
 		}
 		transform.localPosition = target;
+		OnAnimationComplete?.Invoke();
 		WorldUnitManager.GetInstance().OnFrameAnimation();
+	}
+	public void MoveAnimation(int x, int y){
+		StartCoroutine(LerpToXY(x, y, null));
+	}
+	public void AttackAnimation(int x, int y){
+		_unit.GetPositionable().GetPosition(out int oldX, out int oldY);
+		StartCoroutine(LerpToXY(x, y, () => {
+			StartCoroutine(LerpToXY(oldX, oldY, null));
+		}));
+	}
+	public void UnitDestroy(){
+		Destroy(gameObject);
 	}
 	private void UnsubscribeFromEvents(){
 		_unit.GetWorldUnit().OnWorldUnitUpdate -= OnWorldUnitUpdate;
@@ -63,7 +76,10 @@ public class WorldUnit : MonoBehaviour{
 			transform.localPosition = _level.GetWorldPosition(x, y);
 			return;
 		}
-		StartCoroutine(MoveAnimation(x, y));
+		WorldUnitManager.GetInstance().QueueAnimation(() => MoveAnimation(x, y));
+	}
+	private void OnAttackEvent(object sender, EventArgs e){
+		//
 	}
 	private void OnLightUpdate(object sender, EventArgs e){
 		RefreshVisibility();

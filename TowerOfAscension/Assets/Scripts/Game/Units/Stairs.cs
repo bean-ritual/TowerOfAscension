@@ -6,7 +6,8 @@ using UnityEngine;
 public class Stairs :
 	Unit,
 	WorldUnit.IWorldUnit,
-	Unit.ISpawnable
+	Unit.ISpawnable,
+	Unit.ITripwire
 	{
 	[field:NonSerialized]public event EventHandler<EventArgs> OnWorldUnitUpdate;
 	private int _x = Unit.NullUnit.GetNullX();
@@ -26,7 +27,7 @@ public class Stairs :
 		Unit.Default_Spawn(this, level, x, y);
 	}
 	public void Despawn(Level level){
-		
+		Unit.Default_Despawn(this, level);
 	}
 	public void SetPosition(Level level, int x, int y){
 		Unit.Default_SetPosition(this, level, x, y, ref _x, ref _y);
@@ -35,6 +36,9 @@ public class Stairs :
 	public void GetPosition(out int x, out int y){
 		x = _x;
 		y = _y;
+	}
+	public void RemovePosition(Level level){
+		Unit.Default_RemovePosition(this, level, _x, _y);
 	}
 	public Vector3 GetPosition(GridMap<Tile> map){
 		return map.GetWorldPosition(_x, _y);
@@ -45,8 +49,14 @@ public class Stairs :
 	public void AddToRegister(Register<Unit> register){
 		register.Add(this, ref _id);
 	}
+	public void RemoveFromRegister(Register<Unit> register){
+		register.Remove(_id);
+	}
 	public Register<Unit>.ID GetID(){
 		return _id;
+	}
+	public void Trip(Level level, Unit unit){
+		unit.GetExitable().Exit(level);
 	}
 	public override WorldUnit.IWorldUnit GetWorldUnit(){
 		return this;
@@ -58,6 +68,9 @@ public class Stairs :
 		return this;
 	}
 	public override Register<Unit>.IRegisterable GetRegisterable(){
+		return this;
+	}
+	public override Unit.ITripwire GetTripwire(){
 		return this;
 	}
 }

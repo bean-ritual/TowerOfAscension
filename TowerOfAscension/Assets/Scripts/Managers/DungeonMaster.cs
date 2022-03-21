@@ -7,7 +7,7 @@ public class DungeonMaster : MonoBehaviour{
 		private static Game _game = Game.GetNullGame();
 		static DUNGEONMASTER_DATA(){
 			_game = new Game();
-			_game.NewLevel();
+			_game.NextLevel();
 		}
 		public static void SetGame(Game game){
 			_game = game;
@@ -48,7 +48,6 @@ public class DungeonMaster : MonoBehaviour{
 		}
 		if(Input.GetKeyDown(KeyCode.F9)){
 			Load();
-			GameManager.GetInstance().Reload();
 		}
 	}
 	public void Play(){
@@ -71,6 +70,7 @@ public class DungeonMaster : MonoBehaviour{
 			file = Game.GetNullGame();
 		}
 		DUNGEONMASTER_DATA.SetGame(file);
+		LoadSystem.Load(LoadSystem.Scene.Game, null);
 	}
 	public Level GetLevel(){
 		return _local.GetLevel();

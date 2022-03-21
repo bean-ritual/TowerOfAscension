@@ -43,7 +43,7 @@ public abstract class LevelUnit :
 		Unit.Default_Spawn(this, level, x, y);
 	}
 	public void Despawn(Level level){
-		
+		Unit.Default_Despawn(this, level);
 	}
 	public void SetPosition(Level level, int x, int y){
 		Unit.Default_SetPosition(this, level, x, y, ref _x, ref _y);
@@ -53,6 +53,9 @@ public abstract class LevelUnit :
 		x = _x;
 		y = _y;
 	}
+	public void RemovePosition(Level level){
+		Unit.Default_RemovePosition(this, level, _x, _y);
+	}
 	public Vector3 GetPosition(GridMap<Tile> map){
 		return map.GetWorldPosition(_x, _y);
 	}
@@ -61,6 +64,9 @@ public abstract class LevelUnit :
 	}
 	public void AddToRegister(Register<Unit> register){
 		register.Add(this, ref _id);
+	}
+	public void RemoveFromRegister(Register<Unit> register){
+		register.Remove(_id);
 	}
 	public Register<Unit>.ID GetID(){
 		return _id;

@@ -42,6 +42,7 @@ public abstract class Tile : GridMap<Tile>.Node{
 		Level.ILightControl,
 		Tile.IDiscoverable,
 		Unit.IInteractable,
+		Unit.IAttackable,
 		Unit.IHostileTarget
 		{
 		private const int _NULL_X = -1;
@@ -92,6 +93,8 @@ public abstract class Tile : GridMap<Tile>.Node{
 		}
 		public void Discover(Level level, Unit unit){}
 		public void Interact(Level level, Unit unit){}
+		public void Attacked(Level level, Unit unit, int attack){}
+		public void OnAttacked(){}
 		public bool CheckHostility(Level level, Unit unit){
 			return false;
 		}
@@ -138,6 +141,9 @@ public abstract class Tile : GridMap<Tile>.Node{
 		return _NULL_TILE;
 	}
 	public virtual Unit.IInteractable GetInteractable(){
+		return _NULL_TILE;
+	}
+	public virtual Unit.IAttackable GetAttackable(){
 		return _NULL_TILE;
 	}
 	public virtual Unit.IHostileTarget GetHostileTarget(){

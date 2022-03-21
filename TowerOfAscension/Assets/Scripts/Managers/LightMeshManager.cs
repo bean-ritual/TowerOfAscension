@@ -8,7 +8,7 @@ public class LightMeshManager : MonoBehaviour{
 		int GetLightUVFactor();
 	}
 	private static LightMeshManager _instance;
-	private Level _level;
+	private Level _level = Level.GetNullLevel();
 	private Mesh _mesh;
 	private UVAtlas _atlas;
 	private Vector3[] _vertices;

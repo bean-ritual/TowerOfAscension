@@ -298,7 +298,7 @@ public class ClassicGen :
 		_structures.Add(Spawner.SPAWNER_DATA.GetContentualBluePrintSpawner(_x, _y));
 	}
 	public void Despawn(Level level){
-		
+		Unit.Default_Despawn(this, level);
 	}
 	public void SetPosition(Level level, int x, int y){
 		Unit.Default_SetPosition(this, level, x, y, ref _x, ref _y);
@@ -308,6 +308,9 @@ public class ClassicGen :
 		x = _x;
 		y = _y;
 	}
+	public void RemovePosition(Level level){
+		Unit.Default_RemovePosition(this, level, _x, _y);
+	}
 	public Vector3 GetPosition(GridMap<Tile> map){
 		return map.GetWorldPosition(_x, _y);
 	}
@@ -316,6 +319,9 @@ public class ClassicGen :
 	}
 	public void AddToRegister(Register<Unit> register){
 		register.Add(this, ref _id);
+	}
+	public void RemoveFromRegister(Register<Unit> register){
+		register.Remove(_id);
 	}
 	public Register<Unit>.ID GetID(){
 		return _id;

@@ -6,25 +6,46 @@ using UnityEngine;
 public abstract class AIUnit : 
 	LevelUnit,
 	Unit.IMoveable,
-	Unit.IControllable
+	Unit.IControllable,
+	Unit.IAttackable,
+	Unit.IAttacker,
+	Unit.IKillable
 	{
 	[field:NonSerialized]public event EventHandler<EventArgs> OnMoveEvent;
 	protected AI _ai = AI.GetNullAI();
 	public AIUnit(){}
-	public void Move(Level level, Direction direction){
+	public virtual void Move(Level level, Direction direction){
 		Unit.Default_Move(this, level, direction);
 	}
-	public void OnMove(Level level, Tile tile){
+	public virtual void OnMove(Level level, Tile tile){
 		tile.GetXY(out int x, out int y);
 		Unit.Default_SetPosition(this, level, x, y, ref _x, ref _y);
 		_ai.GetTurnControl().EndTurn(level, this);
 		OnMoveEvent?.Invoke(this, EventArgs.Empty);
 	}
-	public void SetAI(AI ai){
+	public virtual void SetAI(AI ai){
 		_ai = ai;
 	}
-	public AI GetAI(){
+	public virtual AI GetAI(){
 		return _ai;
+	}
+	public virtual void Attacked(Level level, Unit unit, int attack){
+		GetKillable().Kill(level);
+	}
+	public virtual void OnAttacked(){
+		//
+	}
+	public virtual void Attack(Level level, Direction direction){
+		direction.GetTile(level, _x, _y).GetAttackable().Attacked(level, this, 10);
+	}
+	public virtual void OnAttack(){
+		
+	}
+	public virtual void Kill(Level level){
+		Default_Kill(this, level);
+	}
+	public virtual void OnKill(Level level){
+		
 	}
 	public override bool Process(Level level){
 		return _ai.Process(level, this);
@@ -33,6 +54,15 @@ public abstract class AIUnit :
 		return this;
 	}
 	public override Unit.IControllable GetControllable(){
+		return this;
+	}
+	public override Unit.IAttackable GetAttackable(){
+		return this;
+	}
+	public override Unit.IAttacker GetAttacker(){
+		return this;
+	}
+	public override IKillable GetKillable(){
 		return this;
 	}
 }

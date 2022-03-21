@@ -14,6 +14,7 @@ public class PathTile :
 	Level.ILightControl,
 	Tile.IDiscoverable,
 	Unit.IInteractable,
+	Unit.IAttackable,
 	Unit.IHostileTarget
 	{
 	private int _light;
@@ -57,6 +58,10 @@ public class PathTile :
 	public void Walk(Level level, Unit unit){
 		if(CanWalk(level, unit)){
 			unit.GetMoveable().OnMove(level, this);
+			List<Unit> units = level.GetUnits().GetMultiple(_ids);
+			for(int i = 0; i < units.Count; i++){
+				units[i].GetTripwire().Trip(level, unit);
+			}
 		}
 	}
 	public bool CanWalk(Level level, Unit unit){
@@ -99,6 +104,15 @@ public class PathTile :
 			units[i].GetInteractable().Interact(level, unit);
 		}
 	}
+	public void Attacked(Level level, Unit unit, int attack){
+		List<Unit> units = level.GetUnits().GetMultiple(_ids);
+		for(int i = 0; i < units.Count; i++){
+			units[i].GetAttackable().Attacked(level, unit, attack);
+		}
+	}
+	public void OnAttacked(){
+		
+	}
 	public bool CheckHostility(Level level, Unit unit){
 		List<Unit> units = level.GetUnits().GetMultiple(_ids);
 		for(int i = 0; i < units.Count; i++){
@@ -136,6 +150,9 @@ public class PathTile :
 		return this;
 	}
 	public override Unit.IInteractable GetInteractable(){
+		return this;
+	}
+	public override Unit.IAttackable GetAttackable(){
 		return this;
 	}
 	public override Unit.IHostileTarget GetHostileTarget(){

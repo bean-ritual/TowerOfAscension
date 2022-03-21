@@ -6,6 +6,7 @@ using UnityEngine;
 public abstract class Register<TStoreObject> : Register<TStoreObject>.RegisterEvents{
 	public interface IRegisterable{
 		void AddToRegister(Register<TStoreObject> register);
+		void RemoveFromRegister(Register<TStoreObject> register);
 		Register<TStoreObject>.ID GetID();
 	}
 	public interface RegisterEvents{

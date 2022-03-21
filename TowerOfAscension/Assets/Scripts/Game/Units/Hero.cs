@@ -8,6 +8,7 @@ public class Hero :
 	Unit.IDiscoverer,
 	Unit.IInteractor,
 	Unit.IHostileTarget,
+	Unit.IExitable,
 	Level.ILightSource
 	{
 	public Hero(){
@@ -25,8 +26,14 @@ public class Hero :
 	public bool CheckHostility(Level level, Unit unit){
 		return true;
 	}
+	public void Exit(Level level){
+		level.SetTrigger(new NextLevel(this));
+	}
 	public int GetLightRange(Level level){
 		return 3;
+	}
+	public override void Attacked(Level level, Unit unit, int attack){
+		
 	}
 	public override Unit.IDiscoverer GetDiscoverer(){
 		return this;
@@ -35,6 +42,9 @@ public class Hero :
 		return this;
 	}
 	public override Unit.IHostileTarget GetHostileTarget(){
+		return this;
+	}
+	public override Unit.IExitable GetExitable(){
 		return this;
 	}
 	public override Level.ILightSource GetLightSource(){

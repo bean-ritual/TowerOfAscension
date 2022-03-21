@@ -21,17 +21,22 @@ public class Level : GridMap<Tile>{
 		public override bool Process(){
 			return false;
 		}
+		public override void LightUpdate(Unit unit){}
 		public override bool Set(int x, int y, Tile tile){
 			return false;
 		}
 		public override Tile Get(int x, int y){
 			return Tile.GetNullTile();
 		}
+		public override bool NextTurn(){
+			return false;
+		}
 		public override Register<Unit> GetUnits(){
 			return UnitRegister.GetNullUnitRegister();
 		}
-		public override bool NextTurn(){
-			return false;
+		public override void SetTrigger(Trigger trigger){}
+		public override Trigger GetTrigger(){
+			return Trigger.GetNullTrigger();
 		}
 	}
 	public override Tile GetNullGridObject(){
@@ -47,6 +52,8 @@ public class Level : GridMap<Tile>{
 	//
 	private int _index;
 	private Register<Unit> _units;
+	private Trigger _trigger = Trigger.GetNullTrigger();
+	//
 	public Level(int width, int height) : 
 	base(
 		width, 
@@ -64,7 +71,7 @@ public class Level : GridMap<Tile>{
 	public virtual bool Process(){
 		return _units.Get(_index).GetProcessable().Process(this);
 	}
-	public void LightUpdate(Unit unit){
+	public virtual void LightUpdate(Unit unit){
 		int lightRange = unit.GetLightSource().GetLightRange(this);
 		if(lightRange <= 0){
 			return;
@@ -96,6 +103,12 @@ public class Level : GridMap<Tile>{
 	}
 	public virtual Register<Unit> GetUnits(){
 		return _units;
+	}
+	public virtual void SetTrigger(Trigger trigger){
+		_trigger = trigger;
+	}
+	public virtual Trigger GetTrigger(){
+		return _trigger;
 	}
 	public static Level GetNullLevel(){
 		return _NULL_LEVEL;

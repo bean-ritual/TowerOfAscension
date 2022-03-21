@@ -10,7 +10,10 @@ public class Game{
 		public override bool Process(){
 			return false;
 		}
+		public override void NextLevel(){}
 		public override void NewLevel(){}
+		public override void SetPlayer(Unit player){}
+		public override void SetLevel(Level level){}
 		public override Level GetLevel(){
 			return Level.GetNullLevel();
 		}
@@ -22,7 +25,12 @@ public class Game{
 		_player = new Hero();
 	}
 	public virtual bool Process(){
-		return _level.Process();
+		bool update = _level.Process();
+		_level.GetTrigger().Process(this);
+		return update;
+	}
+	public virtual void NextLevel(){
+		LoadSystem.Load(LoadSystem.Scene.Game, NewLevel);
 	}
 	public virtual void NewLevel(){
 		_level = new Level(100, 100);
@@ -34,11 +42,18 @@ public class Game{
 			classic.Process(_level);
 			if(classic.IsFinished()){
 				UnityEngine.Debug.Log("Game :: NewLevel() :: Completed");
+				//SaveSystem.Save(this);
 				return;
 			}
 		}
 		UnityEngine.Debug.Log("Game :: NewLevel() :: Failed");
 		NewLevel();
+	}
+	public virtual void SetPlayer(Unit player){
+		_player = player;
+	}
+	public virtual void SetLevel(Level level){
+		_level = level;
 	}
 	public virtual Level GetLevel(){
 		return _level;

@@ -8,7 +8,7 @@ public class LevelMeshManager : MonoBehaviour{
 		int GetUVFactor();
 	}
 	private static LevelMeshManager _instance;
-	private Level _level;
+	private Level _level = Level.GetNullLevel();
 	private Mesh _mesh;
 	private UVAtlas _atlas;
 	private Vector3[] _vertices;

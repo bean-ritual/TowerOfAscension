@@ -10,6 +10,7 @@ public abstract class Unit{
 	public interface IPositionable{
 		void SetPosition(Level level, int x, int y);
 		void GetPosition(out int x, out int y);
+		void RemovePosition(Level level);
 		Vector3 GetPosition(GridMap<Tile> map);
 		Tile GetTile(Level level);
 	}
@@ -49,6 +50,16 @@ public abstract class Unit{
 		void Attack(Level level, Direction direction);
 		void OnAttack();
 	}
+	public interface IKillable : ISpawnable{
+		void Kill(Level level);
+		void OnKill(Level level);
+	}
+	public interface IExitable{
+		void Exit(Level level);
+	}
+	public interface ITripwire{
+		void Trip(Level level, Unit unit);
+	}
 	public interface IHostileTarget{
 		bool CheckHostility(Level level, Unit unit);
 	}
@@ -77,6 +88,9 @@ public abstract class Unit{
 		Unit.IDamageable,
 		Unit.IAttackable,
 		Unit.IAttacker,
+		Unit.IKillable,
+		Unit.IExitable,
+		Unit.ITripwire,
 		Unit.IHostileTarget,
 		Level.ILightControl,
 		Level.ILightSource,
@@ -89,6 +103,7 @@ public abstract class Unit{
 		private const int _NULL_Y = -1;
 		public NullUnit(){}
 		public void AddToRegister(Register<Unit> register){}
+		public void RemoveFromRegister(Register<Unit> register){}
 		public Register<Unit>.ID GetID(){
 			return Register<Unit>.ID.GetNullID();
 		}
@@ -109,6 +124,7 @@ public abstract class Unit{
 			x = _NULL_X;
 			y = _NULL_Y;
 		}
+		public void RemovePosition(Level level){}
 		public Vector3 GetPosition(GridMap<Tile> map){
 			return Vector3.zero;
 		}
@@ -134,6 +150,10 @@ public abstract class Unit{
 		public void OnAttacked(){}
 		public void Attack(Level level, Direction direction){}
 		public void OnAttack(){}
+		public void Kill(Level level){}
+		public void OnKill(Level level){}
+		public void Exit(Level level){}
+		public void Trip(Level level, Unit unit){}
 		public bool CheckHostility(Level level, Unit unit){
 			return false;
 		}
@@ -206,6 +226,15 @@ public abstract class Unit{
 	public virtual IAttacker GetAttacker(){
 		return _NULL_UNIT;
 	}
+	public virtual IKillable GetKillable(){
+		return _NULL_UNIT;
+	}
+	public virtual IExitable GetExitable(){
+		return _NULL_UNIT;
+	}
+	public virtual ITripwire GetTripwire(){
+		return _NULL_UNIT;
+	}
 	public virtual IHostileTarget GetHostileTarget(){
 		return _NULL_UNIT;
 	}
@@ -226,16 +255,26 @@ public abstract class Unit{
 		self.GetPositionable().SetPosition(level, x, y);
 		level.LightUpdate(self);
 	}
+	public static void Default_Despawn(Unit self, Level level){
+		self.GetRegisterable().RemoveFromRegister(level.GetUnits());
+		self.GetPositionable().RemovePosition(level);
+	}
 	public static void Default_SetPosition(Unit self, Level level, int newX, int newY, ref int x, ref int y){
-		self.GetPositionable().GetPosition(out int oldX, out int oldY);
-		level.Get(oldX, oldY).GetHasUnits().RemoveUnit(self.GetRegisterable().GetID());
+		self.GetPositionable().RemovePosition(level);
 		level.Get(newX, newY).GetHasUnits().AddUnit(self.GetRegisterable().GetID());
 		x = newX;
 		y = newY;
 	}
+	public static void Default_RemovePosition(Unit self, Level level, int x, int y){
+		level.Get(x, y).GetHasUnits().RemoveUnit(self.GetRegisterable().GetID());
+	}
 	public static void Default_Move(Unit self, Level level, Direction direction){
 		self.GetPositionable().GetPosition(out int oldX, out int oldY);
 		direction.GetTile(level, oldX, oldY).GetWalkable().Walk(level, self);
+	}
+	public static void Default_Kill(Unit self, Level level){
+		self.GetSpawnable().Despawn(level);
+		self.GetKillable().OnKill(level);
 	}
 	public static Unit GetNullUnit(){
 		return _NULL_UNIT;

@@ -15,9 +15,6 @@ public class GameManager : MonoBehaviour{
 	public void RingTheDinkster(){
 		Debug.Log("GameManager :: RingTheDinkster()");
 	}
-	public void Reload(){
-		SceneManager.LoadScene("Game");
-	}
 	private void InputHandling(){
 		if(Input.GetKeyDown(KeyCode.Escape)){
 			Application.Quit();
