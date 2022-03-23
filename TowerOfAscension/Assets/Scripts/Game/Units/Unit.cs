@@ -19,7 +19,6 @@ public abstract class Unit{
 		void Despawn(Level level);
 	}
 	public interface IMoveable : IPositionable{
-		event EventHandler<EventArgs> OnMoveEvent;
 		void Move(Level level, Direction direction);
 		void OnMove(Level level, Tile tile);
 	}
@@ -44,11 +43,10 @@ public abstract class Unit{
 	}
 	public interface IAttackable{
 		void Attacked(Level level, Unit unit, int attack);
-		void OnAttacked();
 	}
 	public interface IAttacker{
 		void Attack(Level level, Direction direction);
-		void OnAttack();
+		void OnAttack(Level level, Tile tile);
 	}
 	public interface IKillable : ISpawnable{
 		void Kill(Level level);
@@ -76,6 +74,8 @@ public abstract class Unit{
 		Unit,
 		Register<Unit>.IRegisterable,
 		WorldUnit.IWorldUnit,
+		WorldUnit.IWorldUnitUI,
+		WorldUnit.IWorldUnitAnimations,
 		Unit.IProcessable,
 		Unit.IPositionable,
 		Unit.ISpawnable,
@@ -95,10 +95,14 @@ public abstract class Unit{
 		Level.ILightControl,
 		Level.ILightSource,
 		Unit.IClassicGen,
-		ClassicGen.Spawner.IFinalize
+		ClassicGen.Spawner.IFinalize,
+		Health.IHasHealth,
+		Armour.IHasArmour
 		{
 		[field:NonSerialized]public event EventHandler<EventArgs> OnWorldUnitUpdate;
-		[field:NonSerialized]public event EventHandler<EventArgs> OnMoveEvent;
+		[field:NonSerialized]public event EventHandler<EventArgs> OnWorldUnitUIUpdate;
+		[field:NonSerialized]public event EventHandler<WorldUnit.UnitAnimateEventArgs> OnMoveAnimation;
+		[field:NonSerialized]public event EventHandler<WorldUnit.UnitAnimateEventArgs> OnAttackAnimation;
 		private const int _NULL_X = -1;
 		private const int _NULL_Y = -1;
 		public NullUnit(){}
@@ -114,6 +118,15 @@ public abstract class Unit{
 			return 0;
 		}
 		public bool GetWorldVisibility(Level level){
+			return false;
+		}
+		public Vector3 GetUIOffset(){
+			return Vector3.zero;
+		}
+		public int GetUISortingOrder(){
+			return 0;
+		}
+		public bool GetHealthBar(){
 			return false;
 		}
 		public bool Process(Level level){
@@ -147,9 +160,8 @@ public abstract class Unit{
 		public void Interact(Level level, Direction direction){}
 		public void TakeDamage(Level level, Unit unit, int damage){}
 		public void Attacked(Level level, Unit unit, int attack){}
-		public void OnAttacked(){}
 		public void Attack(Level level, Direction direction){}
-		public void OnAttack(){}
+		public void OnAttack(Level level, Tile tile){}
 		public void Kill(Level level){}
 		public void OnKill(Level level){}
 		public void Exit(Level level){}
@@ -181,6 +193,12 @@ public abstract class Unit{
 		public static int GetNullY(){
 			return _NULL_Y;
 		}
+		public Attribute GetHealth(){
+			return Attribute.GetNullAttribute();
+		}
+		public Attribute GetArmour(){
+			return Attribute.GetNullAttribute();
+		}
 	}
 	[field:NonSerialized]private static readonly NullUnit _NULL_UNIT = new NullUnit();
 	public Unit(){}
@@ -188,6 +206,12 @@ public abstract class Unit{
 		return _NULL_UNIT;
 	}
 	public virtual WorldUnit.IWorldUnit GetWorldUnit(){
+		return _NULL_UNIT;
+	}
+	public virtual WorldUnit.IWorldUnitUI GetWorldUnitUI(){
+		return _NULL_UNIT;
+	}
+	public virtual WorldUnit.IWorldUnitAnimations GetWorldUnitAnimations(){
 		return _NULL_UNIT;
 	}
 	public virtual IProcessable GetProcessable(){
@@ -248,6 +272,12 @@ public abstract class Unit{
 		return _NULL_UNIT;
 	}
 	public virtual ClassicGen.Spawner.IFinalize GetFinalize(){
+		return _NULL_UNIT;
+	}
+	public virtual Health.IHasHealth GetHasHealth(){
+		return _NULL_UNIT;
+	}
+	public virtual Armour.IHasArmour GetHasArmour(){
 		return _NULL_UNIT;
 	}
 	public static void Default_Spawn(Unit self, Level level, int x, int y){

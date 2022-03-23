@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 public class PlayerController : MonoBehaviour{
-	private static PlayerController _instance;
+	private static PlayerController _INSTANCE;
 	private Level _level = Level.GetNullLevel();
 	private Unit _player = Unit.GetNullUnit();
 	private Unit _previous = Unit.GetNullUnit();
@@ -17,10 +17,10 @@ public class PlayerController : MonoBehaviour{
 		_level.OnNextTurn -= OnNextTurn;
 	}
 	private void Awake(){
-		if(_instance != null){
+		if(_INSTANCE != null){
 			Destroy(gameObject);
 		}
-		_instance = this;
+		_INSTANCE = this;
 	}
 	private void Start(){
 		_level = DungeonMaster.GetInstance().GetLevel();
@@ -64,8 +64,14 @@ public class PlayerController : MonoBehaviour{
 			return;
 		}
 		_previous = _player;
-		_camera.Setup(() => _previous.GetPositionable().GetPosition(_level), () => _cameraZoom, _cameraOffset, _cameraSpeed, true);
-		//Setup
+		_camera.Setup(
+			() => _previous.GetPositionable().GetPosition(_level), 
+			() => _cameraZoom, 
+			_cameraOffset, 
+			_cameraSpeed, 
+			true
+		);
+		HUDUIManager.GetInstance().SetUnit(_previous);
 	}
 	public void ClearPlayer(){
 		_player = Unit.GetNullUnit();
@@ -80,6 +86,6 @@ public class PlayerController : MonoBehaviour{
 		ClearPlayer();
 	}
 	public static PlayerController GetInstance(){
-		return _instance;
+		return _INSTANCE;
 	}
 }

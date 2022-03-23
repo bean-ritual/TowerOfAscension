@@ -9,7 +9,6 @@ public class NextLevel : Trigger{
 		_player = player;
 	}
 	public override void Process(Game game){
-		UnityEngine.Debug.Log("test");
 		Default_ResetTrigger(game.GetLevel());
 		game.SetPlayer(_player);
 		game.NextLevel();

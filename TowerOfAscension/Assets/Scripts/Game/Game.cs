@@ -25,9 +25,8 @@ public class Game{
 		_player = new Hero();
 	}
 	public virtual bool Process(){
-		bool update = _level.Process();
 		_level.GetTrigger().Process(this);
-		return update;
+		return _level.Process();
 	}
 	public virtual void NextLevel(){
 		LoadSystem.Load(LoadSystem.Scene.Game, NewLevel);

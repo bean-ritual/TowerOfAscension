@@ -15,6 +15,10 @@ public class Hero :
 		_ai = new PlayerControl();
 		_spriteID = SpriteSheet.SpriteID.Hero;
 		_sortingOrder = 20;
+		_health = new Health(95);
+	}
+	public override bool GetHealthBar(){
+		return false;
 	}
 	public void Discover(Level level, Tile tile){
 		tile.GetDiscoverable().Discover(level, this);
@@ -31,9 +35,6 @@ public class Hero :
 	}
 	public int GetLightRange(Level level){
 		return 3;
-	}
-	public override void Attacked(Level level, Unit unit, int attack){
-		
 	}
 	public override Unit.IDiscoverer GetDiscoverer(){
 		return this;

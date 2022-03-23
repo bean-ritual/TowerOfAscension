@@ -3,16 +3,35 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 public class WorldUnit : MonoBehaviour{
+	public class UnitAnimateEventArgs : EventArgs{
+		public Unit unit;
+		public Vector3 position;
+		public UnitAnimateEventArgs(Unit unit, Vector3 position){
+			this.unit = unit;
+			this.position = position;
+		}
+	}
 	public interface IWorldUnit{
 		event EventHandler<EventArgs> OnWorldUnitUpdate;
 		Sprite GetSprite();
 		int GetSortingOrder();
 		bool GetWorldVisibility(Level level);
 	}
+	public interface IWorldUnitUI{
+		event EventHandler<EventArgs> OnWorldUnitUIUpdate;
+		Vector3 GetUIOffset();
+		int GetUISortingOrder();
+		bool GetHealthBar();
+	}
+	public interface IWorldUnitAnimations{
+		event EventHandler<UnitAnimateEventArgs> OnMoveAnimation;
+		event EventHandler<UnitAnimateEventArgs> OnAttackAnimation;
+	}
 	private Unit _unit = Unit.GetNullUnit();
 	private Level _level = Level.GetNullLevel();
 	[SerializeField]private GameObject _offset;
 	[SerializeField]private SpriteRenderer _renderer;
+	[SerializeField]private WorldUnitUI _worldUnitUI;
 	private void OnDisable(){
 		UnsubscribeFromEvents();
 	}
@@ -20,9 +39,11 @@ public class WorldUnit : MonoBehaviour{
 		UnsubscribeFromEvents();
 		_unit = unit;
 		_unit.GetWorldUnit().OnWorldUnitUpdate += OnWorldUnitUpdate;
-		_unit.GetMoveable().OnMoveEvent += OnMoveEvent;
+		_unit.GetWorldUnitAnimations().OnMoveAnimation += OnMoveAnimation;
+		_unit.GetWorldUnitAnimations().OnAttackAnimation += OnAttackAnimation;
 		_level = DungeonMaster.GetInstance().GetLevel();
 		_level.OnLightUpdate += OnLightUpdate;
+		_worldUnitUI.Setup(_unit);
 		RefreshAll();
 	}
 	public void RefreshAll(){
@@ -30,16 +51,15 @@ public class WorldUnit : MonoBehaviour{
 		_renderer.sortingOrder = _unit.GetWorldUnit().GetSortingOrder();
 		_offset.transform.localPosition = _level.GetVector3CellOffset();
 		this.transform.localPosition = _unit.GetPositionable().GetPosition(_level);
+		_worldUnitUI.Refresh();
 		RefreshVisibility();
 	}
 	public void RefreshVisibility(){
 		_offset.SetActive(_unit.GetWorldUnit().GetWorldVisibility(_level));
 	}
-	public IEnumerator LerpToXY(int x, int y, Action OnAnimationComplete){
+	public IEnumerator LerpToTarget(Vector3 target, float duration, Action OnAnimationComplete){
 		float time = 0f;
-		float duration = 0.1f;
 		Vector3 start = transform.localPosition;
-		Vector3 target = _level.GetWorldPosition(x, y);
 		while(time < duration){
 			transform.localPosition = Vector3.Lerp(start, target, time / duration);
 			time += Time.deltaTime;
@@ -50,13 +70,15 @@ public class WorldUnit : MonoBehaviour{
 		OnAnimationComplete?.Invoke();
 		WorldUnitManager.GetInstance().OnFrameAnimation();
 	}
-	public void MoveAnimation(int x, int y){
-		StartCoroutine(LerpToXY(x, y, null));
+	public void MoveAnimation(Vector3 target){
+		const float MOVE_DURATION = 0.1f;
+		StartCoroutine(LerpToTarget(target, MOVE_DURATION, null));
 	}
-	public void AttackAnimation(int x, int y){
-		_unit.GetPositionable().GetPosition(out int oldX, out int oldY);
-		StartCoroutine(LerpToXY(x, y, () => {
-			StartCoroutine(LerpToXY(oldX, oldY, null));
+	public void AttackAnimation(Vector3 target){
+		const float ATTACK_DURATION = 0.08f;
+		Vector3 position = transform.localPosition;
+		StartCoroutine(LerpToTarget(target, ATTACK_DURATION, () => {
+			StartCoroutine(LerpToTarget(position, ATTACK_DURATION, null));
 		}));
 	}
 	public void UnitDestroy(){
@@ -64,22 +86,25 @@ public class WorldUnit : MonoBehaviour{
 	}
 	private void UnsubscribeFromEvents(){
 		_unit.GetWorldUnit().OnWorldUnitUpdate -= OnWorldUnitUpdate;
-		_unit.GetMoveable().OnMoveEvent -= OnMoveEvent;
+		_unit.GetWorldUnitAnimations().OnMoveAnimation -= OnMoveAnimation;
+		_unit.GetWorldUnitAnimations().OnAttackAnimation -= OnAttackAnimation;
 		_level.OnLightUpdate -= OnLightUpdate;
 	}
 	private void OnWorldUnitUpdate(object sender, EventArgs e){
 		RefreshAll();
 	}
-	private void OnMoveEvent(object sender, EventArgs e){
-		_unit.GetPositionable().GetPosition(out int x, out int y);
+	private void OnMoveAnimation(object sender, UnitAnimateEventArgs e){
 		if(!_offset.activeSelf){
-			transform.localPosition = _level.GetWorldPosition(x, y);
+			transform.localPosition = e.position;
 			return;
 		}
-		WorldUnitManager.GetInstance().QueueAnimation(() => MoveAnimation(x, y));
+		WorldUnitManager.GetInstance().QueueAnimation(() => MoveAnimation(e.position));
 	}
-	private void OnAttackEvent(object sender, EventArgs e){
-		//
+	private void OnAttackAnimation(object sender, UnitAnimateEventArgs e){
+		if(!_offset.activeSelf){
+			return;
+		}
+		WorldUnitManager.GetInstance().QueueAnimation(() => AttackAnimation(e.position));
 	}
 	private void OnLightUpdate(object sender, EventArgs e){
 		RefreshVisibility();

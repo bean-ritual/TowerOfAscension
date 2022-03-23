@@ -105,13 +105,11 @@ public class PathTile :
 		}
 	}
 	public void Attacked(Level level, Unit unit, int attack){
+		unit.GetAttacker().OnAttack(level, this);
 		List<Unit> units = level.GetUnits().GetMultiple(_ids);
 		for(int i = 0; i < units.Count; i++){
 			units[i].GetAttackable().Attacked(level, unit, attack);
 		}
-	}
-	public void OnAttacked(){
-		
 	}
 	public bool CheckHostility(Level level, Unit unit){
 		List<Unit> units = level.GetUnits().GetMultiple(_ids);

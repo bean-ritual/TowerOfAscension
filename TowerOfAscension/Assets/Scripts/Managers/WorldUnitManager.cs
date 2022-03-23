@@ -66,6 +66,6 @@ public class WorldUnitManager : MonoBehaviour{
 		CreateWorldUnit(e.value);
 	}
 	private void OnObjectRemoved(object sender, Register<Unit>.OnObjectChangedEventArgs e){
-		RemoveWorldUnit(e.value);
+		_animations.Enqueue(() => RemoveWorldUnit(e.value));
 	}
 }

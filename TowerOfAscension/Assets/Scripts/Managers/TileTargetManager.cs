@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 public class TileTargetManager : MonoBehaviour{
-	private static TileTargetManager _instance;
+	private static TileTargetManager _INSTANCE;
 	private Level _level = Level.GetNullLevel();
 	private Tile _tile = Tile.GetNullTile();
 	[SerializeField]private Transform _target;
@@ -11,10 +11,10 @@ public class TileTargetManager : MonoBehaviour{
 	[SerializeField]private SpriteRenderer _renderer;
 	[SerializeField]private int _sortingOrder;
 	private void Awake(){
-		if(_instance != null){
+		if(_INSTANCE != null){
 			Destroy(gameObject);
 		}
-		_instance = this;
+		_INSTANCE = this;
 	}
 	private void Start(){
 		_level = DungeonMaster.GetInstance().GetLevel();
@@ -29,6 +29,6 @@ public class TileTargetManager : MonoBehaviour{
 		_target.localPosition = _level.GetWorldPosition(x, y);
 	}
 	public static TileTargetManager GetInstance(){
-		return _instance;
+		return _INSTANCE;
 	}
 }

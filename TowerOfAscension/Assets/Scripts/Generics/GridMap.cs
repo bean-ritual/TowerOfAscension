@@ -9,10 +9,10 @@ public abstract class GridMap<TGridObject> where TGridObject : GridMap<TGridObje
 	public abstract class Node{
 		protected int _x;
 		protected int _y;
-		[field:NonSerialized()]public int gCost;
-		[field:NonSerialized()]public int hCost;
-		[field:NonSerialized()]public int fCost;
-		[field:NonSerialized()]public TGridObject cameFrom;
+		[field:NonSerialized]public int gCost;
+		[field:NonSerialized]public int hCost;
+		[field:NonSerialized]public int fCost;
+		[field:NonSerialized]public TGridObject cameFrom;
 		public Node(int x, int y){
 			_x = x;
 			_y = y;
@@ -186,14 +186,6 @@ public abstract class GridMap<TGridObject> where TGridObject : GridMap<TGridObje
 			}		
 		}
 	}
-	public void Linecast(ref List<TGridObject> nodes, int startX, int startY, int endX, int endY, Func<int, TGridObject, bool> IsRayable){
-		int posX = endX - startX;
-		int posY = endY - startY;
-		float range = Mathf.Sqrt((posX * 2) + (posY * 2));
-		posX = (int)(posX / range);
-		posY = (int)(posY / range);
-		RaycastAngle(ref nodes, startX, startY, posX, posY, (int)range, IsRayable);
-	}	
 	public List<TGridObject> GetCardinals(int x, int y){
 		List<TGridObject> cardinals = new List<TGridObject>();
 		for(int i = 0; i < _CARDINALS.Length; i++){
@@ -283,6 +275,7 @@ public abstract class GridMap<TGridObject> where TGridObject : GridMap<TGridObje
 				}
 			}
 		}
+		//ResetMap();
 		return new List<TGridObject>();
 	}
 	private List<TGridObject> CalculatePath(TGridObject end){
@@ -294,6 +287,7 @@ public abstract class GridMap<TGridObject> where TGridObject : GridMap<TGridObje
 			current = current.cameFrom;
 		}
 		path.Reverse();
+		//ResetMap();
 		return path;
 	}
 	private TGridObject GetLowestFCostNode(List<TGridObject> nodes){
@@ -304,6 +298,20 @@ public abstract class GridMap<TGridObject> where TGridObject : GridMap<TGridObje
 			}
 		}
 		return lowestFCostNode;
+	}
+	private void ResetMap(){
+		for(int i = 0; i < _open.Count; i++){
+			TGridObject openNode = _open[i];
+			openNode.gCost = int.MaxValue;
+			openNode.CalculateFCost();
+			openNode.cameFrom = null;
+		}
+		for(int j = 0; j < _closed.Count; j++){
+			TGridObject closedNode = _closed[j];
+			closedNode.gCost = int.MaxValue;
+			closedNode.CalculateFCost();
+			closedNode.cameFrom = null;
+		}
 	}
 	private int CalculateDistanceCost(TGridObject start, TGridObject end){
 		int xDistance = Mathf.Abs(start.GetX() - end.GetX());
