@@ -9,16 +9,21 @@ public class Stairs :
 	Unit.ISpawnable,
 	Unit.ITripwire
 	{
-	[field:NonSerialized]public event EventHandler<EventArgs> OnWorldUnitUpdate;
 	private int _x = Unit.NullUnit.GetNullX();
 	private int _y = Unit.NullUnit.GetNullY();
+	private WorldUnit.WorldUnitController _controller = WorldUnit.WorldUnitController.GetNullWorldUnitController();
 	private Register<Unit>.ID _id = Register<Unit>.ID.GetNullID();
-	public Stairs(){}
-	public Sprite GetSprite(){
-		return SpriteSheet.SPRITESHEET_DATA.GetSprite(SpriteSheet.SpriteID.Stairs, 0);
+	public Stairs(){
+		_controller = new WorldUnit.WorldUnitController(
+			SpriteSheet.SpriteID.Stairs,
+			0,
+			10,
+			Vector3.zero, 
+			0
+		);
 	}
-	public int GetSortingOrder(){
-		return 10;
+	public WorldUnit.WorldUnitController GetWorldUnitController(){
+		return _controller;
 	}
 	public bool GetWorldVisibility(Level level){
 		return true;
@@ -31,7 +36,6 @@ public class Stairs :
 	}
 	public void SetPosition(Level level, int x, int y){
 		Unit.Default_SetPosition(this, level, x, y, ref _x, ref _y);
-		OnWorldUnitUpdate?.Invoke(this, EventArgs.Empty);
 	}
 	public void GetPosition(out int x, out int y){
 		x = _x;

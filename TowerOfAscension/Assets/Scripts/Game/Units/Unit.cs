@@ -52,11 +52,21 @@ public abstract class Unit{
 		void Kill(Level level);
 		void OnKill(Level level);
 	}
+	public interface IPickupable{
+		void TryPickup(Level level, Unit unit);
+		void DoPickup(Level level, Inventory inventory);
+	}
+	public interface IDroppable{
+		void DoDrop(Level level, Inventory inventory);
+	}
 	public interface IExitable{
 		void Exit(Level level);
 	}
 	public interface ITripwire{
 		void Trip(Level level, Unit unit);
+	}
+	public interface IHasInventory{
+		Inventory GetInventory();
 	}
 	public interface IHostileTarget{
 		bool CheckHostility(Level level, Unit unit);
@@ -89,8 +99,10 @@ public abstract class Unit{
 		Unit.IAttackable,
 		Unit.IAttacker,
 		Unit.IKillable,
+		Unit.IPickupable,
 		Unit.IExitable,
 		Unit.ITripwire,
+		Unit.IHasInventory,
 		Unit.IHostileTarget,
 		Level.ILightControl,
 		Level.ILightSource,
@@ -99,23 +111,21 @@ public abstract class Unit{
 		Health.IHasHealth,
 		Armour.IHasArmour
 		{
-		[field:NonSerialized]public event EventHandler<EventArgs> OnWorldUnitUpdate;
 		[field:NonSerialized]public event EventHandler<EventArgs> OnWorldUnitUIUpdate;
-		[field:NonSerialized]public event EventHandler<WorldUnit.UnitAnimateEventArgs> OnMoveAnimation;
 		[field:NonSerialized]public event EventHandler<WorldUnit.UnitAnimateEventArgs> OnAttackAnimation;
 		private const int _NULL_X = -1;
 		private const int _NULL_Y = -1;
 		public NullUnit(){}
+		public override bool IsNull(){
+			return true;
+		}
 		public void AddToRegister(Register<Unit> register){}
 		public void RemoveFromRegister(Register<Unit> register){}
 		public Register<Unit>.ID GetID(){
 			return Register<Unit>.ID.GetNullID();
 		}
-		public Sprite GetSprite(){
-			return SpriteSheet.NullSpriteSheet.GetNullSprite();
-		}
-		public int GetSortingOrder(){
-			return 0;
+		public WorldUnit.WorldUnitController GetWorldUnitController(){
+			return WorldUnit.WorldUnitController.GetNullWorldUnitController();
 		}
 		public bool GetWorldVisibility(Level level){
 			return false;
@@ -164,8 +174,13 @@ public abstract class Unit{
 		public void OnAttack(Level level, Tile tile){}
 		public void Kill(Level level){}
 		public void OnKill(Level level){}
+		public void TryPickup(Level level, Unit unit){}
+		public void DoPickup(Level level, Inventory inventory){}
 		public void Exit(Level level){}
 		public void Trip(Level level, Unit unit){}
+		public Inventory GetInventory(){
+			return Inventory.GetNullInventory();
+		}
 		public bool CheckHostility(Level level, Unit unit){
 			return false;
 		}
@@ -202,6 +217,9 @@ public abstract class Unit{
 	}
 	[field:NonSerialized]private static readonly NullUnit _NULL_UNIT = new NullUnit();
 	public Unit(){}
+	public virtual bool IsNull(){
+		return false;
+	}
 	public virtual Register<Unit>.IRegisterable GetRegisterable(){
 		return _NULL_UNIT;
 	}
@@ -253,10 +271,16 @@ public abstract class Unit{
 	public virtual IKillable GetKillable(){
 		return _NULL_UNIT;
 	}
+	public virtual IPickupable GetPickupable(){
+		return _NULL_UNIT;
+	}
 	public virtual IExitable GetExitable(){
 		return _NULL_UNIT;
 	}
 	public virtual ITripwire GetTripwire(){
+		return _NULL_UNIT;
+	}
+	public virtual IHasInventory GetHasInventory(){
 		return _NULL_UNIT;
 	}
 	public virtual IHostileTarget GetHostileTarget(){
@@ -289,11 +313,12 @@ public abstract class Unit{
 		self.GetRegisterable().RemoveFromRegister(level.GetUnits());
 		self.GetPositionable().RemovePosition(level);
 	}
-	public static void Default_SetPosition(Unit self, Level level, int newX, int newY, ref int x, ref int y){
+	public static void Default_SetPosition(Unit self, Level level, int newX, int newY, ref int x, ref int y, int moveSpeed = 0){
 		self.GetPositionable().RemovePosition(level);
 		level.Get(newX, newY).GetHasUnits().AddUnit(self.GetRegisterable().GetID());
 		x = newX;
 		y = newY;
+		self.GetWorldUnit().GetWorldUnitController().SetWorldPosition(level.GetWorldPosition(x, y), moveSpeed);
 	}
 	public static void Default_RemovePosition(Unit self, Level level, int x, int y){
 		level.Get(x, y).GetHasUnits().RemoveUnit(self.GetRegisterable().GetID());

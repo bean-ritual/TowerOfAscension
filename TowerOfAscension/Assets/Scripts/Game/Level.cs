@@ -31,8 +31,8 @@ public class Level : GridMap<Tile>{
 		public override bool NextTurn(){
 			return false;
 		}
-		public override Register<Unit> GetUnits(){
-			return UnitRegister.GetNullUnitRegister();
+		public override Inventory GetUnits(){
+			return Inventory.GetNullInventory();
 		}
 		public override void SetTrigger(Trigger trigger){}
 		public override Trigger GetTrigger(){
@@ -51,7 +51,7 @@ public class Level : GridMap<Tile>{
 	private const float _LEVEL_CELL_OFFSET = 0.5f;
 	//
 	private int _index;
-	private Register<Unit> _units;
+	private Inventory _units = Inventory.GetNullInventory();
 	private Trigger _trigger = Trigger.GetNullTrigger();
 	//
 	public Level(int width, int height) : 
@@ -65,7 +65,7 @@ public class Level : GridMap<Tile>{
 		CreateTile
 	){	
 		_index = 0;
-		_units = new UnitRegister();
+		_units = new Inventory();
 	}
 	//
 	public virtual bool Process(){
@@ -101,7 +101,7 @@ public class Level : GridMap<Tile>{
 		OnNextTurn?.Invoke(this, EventArgs.Empty);
 		return (_index > 0);
 	}
-	public virtual Register<Unit> GetUnits(){
+	public virtual Inventory GetUnits(){
 		return _units;
 	}
 	public virtual void SetTrigger(Trigger trigger){

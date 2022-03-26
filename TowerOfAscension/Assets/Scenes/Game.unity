@@ -312,7 +312,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_Color: {r: 1, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -874,7 +874,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 1
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 3000
   m_TargetDisplay: 0
 --- !u!224 &1145205829
 RectTransform:
@@ -921,6 +921,8 @@ GameObject:
   - component: {fileID: 1239936458}
   - component: {fileID: 1239936457}
   - component: {fileID: 1239936456}
+  - component: {fileID: 1239936460}
+  - component: {fileID: 1239936461}
   m_Layer: 5
   m_Name: MenusUI
   m_TagString: Untagged
@@ -985,9 +987,9 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_AdditionalShaderChannelsFlag: 1
+  m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 0
-  m_SortingOrder: 10
+  m_SortingOrder: 3500
   m_TargetDisplay: 0
 --- !u!224 &1239936459
 RectTransform:
@@ -1008,6 +1010,38 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &1239936460
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1239936455}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2306b7a483507634bb324035d5ee3d1b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _prefabUIWindow: {fileID: 1926415167355457463, guid: bd63e672bbaf3cf4a9705d2418664dde, type: 3}
+  _prefabUIInventory: {fileID: 3587006565360177160, guid: b72ee30b77ca1ab4c85ed4b8316308f6, type: 3}
+  _prefabUIItem: {fileID: 8711243737798690678, guid: a493ce467d685ca49bf9ab8fddecadf0, type: 3}
+  _canvas: {fileID: 1239936458}
+--- !u!114 &1239936461
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1239936455}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d82bc4ba70b7ce745b959ac41de119b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _prefabUIWindow: {fileID: 0}
+  _prefabUIInventory: {fileID: 0}
+  _prefabUIItem: {fileID: 0}
+  _canvas: {fileID: 0}
 --- !u!1 &1325618487
 GameObject:
   m_ObjectHideFlags: 0
@@ -1122,7 +1156,7 @@ MonoBehaviour:
   _target: {fileID: 1620330897}
   _offset: {fileID: 1325618488}
   _renderer: {fileID: 1325618489}
-  _sortingOrder: 200
+  _sortingOrder: 2000
 --- !u!4 &1329016317
 Transform:
   m_ObjectHideFlags: 0
@@ -1218,7 +1252,7 @@ MonoBehaviour:
   _meshRenderer: {fileID: 1666076766}
   _atlasID: 3
   _material: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
-  _sortingOrder: 100
+  _sortingOrder: 1000
 --- !u!23 &1666076766
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1318,7 +1352,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0, b: 0, a: 1}
+  m_Color: {r: 0, g: 1, b: 0, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

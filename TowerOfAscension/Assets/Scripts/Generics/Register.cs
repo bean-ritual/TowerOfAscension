@@ -62,6 +62,10 @@ public abstract class Register<TStoreObject> : Register<TStoreObject>.RegisterEv
 	public class OnObjectChangedEventArgs : EventArgs{
 		public ID id;
 		public TStoreObject value;
+		public OnObjectChangedEventArgs(ID id, TStoreObject value){
+			this.id = id;
+			this.value = value;
+		}
 	}
 	public class OnObjectSwappedEventArgs : EventArgs{
 		public ID id1;
@@ -82,12 +86,12 @@ public abstract class Register<TStoreObject> : Register<TStoreObject>.RegisterEv
 		id = CreateID();
 		_ids.Add(id);
 		_register.Add(id, value);
-		OnObjectAdded?.Invoke(this, new OnObjectChangedEventArgs{id = id, value = value});
+		OnObjectAdded?.Invoke(this, new OnObjectChangedEventArgs(id, value));
 	}
 	public virtual bool Remove(ID id){
 		_ids.Remove(id);
 		_register.TryGetValue(id, out TStoreObject value);
-		OnObjectRemoved?.Invoke(this, new OnObjectChangedEventArgs{id = id, value = value});
+		OnObjectRemoved?.Invoke(this, new OnObjectChangedEventArgs(id, value));
 		return _register.Remove(id);
 	}
 	public virtual TStoreObject Get(ID id){

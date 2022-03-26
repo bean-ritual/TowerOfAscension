@@ -3,10 +3,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 [Serializable]
-public class UnitRegister : Register<Unit>{
+public class Inventory : Register<Unit>{
+	public interface IPickupable{
+		void AttemptPickup(Level level, Unit unit);
+	}
+	public interface IDroppable{
+		void TryDrop(Level level, Register<Unit>.ID id);
+	}
 	[Serializable]
-	public class NullUnitRegister : UnitRegister{
-		public NullUnitRegister(){}
+	public class NullInventory : Inventory{
+		public NullInventory(){}
+		public override bool IsNull(){
+			return true;
+		}
 		public override void Add(Unit value, ref Register<Unit>.ID id){}
 		public override bool Remove(ID id){
 			return false;
@@ -45,12 +54,15 @@ public class UnitRegister : Register<Unit>{
 			return 0;
 		}
 	}
-	[field:NonSerialized]private static readonly NullUnitRegister _NULL_UNIT_REGISTER = new NullUnitRegister();
-	public UnitRegister(){}
+	[field:NonSerialized]private static readonly NullInventory _NULL_INVENTORY = new NullInventory();
+	public Inventory(){}
+	public virtual bool IsNull(){
+		return false;
+	}
 	public override Unit GetNullStoreObject(){
 		return Unit.GetNullUnit();
 	}
-	public static Register<Unit> GetNullUnitRegister(){
-		return _NULL_UNIT_REGISTER;
+	public static Inventory GetNullInventory(){
+		return _NULL_INVENTORY;
 	}
 }

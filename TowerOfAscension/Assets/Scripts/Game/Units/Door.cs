@@ -20,8 +20,13 @@ public class Door :
 	private bool _locked;
 	public Door(){
 		_locked = true;
-		_spriteID = SpriteSheet.SpriteID.Door;
-		_sortingOrder = 30;
+		_controller = new WorldUnit.WorldUnitController(
+			SpriteSheet.SpriteID.Door,
+			0,
+			30,
+			Vector3.zero, 
+			0
+		);
 	}
 	public void Interact(Level level, Unit unit){
 		_locked ^= true;
@@ -41,7 +46,7 @@ public class Door :
 		if(!_locked){
 			index = 1;
 		}
-		SetSpriteIndex(index);
+		_controller.SetSpriteIndex(index);
 	}
 	public override Unit.IInteractable GetInteractable(){
 		return this;

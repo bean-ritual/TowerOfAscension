@@ -9,13 +9,21 @@ public class Hero :
 	Unit.IInteractor,
 	Unit.IHostileTarget,
 	Unit.IExitable,
+	Unit.IHasInventory,
 	Level.ILightSource
 	{
+	private Inventory _inventory = Inventory.GetNullInventory();
 	public Hero(){
 		_ai = new PlayerControl();
-		_spriteID = SpriteSheet.SpriteID.Hero;
-		_sortingOrder = 20;
+		_controller = new WorldUnit.WorldUnitController(
+			SpriteSheet.SpriteID.Hero,
+			0,
+			20,
+			Vector3.zero, 
+			0
+		);
 		_health = new Health(95);
+		_inventory = new Inventory();
 	}
 	public override bool GetHealthBar(){
 		return false;
@@ -33,6 +41,9 @@ public class Hero :
 	public void Exit(Level level){
 		level.SetTrigger(new NextLevel(this));
 	}
+	public Inventory GetInventory(){
+		return _inventory;
+	}
 	public int GetLightRange(Level level){
 		return 3;
 	}
@@ -46,6 +57,9 @@ public class Hero :
 		return this;
 	}
 	public override Unit.IExitable GetExitable(){
+		return this;
+	}
+	public override Unit.IHasInventory GetHasInventory(){
 		return this;
 	}
 	public override Level.ILightSource GetLightSource(){

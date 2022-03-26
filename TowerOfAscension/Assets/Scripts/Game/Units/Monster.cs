@@ -13,8 +13,13 @@ public class Monster :
 	}
 	public Monster(){
 		_ai = new ScanAI();
-		_spriteID = SpriteSheet.SpriteID.Rat;
-		_sortingOrder = 20;
+		_controller = new WorldUnit.WorldUnitController(
+			SpriteSheet.SpriteID.Rat,
+			0,
+			20,
+			Vector3.zero, 
+			0
+		);
 		_health = new Health(5);
 	}
 }

@@ -17,7 +17,6 @@ public abstract class AIUnit :
 	{
 	private static readonly Vector3 _UI_OFFSET = new Vector3(0, 0.9f);
 	[field:NonSerialized]public	event EventHandler<EventArgs> OnWorldUnitUIUpdate;
-	[field:NonSerialized]public event EventHandler<WorldUnit.UnitAnimateEventArgs> OnMoveAnimation;
 	[field:NonSerialized]public event EventHandler<WorldUnit.UnitAnimateEventArgs> OnAttackAnimation;
 	protected int uiSortingOrder = 100;
 	protected AI _ai = AI.GetNullAI();
@@ -28,7 +27,7 @@ public abstract class AIUnit :
 		return _UI_OFFSET;
 	}
 	public virtual int GetUISortingOrder(){
-		return _sortingOrder + uiSortingOrder;
+		return _controller.GetSortingOrder() + uiSortingOrder;
 	}
 	public virtual bool GetHealthBar(){
 		return true;
@@ -38,9 +37,8 @@ public abstract class AIUnit :
 	}
 	public virtual void OnMove(Level level, Tile tile){
 		tile.GetXY(out int x, out int y);
-		Unit.Default_SetPosition(this, level, x, y, ref _x, ref _y);
+		Unit.Default_SetPosition(this, level, x, y, ref _x, ref _y, 1);
 		_ai.GetTurnControl().EndTurn(level, this);
-		OnMoveAnimation?.Invoke(this, new WorldUnit.UnitAnimateEventArgs(this, level.GetWorldPosition(x, y)));
 	}
 	public virtual void SetAI(AI ai){
 		_ai = ai;

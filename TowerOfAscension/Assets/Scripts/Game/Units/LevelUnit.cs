@@ -10,36 +10,18 @@ public abstract class LevelUnit :
 	Unit.IProcessable,
 	Unit.ICollideable
 	{
-	[field:NonSerialized]public event EventHandler<EventArgs> OnWorldUnitUpdate;
-	protected SpriteSheet.SpriteID _spriteID = SpriteSheet.SpriteID.Misc;
-	protected int _spriteIndex = 0;
-	protected int _sortingOrder = 10;
+	protected WorldUnit.WorldUnitController _controller = WorldUnit.WorldUnitController.GetNullWorldUnitController();
 	protected int _x = Unit.NullUnit.GetNullX();
 	protected int _y = Unit.NullUnit.GetNullY();
 	protected Register<Unit>.ID _id = Register<Unit>.ID.GetNullID();
 	public LevelUnit(){}
-	public void SetSpriteID(SpriteSheet.SpriteID spriteID){
-		_spriteID = spriteID;
-		OnWorldUnitUpdate?.Invoke(this, EventArgs.Empty);
-	}
-	public void SetSpriteIndex(int spriteIndex){
-		_spriteIndex = spriteIndex;
-		OnWorldUnitUpdate?.Invoke(this, EventArgs.Empty);
-	}
-	public Sprite GetSprite(){
-		return SpriteSheet.SPRITESHEET_DATA.GetSprite(_spriteID, _spriteIndex);
-	}
-	public void SetSortingOrder(int sortingOrder){
-		_sortingOrder = sortingOrder;
-		OnWorldUnitUpdate?.Invoke(this, EventArgs.Empty);
-	}
-	public int GetSortingOrder(){
-		return _sortingOrder;
+	public virtual WorldUnit.WorldUnitController GetWorldUnitController(){
+		return _controller;
 	}
 	public virtual bool GetWorldVisibility(Level level){
 		return level.Get(_x, _y).GetLightable().GetLight() > 0;
 	}
-	public void Spawn(Level level, int x, int y){
+	public virtual void Spawn(Level level, int x, int y){
 		Unit.Default_Spawn(this, level, x, y);
 	}
 	public void Despawn(Level level){
@@ -47,7 +29,6 @@ public abstract class LevelUnit :
 	}
 	public void SetPosition(Level level, int x, int y){
 		Unit.Default_SetPosition(this, level, x, y, ref _x, ref _y);
-		OnWorldUnitUpdate?.Invoke(this, EventArgs.Empty);
 	}
 	public void GetPosition(out int x, out int y){
 		x = _x;

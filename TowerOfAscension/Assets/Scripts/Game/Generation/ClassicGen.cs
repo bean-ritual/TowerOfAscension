@@ -260,34 +260,34 @@ public class ClassicGen :
 		Finalize,
 		Complete,
 	};
-	[field:NonSerialized]public event EventHandler<EventArgs> OnWorldUnitUpdate;
-	private int _x;
-	private int _y;
-	private Unit _player;
-	private GenState _state;
+	private int _x = Unit.NullUnit.GetNullX();
+	private int _y = Unit.NullUnit.GetNullY();
+	private Unit _player = Unit.GetNullUnit();
+	private WorldUnit.WorldUnitController _controller = WorldUnit.WorldUnitController.GetNullWorldUnitController();
+	private GenState _state = GenState.Null;
 	private List<Spawner> _structures;
 	private Queue<Spawner> _details;
-	private Spawner _finalize;
-	private Register<Unit>.ID _id;
+	private Spawner _finalize = Spawner.GetNullSpawner();
+	private Register<Unit>.ID _id = Register<Unit>.ID.GetNullID();
 	private int _minBuild;
 	private int _build;
 	public ClassicGen(Unit player, int minBuild = 10, int maxExits = 1){
-		_x = Unit.NullUnit.GetNullX();
-		_y = Unit.NullUnit.GetNullY();
+		_controller = new WorldUnit.WorldUnitController(
+			SpriteSheet.SpriteID.Stairs,
+			1,
+			10,
+			Vector3.zero, 
+			0
+		);
 		_player = player;
-		_state = GenState.Null;
 		_structures = new List<Spawner>();
 		_details = new Queue<Spawner>();
 		_finalize = new FinalSpawner(maxExits);
-		_id = Register<Unit>.ID.GetNullID();
 		_minBuild = minBuild;
 		_build = 0;
-	}	
-	public Sprite GetSprite(){
-		return SpriteSheet.SPRITESHEET_DATA.GetSprite(SpriteSheet.SpriteID.Stairs, 1);
 	}
-	public int GetSortingOrder(){
-		return 10;
+	public WorldUnit.WorldUnitController GetWorldUnitController(){
+		return _controller;
 	}
 	public bool GetWorldVisibility(Level level){
 		return true;
@@ -302,7 +302,6 @@ public class ClassicGen :
 	}
 	public void SetPosition(Level level, int x, int y){
 		Unit.Default_SetPosition(this, level, x, y, ref _x, ref _y);
-		OnWorldUnitUpdate?.Invoke(this, EventArgs.Empty);
 	}
 	public void GetPosition(out int x, out int y){
 		x = _x;
