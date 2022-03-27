@@ -310,18 +310,18 @@ public abstract class Unit{
 		level.LightUpdate(self);
 	}
 	public static void Default_Despawn(Unit self, Level level){
-		self.GetRegisterable().RemoveFromRegister(level.GetUnits());
 		self.GetPositionable().RemovePosition(level);
+		self.GetRegisterable().RemoveFromRegister(level.GetUnits());
 	}
 	public static void Default_SetPosition(Unit self, Level level, int newX, int newY, ref int x, ref int y, int moveSpeed = 0){
 		self.GetPositionable().RemovePosition(level);
-		level.Get(newX, newY).GetHasUnits().AddUnit(self.GetRegisterable().GetID());
+		level.Get(newX, newY).GetHasUnits().AddUnit(level, self.GetRegisterable().GetID());
 		x = newX;
 		y = newY;
 		self.GetWorldUnit().GetWorldUnitController().SetWorldPosition(level.GetWorldPosition(x, y), moveSpeed);
 	}
 	public static void Default_RemovePosition(Unit self, Level level, int x, int y){
-		level.Get(x, y).GetHasUnits().RemoveUnit(self.GetRegisterable().GetID());
+		level.Get(x, y).GetHasUnits().RemoveUnit(level, self.GetRegisterable().GetID());
 	}
 	public static void Default_Move(Unit self, Level level, Direction direction){
 		self.GetPositionable().GetPosition(out int oldX, out int oldY);

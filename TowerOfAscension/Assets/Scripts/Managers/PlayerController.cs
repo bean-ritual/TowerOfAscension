@@ -60,6 +60,7 @@ public class PlayerController : MonoBehaviour{
 	}
 	public void SetPlayer(Unit player){
 		_player = player;
+		PickupUIManager.GetInstance().SetTile(_player.GetPositionable().GetTile(_level));
 		if(_previous == _player){
 			return;
 		}
@@ -73,6 +74,7 @@ public class PlayerController : MonoBehaviour{
 		);
 		HUDUIManager.GetInstance().SetUnit(_previous);
 		InventoryUIManager.GetInstance().SetInventory(_previous.GetHasInventory().GetInventory());
+		MinimapUIManager.GetInstance().SetUnit(_previous);
 	}
 	public void ClearPlayer(){
 		_player = Unit.GetNullUnit();

@@ -44,6 +44,7 @@ public class ClassicGen :
 					case 2: return new ConnectorSpawner(x, y);
 					case 3: return new ExitSpawner(x, y);
 					case 4: return new MonsterSpawner(x, y);
+					case 5: return new LootSpawner(x, y);
 					case 10: return GetRandomBluePrintSpawner(x, y);
 					case 11: return GetStructureBluePrintSpawner(x, y);
 					case 12: return GetDetailBluePrintSpawner(x, y);
@@ -246,6 +247,16 @@ public class ClassicGen :
 		public MonsterSpawner(int x, int y) : base(x, y){}
 		public override void Spawn(Level level, Unit master){
 			Monster.MONSTER_DATA.GetLevelledMonster(0).GetSpawnable().Spawn(level, _x, _y);
+		}
+		public override void AddToMaster(Level level, Unit master){
+			master.GetClassicGen().AddDetailSpawner(this);
+		}
+	}
+	[Serializable]
+	public class LootSpawner : Spawner{
+		public LootSpawner(int x, int y) : base(x, y){}
+		public override void Spawn(Level level, Unit master){
+			Item.ITEM_DATA.GetLevelledItem(0).GetSpawnable().Spawn(level, _x, _y);
 		}
 		public override void AddToMaster(Level level, Unit master){
 			master.GetClassicGen().AddDetailSpawner(this);

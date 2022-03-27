@@ -11,7 +11,10 @@ public class Inventory : Register<Unit>{
 		void TryDrop(Level level, Register<Unit>.ID id);
 	}
 	[Serializable]
-	public class NullInventory : Inventory{
+	public class NullInventory : 
+		Inventory,
+		Inventory.IPickupable
+		{
 		public NullInventory(){}
 		public override bool IsNull(){
 			return true;
@@ -53,6 +56,7 @@ public class Inventory : Register<Unit>{
 		public override int GetCount(){
 			return 0;
 		}
+		public void AttemptPickup(Level level, Unit unit){}
 	}
 	[field:NonSerialized]private static readonly NullInventory _NULL_INVENTORY = new NullInventory();
 	public Inventory(){}
@@ -61,6 +65,9 @@ public class Inventory : Register<Unit>{
 	}
 	public override Unit GetNullStoreObject(){
 		return Unit.GetNullUnit();
+	}
+	public virtual IPickupable GetPickupable(){
+		return _NULL_INVENTORY;
 	}
 	public static Inventory GetNullInventory(){
 		return _NULL_INVENTORY;

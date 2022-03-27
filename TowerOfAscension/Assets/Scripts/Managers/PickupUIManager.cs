@@ -4,7 +4,6 @@ using UnityEngine;
 public class PickupUIManager : MonoBehaviour{
 	private static PickupUIManager _INSTANCE;
 	private Level _level = Level.GetNullLevel();
-	private Unit _unit = Unit.GetNullUnit();
 	private Tile _tile = Tile.GetNullTile();
 	private Dictionary<Unit, UIUnit> _uiUnits;
 	private UIWindowManager _uiWindow;
@@ -45,27 +44,28 @@ public class PickupUIManager : MonoBehaviour{
 		GameObject go2 =  Instantiate(_prefabUIInventory, _uiWindow.GetContent().transform);
 		_content = go2.GetComponent<ContentManager>().GetContent();
 	}
-	public void SetUnit(Unit unit){
-		
-	}
 	public void SetTile(Tile tile){
+		if(_tile == tile){
+			return;
+		}
 		UnsubcribeFromEvents();
 		_uiUnits = new Dictionary<Unit, UIUnit>();
 		GameObjectUtils.DestroyAllChildren(_content);
-		//_inventory = inventory;
-		/*
-		for(int i = 0; i < _inventory.GetCount(); i++){
-			CreateUIUnit(_inventory.Get(i));
+		_tile = tile;
+		List<Unit> units = _tile.GetHasUnits().GetUnits(_level);
+		for(int i = 0; i < units.Count; i++){
+			CreateUIUnit(units[i]);
 		}
-		*/
-		//_inventory.OnObjectAdded += OnObjectAdded;
-		//_inventory.OnObjectRemoved += OnObjectRemoved;
+		_tile.GetHasUnits().OnUnitAdded += OnUnitAdded;
+		_tile.GetHasUnits().OnUnitRemoved += OnUnitRemoved;
 	}
 	public void CreateUIUnit(Unit unit){
-		GameObject go = Instantiate(_prefabUIItem, _content);
-		UIUnit uiUnit = go.GetComponent<UIUnit>();
-		uiUnit.Setup(unit, UIUnit.GetNullInteract());
-		_uiUnits.Add(unit, uiUnit);
+		if(unit is Unit.IPickupable && !unit.IsNull()){
+			GameObject go = Instantiate(_prefabUIItem, _content);
+			UIUnit uiUnit = go.GetComponent<UIUnit>();
+			uiUnit.Setup(unit, PickupInteract);
+			_uiUnits.Add(unit, uiUnit);
+		}
 	}
 	public void RemoveUIUnit(Unit unit){
 		if(!_uiUnits.TryGetValue(unit, out UIUnit uiUnit)){
@@ -75,13 +75,16 @@ public class PickupUIManager : MonoBehaviour{
 		uiUnit.UnitDestroy();
 	}
 	public void UnsubcribeFromEvents(){
-		//_inventory.OnObjectAdded -= OnObjectAdded;
-		//_inventory.OnObjectRemoved -= OnObjectRemoved;
+		_tile.GetHasUnits().OnUnitAdded -= OnUnitAdded;
+		_tile.GetHasUnits().OnUnitRemoved -= OnUnitRemoved;
 	}
-	private void OnObjectAdded(object sender, Register<Unit>.OnObjectChangedEventArgs e){
+	public void PickupInteract(Unit item){
+		item.GetPickupable().TryPickup(_level, PlayerController.GetInstance().GetPlayer());
+	}
+	private void OnUnitAdded(object sender, Register<Unit>.OnObjectChangedEventArgs e){
 		CreateUIUnit(e.value);
 	}
-	private void OnObjectRemoved(object sender, Register<Unit>.OnObjectChangedEventArgs e){
+	private void OnUnitRemoved(object sender, Register<Unit>.OnObjectChangedEventArgs e){
 		RemoveUIUnit(e.value);
 	}
 	public static PickupUIManager GetInstance(){

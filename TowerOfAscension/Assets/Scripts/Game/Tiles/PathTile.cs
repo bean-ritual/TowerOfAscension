@@ -17,6 +17,8 @@ public class PathTile :
 	Unit.IAttackable,
 	Unit.IHostileTarget
 	{
+	[field:NonSerialized]public event EventHandler<Register<Unit>.OnObjectChangedEventArgs> OnUnitAdded;
+	[field:NonSerialized]public event EventHandler<Register<Unit>.OnObjectChangedEventArgs> OnUnitRemoved;
 	private int _light;
 	private bool _discovered;
 	private List<Register<Unit>.ID> _ids;
@@ -49,11 +51,19 @@ public class PathTile :
 		}
 		return UNLIT_FACTOR;
 	}
-	public void AddUnit(Register<Unit>.ID id){
+	public void AddUnit(Level level, Register<Unit>.ID id){
 		_ids.Add(id);
+		OnUnitAdded?.Invoke(this, new Register<Unit>.OnObjectChangedEventArgs(id, level.GetUnits().Get(id)));
 	}
-	public bool RemoveUnit(Register<Unit>.ID id){
-		return _ids.Remove(id);
+	public bool RemoveUnit(Level level, Register<Unit>.ID id){
+		if(_ids.Remove(id)){
+			OnUnitRemoved?.Invoke(this, new Register<Unit>.OnObjectChangedEventArgs(id, level.GetUnits().Get(id)));
+			return true;
+		}
+		return false;
+	}
+	public List<Unit> GetUnits(Level level){
+		return level.GetUnits().GetMultiple(_ids);
 	}
 	public void Walk(Level level, Unit unit){
 		if(CanWalk(level, unit)){

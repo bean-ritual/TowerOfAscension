@@ -5,8 +5,11 @@ using UnityEngine;
 [Serializable]
 public abstract class Tile : GridMap<Tile>.Node{
 	public interface IHasUnits{
-		void AddUnit(Register<Unit>.ID id);
-		bool RemoveUnit(Register<Unit>.ID id);
+		event EventHandler<Register<Unit>.OnObjectChangedEventArgs> OnUnitAdded;
+		event EventHandler<Register<Unit>.OnObjectChangedEventArgs> OnUnitRemoved;
+		void AddUnit(Level level, Register<Unit>.ID id);
+		bool RemoveUnit(Level level, Register<Unit>.ID id);
+		List<Unit> GetUnits(Level level);
 	}
 	public interface IPrintable{
 		void Print(Level level, Unit master, BluePrint.Print print, Tile tile, int x, int y);
@@ -45,6 +48,8 @@ public abstract class Tile : GridMap<Tile>.Node{
 		Unit.IAttackable,
 		Unit.IHostileTarget
 		{
+		[field:NonSerialized]public event EventHandler<Register<Unit>.OnObjectChangedEventArgs> OnUnitAdded;
+		[field:NonSerialized]public event EventHandler<Register<Unit>.OnObjectChangedEventArgs> OnUnitRemoved;
 		private const int _NULL_X = -1;
 		private const int _NULL_Y = -1;
 		private const int _NULL_INDEX = -1;
@@ -66,9 +71,12 @@ public abstract class Tile : GridMap<Tile>.Node{
 		public int GetLightUVFactor(){
 			return _NULL_FACTOR;
 		}
-		public void AddUnit(Register<Unit>.ID id){}
-		public bool RemoveUnit(Register<Unit>.ID id){
+		public void AddUnit(Level level, Register<Unit>.ID id){}
+		public bool RemoveUnit(Level level, Register<Unit>.ID id){
 			return false;
+		}
+		public List<Unit> GetUnits(Level level){
+			return new List<Unit>();
 		}
 		public void Print(Level level, Unit master, BluePrint.Print print, Tile tile, int x, int y){
 			level.Set(x, y, tile);
@@ -100,19 +108,8 @@ public abstract class Tile : GridMap<Tile>.Node{
 		}
 	}
 	[field:NonSerialized]private static readonly NullTile _NULL_TILE = new NullTile();
-	//protected int _x;
-	//protected int _y;
-	public Tile(int x, int y) : base(x, y){
-		//_x = x;
-		//_y = y;
-	}
+	public Tile(int x, int y) : base(x, y){}
 	public Tile(){}
-	/*
-	public virtual void GetXY(out int x, out int y){
-		x = _x;
-		y = _y;
-	}
-	*/
 	public virtual LevelMeshManager.ITileMeshData GetTileMeshData(){
 		return _NULL_TILE;
 	}

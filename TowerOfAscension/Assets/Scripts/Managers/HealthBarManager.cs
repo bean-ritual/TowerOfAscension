@@ -3,10 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 public class HealthBarManager : MonoBehaviour{
 	private Attribute _health = Attribute.GetNullAttribute();
 	[SerializeField]private Slider _slider;
 	[SerializeField]private GameObject _control;
+	[SerializeField]private TextMeshProUGUI _text;
 	private void Awake(){
 		SetHealth(_health);
 	}
@@ -20,10 +22,14 @@ public class HealthBarManager : MonoBehaviour{
 		Refresh();
 	}
 	public void Refresh(){
+		int value = _health.GetValue();
 		int maxValue = _health.GetMaxValue();
 		_control.SetActive(maxValue > 0);
 		_slider.maxValue = maxValue;
-		_slider.value = _health.GetValue();
+		_slider.value = value;
+		if(_text != null){
+			_text.text = "HP: " + value + "/" + maxValue;
+		}
 	}
 	public void UnsubscribeFromEvents(){
 		_health.OnAttributeUpdate -= OnAttributeUpdate;

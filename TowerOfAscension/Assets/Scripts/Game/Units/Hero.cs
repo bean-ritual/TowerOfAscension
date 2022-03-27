@@ -23,7 +23,7 @@ public class Hero :
 			0
 		);
 		_health = new Health(95);
-		_inventory = new Inventory();
+		_inventory = new Equipment();
 	}
 	public override bool GetHealthBar(){
 		return false;
