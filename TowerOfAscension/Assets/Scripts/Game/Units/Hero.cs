@@ -25,26 +25,35 @@ public class Hero :
 		_health = new Health(95);
 		_inventory = new Equipment();
 	}
+	public override void Spawn(Game game, int x, int y){
+		base.Spawn(game, x, y);
+		Level level = game.GetLevel();
+		level.GetUnits().Swap(_id, 0);
+		level.ResetTurn();
+	}
 	public override bool GetHealthBar(){
 		return false;
 	}
-	public void Discover(Level level, Tile tile){
-		tile.GetDiscoverable().Discover(level, this);
+	public override void Attack(Game game, Direction direction){
+		direction.GetTile(game.GetLevel(), _x, _y).GetAttackable().Attacked(game, this, 100);
 	}
-	public void Interact(Level level, Direction direction){
-		direction.GetTile(level, _x, _y).GetInteractable().Interact(level, this);
-		_ai.GetTurnControl().EndTurn(level, this);
+	public void Discover(Game game, Tile tile){
+		tile.GetDiscoverable().Discover(game, this);
 	}
-	public bool CheckHostility(Level level, Unit unit){
+	public void Interact(Game game, Direction direction){
+		direction.GetTile(game.GetLevel(), _x, _y).GetInteractable().Interact(game, this);
+		_ai.GetTurnControl().EndTurn(game, this);
+	}
+	public bool CheckHostility(Game game, Unit unit){
 		return true;
 	}
-	public void Exit(Level level){
-		level.SetTrigger(new NextLevel(this));
+	public void Exit(Game game){
+		game.NextLevel();
 	}
 	public Inventory GetInventory(){
 		return _inventory;
 	}
-	public int GetLightRange(Level level){
+	public int GetLightRange(Game game){
 		return 3;
 	}
 	public override Unit.IDiscoverer GetDiscoverer(){

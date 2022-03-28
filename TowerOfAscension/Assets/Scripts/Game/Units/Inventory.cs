@@ -5,10 +5,10 @@ using UnityEngine;
 [Serializable]
 public class Inventory : Register<Unit>{
 	public interface IPickupable{
-		void AttemptPickup(Level level, Unit unit);
+		void AttemptPickup(Game game, Unit unit);
 	}
 	public interface IDroppable{
-		void TryDrop(Level level, Register<Unit>.ID id);
+		void TryDrop(Game game, Register<Unit>.ID id);
 	}
 	[Serializable]
 	public class NullInventory : 
@@ -56,7 +56,7 @@ public class Inventory : Register<Unit>{
 		public override int GetCount(){
 			return 0;
 		}
-		public void AttemptPickup(Level level, Unit unit){}
+		public void AttemptPickup(Game game, Unit unit){}
 	}
 	[field:NonSerialized]private static readonly NullInventory _NULL_INVENTORY = new NullInventory();
 	public Inventory(){}

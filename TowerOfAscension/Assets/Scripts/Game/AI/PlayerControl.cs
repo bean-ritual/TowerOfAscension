@@ -23,28 +23,28 @@ public class PlayerControl :
 	public PlayerControl(){
 		_state = ControlState.Locked;
 	}
-	public override bool Process(Level level, Unit self){
+	public override bool Process(Game game, Unit self){
 		OnPlayerControl?.Invoke(this, new OnPlayerControlEventArgs(self));
 		switch(_state){
-			default: return level.NextTurn();
-			case ControlState.Null: return level.NextTurn();
+			default: return game.GetLevel().NextTurn();
+			case ControlState.Null: return game.GetLevel().NextTurn();
 			case ControlState.Locked:{
-				StartTurn(level, self);
+				StartTurn(game, self);
 				return true;
 			}
 			case ControlState.Input: return false;
 		}
 	}
-	public virtual void StartTurn(Level level, Unit self){
+	public virtual void StartTurn(Game game, Unit self){
 		if(_state != ControlState.Input){
 			_state = ControlState.Input;
 		}
 	}
-	public virtual void EndTurn(Level level, Unit self){
+	public virtual void EndTurn(Game game, Unit self){
 		if(_state == ControlState.Input){
 			_state = ControlState.Locked;
-			level.LightUpdate(self);
-			level.NextTurn();
+			game.GetLevel().LightUpdate(game, self);
+			game.GetLevel().NextTurn();
 		}
 	}
 	public override ITurnControl GetTurnControl(){

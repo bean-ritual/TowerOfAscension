@@ -21,14 +21,14 @@ public class Item :
 			0
 		);
 	}
-	public void TryPickup(Level level, Unit unit){
-		unit.GetHasInventory().GetInventory().GetPickupable().AttemptPickup(level, this);
+	public void TryPickup(Game game, Unit unit){
+		unit.GetHasInventory().GetInventory().GetPickupable().AttemptPickup(game, this);
 	}
-	public void DoPickup(Level level, Inventory inventory){
-		GetSpawnable().Despawn(level);
+	public void DoPickup(Game game, Inventory inventory){
+		GetSpawnable().Despawn(game);
 		inventory.Add(this, ref _id);
 	}
-	public override bool CheckCollision(Level level, Unit check){
+	public override bool CheckCollision(Game game, Unit check){
 		return false;
 	}
 	public override IPickupable GetPickupable(){

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 public class PickupUIManager : MonoBehaviour{
 	private static PickupUIManager _INSTANCE;
+	private Game _local = Game.GetNullGame();
 	private Level _level = Level.GetNullLevel();
 	private Tile _tile = Tile.GetNullTile();
 	private Dictionary<Unit, UIUnit> _uiUnits;
@@ -23,7 +24,8 @@ public class PickupUIManager : MonoBehaviour{
 		BuildUI();
 	}
 	private void Start(){
-		_level = DungeonMaster.GetInstance().GetLevel();
+		_local = DungeonMaster.GetInstance().GetLocalGame();
+		_level = _local.GetLevel();
 	}
 	public void BuildUI(){
 		GameObject go = Instantiate(_prefabUIWindow, this.transform);
@@ -52,10 +54,11 @@ public class PickupUIManager : MonoBehaviour{
 		_uiUnits = new Dictionary<Unit, UIUnit>();
 		GameObjectUtils.DestroyAllChildren(_content);
 		_tile = tile;
-		List<Unit> units = _tile.GetHasUnits().GetUnits(_level);
+		List<Unit> units = _tile.GetHasUnits().GetUnits(_local);
 		for(int i = 0; i < units.Count; i++){
 			CreateUIUnit(units[i]);
 		}
+		CheckExistance();
 		_tile.GetHasUnits().OnUnitAdded += OnUnitAdded;
 		_tile.GetHasUnits().OnUnitRemoved += OnUnitRemoved;
 	}
@@ -65,21 +68,27 @@ public class PickupUIManager : MonoBehaviour{
 			UIUnit uiUnit = go.GetComponent<UIUnit>();
 			uiUnit.Setup(unit, PickupInteract);
 			_uiUnits.Add(unit, uiUnit);
+			CheckExistance();
 		}
 	}
 	public void RemoveUIUnit(Unit unit){
-		if(!_uiUnits.TryGetValue(unit, out UIUnit uiUnit)){
-			return;
+		if(_uiUnits.TryGetValue(unit, out UIUnit uiUnit)){
+			_uiUnits.Remove(unit);
+			uiUnit.UnitDestroy();
+			CheckExistance();
 		}
-		_uiUnits.Remove(unit);
-		uiUnit.UnitDestroy();
+	}
+	public void CheckExistance(){
+		_uiWindow.SetActive(_uiUnits.Count > 0);
 	}
 	public void UnsubcribeFromEvents(){
 		_tile.GetHasUnits().OnUnitAdded -= OnUnitAdded;
 		_tile.GetHasUnits().OnUnitRemoved -= OnUnitRemoved;
 	}
 	public void PickupInteract(Unit item){
-		item.GetPickupable().TryPickup(_level, PlayerController.GetInstance().GetPlayer());
+		Unit player = PlayerController.GetInstance().GetPlayer();
+		item.GetPickupable().TryPickup(_local, player);
+		player.GetControllable().GetAI().GetTurnControl().EndTurn(_local, player);
 	}
 	private void OnUnitAdded(object sender, Register<Unit>.OnObjectChangedEventArgs e){
 		CreateUIUnit(e.value);

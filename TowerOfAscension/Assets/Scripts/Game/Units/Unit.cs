@@ -5,77 +5,77 @@ using UnityEngine;
 [Serializable]
 public abstract class Unit{
 	public interface IProcessable{
-		bool Process(Level level);
+		bool Process(Game game);
 	}
 	public interface IPositionable{
-		void SetPosition(Level level, int x, int y);
+		void SetPosition(Game game, int x, int y);
 		void GetPosition(out int x, out int y);
-		void RemovePosition(Level level);
+		void RemovePosition(Game game);
 		Vector3 GetPosition(GridMap<Tile> map);
-		Tile GetTile(Level level);
+		Tile GetTile(Game game);
 	}
 	public interface ISpawnable : IPositionable, Register<Unit>.IRegisterable{
-		void Spawn(Level level, int x, int y);
-		void Despawn(Level level);
+		void Spawn(Game game, int x, int y);
+		void Despawn(Game game);
 	}
 	public interface IMoveable : IPositionable{
-		void Move(Level level, Direction direction);
-		void OnMove(Level level, Tile tile);
+		void Move(Game game, Direction direction);
+		void OnMove(Game game, Tile tile);
 	}
 	public interface ICollideable{
-		bool CheckCollision(Level level, Unit check);
+		bool CheckCollision(Game game, Unit check);
 	}
 	public interface IControllable{
 		void SetAI(AI ai);
 		AI GetAI();
 	}
 	public interface IDiscoverer{
-		void Discover(Level level, Tile tile);
+		void Discover(Game game, Tile tile);
 	}
 	public interface IInteractable{
-		void Interact(Level level, Unit unit);
+		void Interact(Game game, Unit unit);
 	}
 	public interface IInteractor{
-		void Interact(Level level, Direction direction);
+		void Interact(Game game, Direction direction);
 	}
 	public interface IDamageable{
-		void TakeDamage(Level level, Unit unit, int damage);
+		void TakeDamage(Game game, Unit unit, int damage);
 	}
 	public interface IAttackable{
-		void Attacked(Level level, Unit unit, int attack);
+		void Attacked(Game game, Unit unit, int attack);
 	}
 	public interface IAttacker{
-		void Attack(Level level, Direction direction);
-		void OnAttack(Level level, Tile tile);
+		void Attack(Game game, Direction direction);
+		void OnAttack(Game game, Tile tile);
 	}
 	public interface IKillable : ISpawnable{
-		void Kill(Level level);
-		void OnKill(Level level);
+		void Kill(Game game);
+		void OnKill(Game game);
 	}
 	public interface IPickupable{
-		void TryPickup(Level level, Unit unit);
-		void DoPickup(Level level, Inventory inventory);
+		void TryPickup(Game game, Unit unit);
+		void DoPickup(Game game, Inventory inventory);
 	}
 	public interface IDroppable{
-		void DoDrop(Level level, Inventory inventory);
+		void DoDrop(Game game, Inventory inventory);
 	}
 	public interface IExitable{
-		void Exit(Level level);
+		void Exit(Game game);
 	}
 	public interface ITripwire{
-		void Trip(Level level, Unit unit);
+		void Trip(Game game, Unit unit);
 	}
 	public interface IHasInventory{
 		Inventory GetInventory();
 	}
 	public interface IHostileTarget{
-		bool CheckHostility(Level level, Unit unit);
+		bool CheckHostility(Game game, Unit unit);
 	}
 	public interface IClassicGen{
 		void AddStructureSpawner(ClassicGen.Spawner spawner);
 		void AddDetailSpawner(ClassicGen.Spawner spawner);
 		void AddBuild(int value = 1);
-		void OnFinalize(Level level);
+		void OnFinalize(Game game);
 		int GetContentualBluePrintIndex();
 		ClassicGen.Spawner.IFinalize GetFinalize();
 	}
@@ -127,7 +127,7 @@ public abstract class Unit{
 		public WorldUnit.WorldUnitController GetWorldUnitController(){
 			return WorldUnit.WorldUnitController.GetNullWorldUnitController();
 		}
-		public bool GetWorldVisibility(Level level){
+		public bool GetWorldVisibility(Game game){
 			return false;
 		}
 		public Vector3 GetUIOffset(){
@@ -139,61 +139,61 @@ public abstract class Unit{
 		public bool GetHealthBar(){
 			return false;
 		}
-		public bool Process(Level level){
-			return level.NextTurn();
+		public bool Process(Game game){
+			return game.GetLevel().NextTurn();
 		}
-		public void SetPosition(Level level, int x, int y){}
+		public void SetPosition(Game game, int x, int y){}
 		public void GetPosition(out int x, out int y){
 			x = _NULL_X;
 			y = _NULL_Y;
 		}
-		public void RemovePosition(Level level){}
+		public void RemovePosition(Game game){}
 		public Vector3 GetPosition(GridMap<Tile> map){
 			return Vector3.zero;
 		}
-		public Tile GetTile(Level level){
+		public Tile GetTile(Game game){
 			return Tile.GetNullTile();
 		}
-		public void Spawn(Level level, int x, int y){}
-		public void Despawn(Level level){}
-		public void Move(Level level, Direction direction){}
-		public void OnMove(Level level, Tile tile){}
-		public bool CheckCollision(Level level, Unit check){
+		public void Spawn(Game game, int x, int y){}
+		public void Despawn(Game game){}
+		public void Move(Game game, Direction direction){}
+		public void OnMove(Game game, Tile tile){}
+		public bool CheckCollision(Game game, Unit check){
 			return false;
 		}
 		public void SetAI(AI ai){}
 		public AI GetAI(){
 			return AI.GetNullAI();
 		}
-		public void Discover(Level level, Tile tile){}
-		public void Interact(Level level, Unit unit){}
-		public void Interact(Level level, Direction direction){}
-		public void TakeDamage(Level level, Unit unit, int damage){}
-		public void Attacked(Level level, Unit unit, int attack){}
-		public void Attack(Level level, Direction direction){}
-		public void OnAttack(Level level, Tile tile){}
-		public void Kill(Level level){}
-		public void OnKill(Level level){}
-		public void TryPickup(Level level, Unit unit){}
-		public void DoPickup(Level level, Inventory inventory){}
-		public void Exit(Level level){}
-		public void Trip(Level level, Unit unit){}
+		public void Discover(Game game, Tile tile){}
+		public void Interact(Game game, Unit unit){}
+		public void Interact(Game game, Direction direction){}
+		public void TakeDamage(Game game, Unit unit, int damage){}
+		public void Attacked(Game game, Unit unit, int attack){}
+		public void Attack(Game game, Direction direction){}
+		public void OnAttack(Game game, Tile tile){}
+		public void Kill(Game game){}
+		public void OnKill(Game game){}
+		public void TryPickup(Game game, Unit unit){}
+		public void DoPickup(Game game, Inventory inventory){}
+		public void Exit(Game game){}
+		public void Trip(Game game, Unit unit){}
 		public Inventory GetInventory(){
 			return Inventory.GetNullInventory();
 		}
-		public bool CheckHostility(Level level, Unit unit){
+		public bool CheckHostility(Game game, Unit unit){
 			return false;
 		}
-		public bool CheckTransparency(Level level){
+		public bool CheckTransparency(Game game){
 			return true;
 		}
-		public int GetLightRange(Level level){
+		public int GetLightRange(Game game){
 			return 0;
 		}
 		public void AddStructureSpawner(ClassicGen.Spawner spawner){}
 		public void AddDetailSpawner(ClassicGen.Spawner spawner){}
 		public void AddBuild(int value = 1){}
-		public void OnFinalize(Level level){}
+		public void OnFinalize(Game game){}
 		public int GetContentualBluePrintIndex(){
 			return -1;
 		}
@@ -304,32 +304,32 @@ public abstract class Unit{
 	public virtual Armour.IHasArmour GetHasArmour(){
 		return _NULL_UNIT;
 	}
-	public static void Default_Spawn(Unit self, Level level, int x, int y){
-		self.GetRegisterable().AddToRegister(level.GetUnits());
-		self.GetPositionable().SetPosition(level, x, y);
-		level.LightUpdate(self);
+	public static void Default_Spawn(Unit self, Game game, int x, int y){
+		self.GetRegisterable().AddToRegister(game.GetLevel().GetUnits());
+		self.GetPositionable().SetPosition(game, x, y);
+		game.GetLevel().LightUpdate(game, self);
 	}
-	public static void Default_Despawn(Unit self, Level level){
-		self.GetPositionable().RemovePosition(level);
-		self.GetRegisterable().RemoveFromRegister(level.GetUnits());
+	public static void Default_Despawn(Unit self, Game game){
+		self.GetPositionable().RemovePosition(game);
+		self.GetRegisterable().RemoveFromRegister(game.GetLevel().GetUnits());
 	}
-	public static void Default_SetPosition(Unit self, Level level, int newX, int newY, ref int x, ref int y, int moveSpeed = 0){
-		self.GetPositionable().RemovePosition(level);
-		level.Get(newX, newY).GetHasUnits().AddUnit(level, self.GetRegisterable().GetID());
+	public static void Default_SetPosition(Unit self, Game game, int newX, int newY, ref int x, ref int y, int moveSpeed = 0){
+		self.GetPositionable().RemovePosition(game);
+		game.GetLevel().Get(newX, newY).GetHasUnits().AddUnit(game, self.GetRegisterable().GetID());
 		x = newX;
 		y = newY;
-		self.GetWorldUnit().GetWorldUnitController().SetWorldPosition(level.GetWorldPosition(x, y), moveSpeed);
+		self.GetWorldUnit().GetWorldUnitController().SetWorldPosition(game.GetLevel().GetWorldPosition(x, y), moveSpeed);
 	}
-	public static void Default_RemovePosition(Unit self, Level level, int x, int y){
-		level.Get(x, y).GetHasUnits().RemoveUnit(level, self.GetRegisterable().GetID());
+	public static void Default_RemovePosition(Unit self, Game game, int x, int y){
+		game.GetLevel().Get(x, y).GetHasUnits().RemoveUnit(game, self.GetRegisterable().GetID());
 	}
-	public static void Default_Move(Unit self, Level level, Direction direction){
+	public static void Default_Move(Unit self, Game game, Direction direction){
 		self.GetPositionable().GetPosition(out int oldX, out int oldY);
-		direction.GetTile(level, oldX, oldY).GetWalkable().Walk(level, self);
+		direction.GetTile(game.GetLevel(), oldX, oldY).GetWalkable().Walk(game, self);
 	}
-	public static void Default_Kill(Unit self, Level level){
-		self.GetSpawnable().Despawn(level);
-		self.GetKillable().OnKill(level);
+	public static void Default_Kill(Unit self, Game game){
+		self.GetSpawnable().Despawn(game);
+		self.GetKillable().OnKill(game);
 	}
 	public static Unit GetNullUnit(){
 		return _NULL_UNIT;

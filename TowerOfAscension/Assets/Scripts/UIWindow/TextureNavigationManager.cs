@@ -31,6 +31,7 @@ public class TextureNavigationManager :
 	}
 	public void SetUnit(Unit target){
 		_target = target;
+		_camera.Setup(GetPosition, GetZoom, true);
 	}
 	public void OnDrag(PointerEventData eventData){
 		const int DRAG_SENSITIVITY = 10;

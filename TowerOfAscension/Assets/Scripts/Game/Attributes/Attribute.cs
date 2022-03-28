@@ -5,11 +5,11 @@ using UnityEngine;
 [Serializable]
 public abstract class Attribute{
 	public interface IReducer{
-		int Reduce(Level level, Unit self, int value);
+		int Reduce(Game game, Unit self, int value);
 	}
 	public interface IModifiableMaxes{
-		void FortifyMax(Level level, Unit self, int value);
-		void DamageMax(Level level, Unit self, int value);
+		void FortifyMax(Game game, Unit self, int value);
+		void DamageMax(Game game, Unit self, int value);
 	}
 	[Serializable]
 	public class NullAttribute : 
@@ -17,8 +17,8 @@ public abstract class Attribute{
 		IReducer,
 		IModifiableMaxes
 		{
-		public override void Fortify(Level level, Unit self, int value){}
-		public override void Damage(Level level, Unit self, int value){}
+		public override void Fortify(Game game, Unit self, int value){}
+		public override void Damage(Game game, Unit self, int value){}
 		public override int GetValue(){
 			return 0;
 		}
@@ -26,17 +26,17 @@ public abstract class Attribute{
 			return 0;
 		}
 		public override void AttributeUpdateEvent(){}
-		public int Reduce(Level level, Unit self, int value){
+		public int Reduce(Game game, Unit self, int value){
 			return value;
 		}
-		public void FortifyMax(Level level, Unit self, int value){}
-		public void DamageMax(Level level, Unit self, int value){}
+		public void FortifyMax(Game game, Unit self, int value){}
+		public void DamageMax(Game game, Unit self, int value){}
 	}
 	[field:NonSerialized]public event EventHandler<EventArgs> OnAttributeUpdate;
 	[field:NonSerialized]private static readonly NullAttribute _NULL_ATTRIBUTE = new NullAttribute();
 	public Attribute(){}
-	public abstract void Fortify(Level level, Unit self, int value);
-	public abstract void Damage(Level level, Unit self, int value);
+	public abstract void Fortify(Game game, Unit self, int value);
+	public abstract void Damage(Game game, Unit self, int value);
 	public abstract int GetValue();
 	public abstract int GetMaxValue();
 	public virtual void AttributeUpdateEvent(){

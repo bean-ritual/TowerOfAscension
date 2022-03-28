@@ -18,30 +18,30 @@ public abstract class LevelUnit :
 	public virtual WorldUnit.WorldUnitController GetWorldUnitController(){
 		return _controller;
 	}
-	public virtual bool GetWorldVisibility(Level level){
-		return level.Get(_x, _y).GetLightable().GetLight() > 0;
+	public virtual bool GetWorldVisibility(Game game){
+		return game.GetLevel().Get(_x, _y).GetLightable().GetLight() > 0;
 	}
-	public virtual void Spawn(Level level, int x, int y){
-		Unit.Default_Spawn(this, level, x, y);
+	public virtual void Spawn(Game game, int x, int y){
+		Unit.Default_Spawn(this, game, x, y);
 	}
-	public void Despawn(Level level){
-		Unit.Default_Despawn(this, level);
+	public void Despawn(Game game){
+		Unit.Default_Despawn(this, game);
 	}
-	public void SetPosition(Level level, int x, int y){
-		Unit.Default_SetPosition(this, level, x, y, ref _x, ref _y);
+	public void SetPosition(Game game, int x, int y){
+		Unit.Default_SetPosition(this, game, x, y, ref _x, ref _y);
 	}
 	public void GetPosition(out int x, out int y){
 		x = _x;
 		y = _y;
 	}
-	public void RemovePosition(Level level){
-		Unit.Default_RemovePosition(this, level, _x, _y);
+	public void RemovePosition(Game game){
+		Unit.Default_RemovePosition(this, game, _x, _y);
 	}
 	public Vector3 GetPosition(GridMap<Tile> map){
 		return map.GetWorldPosition(_x, _y);
 	}
-	public Tile GetTile(Level level){
-		return level.Get(_x, _y);
+	public Tile GetTile(Game game){
+		return game.GetLevel().Get(_x, _y);
 	}
 	public void AddToRegister(Register<Unit> register){
 		register.Add(this, ref _id);
@@ -52,10 +52,10 @@ public abstract class LevelUnit :
 	public Register<Unit>.ID GetID(){
 		return _id;
 	}
-	public virtual bool Process(Level level){
-		return level.NextTurn();
+	public virtual bool Process(Game game){
+		return game.GetLevel().NextTurn();
 	}
-	public virtual bool CheckCollision(Level level, Unit check){
+	public virtual bool CheckCollision(Game game, Unit check){
 		return true;
 	}
 	public override WorldUnit.IWorldUnit GetWorldUnit(){

@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 public class PlayerController : MonoBehaviour{
 	private static PlayerController _INSTANCE;
+	private Game _local = Game.GetNullGame();
 	private Level _level = Level.GetNullLevel();
 	private Unit _player = Unit.GetNullUnit();
 	private Unit _previous = Unit.GetNullUnit();
@@ -23,7 +24,8 @@ public class PlayerController : MonoBehaviour{
 		_INSTANCE = this;
 	}
 	private void Start(){
-		_level = DungeonMaster.GetInstance().GetLevel();
+		_local = DungeonMaster.GetInstance().GetLocalGame();
+		_level = _local.GetLevel();
 		_level.OnNextTurn += OnNextTurn;
 		PlayerControl.OnPlayerControl += OnPlayerControl;
 	}
@@ -38,18 +40,18 @@ public class PlayerController : MonoBehaviour{
 		//
 		if(Input.GetMouseButtonDown(0)){
 			if(Input.GetKey(KeyCode.A)){
-				_player.GetAttacker().Attack(_level, dir);
+				_player.GetAttacker().Attack(_local, dir);
 				return;
 			}
 			if(Input.GetKey(KeyCode.LeftShift)){
-				_player.GetInteractor().Interact(_level, dir);
+				_player.GetInteractor().Interact(_local, dir);
 				return;
 			}
-			_player.GetMoveable().Move(_level, dir);
+			_player.GetMoveable().Move(_local, dir);
 			return;
 		}
 		if(Input.GetKeyDown(KeyCode.Space)){
-			_player.GetControllable().GetAI().GetTurnControl().EndTurn(_level, _player);
+			_player.GetControllable().GetAI().GetTurnControl().EndTurn(_local, _player);
 			return;
 		}
 	}
@@ -60,7 +62,7 @@ public class PlayerController : MonoBehaviour{
 	}
 	public void SetPlayer(Unit player){
 		_player = player;
-		PickupUIManager.GetInstance().SetTile(_player.GetPositionable().GetTile(_level));
+		PickupUIManager.GetInstance().SetTile(_player.GetPositionable().GetTile(_local));
 		if(_previous == _player){
 			return;
 		}

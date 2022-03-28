@@ -105,7 +105,7 @@ public class WorldUnit : MonoBehaviour{
 	}
 	public interface IWorldUnit{
 		WorldUnit.WorldUnitController GetWorldUnitController();
-		bool GetWorldVisibility(Level level);
+		bool GetWorldVisibility(Game game);
 	}
 	public interface IWorldUnitUI{
 		event EventHandler<EventArgs> OnWorldUnitUIUpdate;
@@ -118,6 +118,7 @@ public class WorldUnit : MonoBehaviour{
 	}
 	private Unit _unit = Unit.GetNullUnit();
 	private WorldUnitController _controller = WorldUnitController.GetNullWorldUnitController();
+	private Game _local = Game.GetNullGame();
 	private Level _level = Level.GetNullLevel();
 	[SerializeField]private GameObject _offset;
 	[SerializeField]private SpriteRenderer _renderer;
@@ -133,7 +134,8 @@ public class WorldUnit : MonoBehaviour{
 		_controller.OnWorldUnitSortingOrderUpdate += OnWorldUnitSortingOrderUpdate;
 		_controller.OnWorldUnitWorldPositionUpdate += OnWorldUnitWorldPositionUpdate;
 		_unit.GetWorldUnitAnimations().OnAttackAnimation += OnAttackAnimation;
-		_level = DungeonMaster.GetInstance().GetLevel();
+		_local = DungeonMaster.GetInstance().GetLocalGame();
+		_level = _local.GetLevel();
 		_level.OnLightUpdate += OnLightUpdate;
 		_worldUnitUI.Setup(_unit);
 		RefreshAll();
@@ -142,7 +144,7 @@ public class WorldUnit : MonoBehaviour{
 		_offset.transform.localPosition = _level.GetVector3CellOffset();
 		RefreshSprite();
 		RefreshSortingOrder();
-		RefreshWorldPosition();
+		this.transform.localPosition = _controller.GetWorldPosition();
 		_worldUnitUI.Refresh();
 		RefreshVisibility();
 	}
@@ -155,26 +157,26 @@ public class WorldUnit : MonoBehaviour{
 	public void RefreshWorldPosition(){
 		RefreshVisibility();
 		if(_offset.activeSelf && _controller.GetMoveSpeed() > 0){
-			WorldUnitManager.GetInstance().QueueAnimation(() => MoveAnimation(_controller.GetWorldPosition(), _controller.GetMoveSpeed()));
+			DungeonMaster.GetInstance().QueueAction(() => MoveAnimation(_controller.GetWorldPosition(), _controller.GetMoveSpeed()));
 		}else{
-			transform.localPosition = _controller.GetWorldPosition();
+			this.transform.localPosition = _controller.GetWorldPosition();
 		}
 	}
 	public void RefreshVisibility(){
-		_offset.SetActive(_unit.GetWorldUnit().GetWorldVisibility(_level));
+		_offset.SetActive(_unit.GetWorldUnit().GetWorldVisibility(_local));
 	}
 	public IEnumerator LerpToTarget(Vector3 target, float duration, Action OnAnimationComplete){
 		float time = 0f;
-		Vector3 start = transform.localPosition;
+		Vector3 start = this.transform.localPosition;
 		while(time < duration){
-			transform.localPosition = Vector3.Lerp(start, target, time / duration);
+			this.transform.localPosition = Vector3.Lerp(start, target, time / duration);
 			time += Time.deltaTime;
-			WorldUnitManager.GetInstance().OnFrameAnimation();
+			DungeonMaster.GetInstance().BusyFrame();
 			yield return null;
 		}
-		transform.localPosition = target;
+		this.transform.localPosition = target;
 		OnAnimationComplete?.Invoke();
-		WorldUnitManager.GetInstance().OnFrameAnimation();
+		DungeonMaster.GetInstance().BusyFrame();
 	}
 	public void MoveAnimation(Vector3 target, int moveSpeed){
 		const float MOVE_FACTOR = 10f;
@@ -182,7 +184,7 @@ public class WorldUnit : MonoBehaviour{
 	}
 	public void AttackAnimation(Vector3 target){
 		const float ATTACK_SPEED = 0.1f;
-		Vector3 position = transform.localPosition;
+		Vector3 position = this.transform.localPosition;
 		StartCoroutine(LerpToTarget(target, ATTACK_SPEED, () => {
 			StartCoroutine(LerpToTarget(position, ATTACK_SPEED, null));
 		}));
@@ -211,7 +213,7 @@ public class WorldUnit : MonoBehaviour{
 		if(!_offset.activeSelf){
 			return;
 		}
-		WorldUnitManager.GetInstance().QueueAnimation(() => AttackAnimation(e.position));
+		DungeonMaster.GetInstance().QueueAction(() => AttackAnimation(e.position));
 	}
 	private void OnLightUpdate(object sender, EventArgs e){
 		RefreshVisibility();

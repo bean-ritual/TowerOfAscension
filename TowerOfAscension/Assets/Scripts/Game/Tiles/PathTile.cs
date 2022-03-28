@@ -51,43 +51,43 @@ public class PathTile :
 		}
 		return UNLIT_FACTOR;
 	}
-	public void AddUnit(Level level, Register<Unit>.ID id){
+	public void AddUnit(Game game, Register<Unit>.ID id){
 		_ids.Add(id);
-		OnUnitAdded?.Invoke(this, new Register<Unit>.OnObjectChangedEventArgs(id, level.GetUnits().Get(id)));
+		OnUnitAdded?.Invoke(this, new Register<Unit>.OnObjectChangedEventArgs(id, game.GetLevel().GetUnits().Get(id)));
 	}
-	public bool RemoveUnit(Level level, Register<Unit>.ID id){
+	public bool RemoveUnit(Game game, Register<Unit>.ID id){
 		if(_ids.Remove(id)){
-			OnUnitRemoved?.Invoke(this, new Register<Unit>.OnObjectChangedEventArgs(id, level.GetUnits().Get(id)));
+			OnUnitRemoved?.Invoke(this, new Register<Unit>.OnObjectChangedEventArgs(id, game.GetLevel().GetUnits().Get(id)));
 			return true;
 		}
 		return false;
 	}
-	public List<Unit> GetUnits(Level level){
-		return level.GetUnits().GetMultiple(_ids);
+	public List<Unit> GetUnits(Game game){
+		return game.GetLevel().GetUnits().GetMultiple(_ids);
 	}
-	public void Walk(Level level, Unit unit){
-		if(CanWalk(level, unit)){
-			unit.GetMoveable().OnMove(level, this);
-			List<Unit> units = level.GetUnits().GetMultiple(_ids);
+	public void Walk(Game game, Unit unit){
+		if(CanWalk(game, unit)){
+			unit.GetMoveable().OnMove(game, this);
+			List<Unit> units = game.GetLevel().GetUnits().GetMultiple(_ids);
 			for(int i = 0; i < units.Count; i++){
-				units[i].GetTripwire().Trip(level, unit);
+				units[i].GetTripwire().Trip(game, unit);
 			}
 		}
 	}
-	public bool CanWalk(Level level, Unit unit){
-		List<Unit> units = level.GetUnits().GetMultiple(_ids);
+	public bool CanWalk(Game game, Unit unit){
+		List<Unit> units = game.GetLevel().GetUnits().GetMultiple(_ids);
 		for(int i = 0; i < units.Count; i++){
-			if(units[i].GetCollideable().CheckCollision(level, unit)){
+			if(units[i].GetCollideable().CheckCollision(game, unit)){
 				return false;
 			}
 		}
 		return true;
 	}
-	public void Print(Level level, Unit master, BluePrint.Print print, Tile tile, int x, int y){}
-	public bool CanPrint(Level level, Unit master, int x, int y){
+	public void Print(Game game, Unit master, BluePrint.Print print, Tile tile, int x, int y){}
+	public bool CanPrint(Game game, Unit master, int x, int y){
 		return false;
 	}
-	public bool CanConnect(Level level, Unit master, int x, int y){
+	public bool CanConnect(Game game, Unit master, int x, int y){
 		return true;
 	}
 	public void SetLight(int light){
@@ -96,35 +96,35 @@ public class PathTile :
 	public int GetLight(){
 		return _light;
 	}
-	public bool CheckTransparency(Level level){
-		List<Unit> units = level.GetUnits().GetMultiple(_ids);
+	public bool CheckTransparency(Game game){
+		List<Unit> units = game.GetLevel().GetUnits().GetMultiple(_ids);
 		for(int i = 0; i < units.Count; i++){
-			if(!units[i].GetLightControl().CheckTransparency(level)){
+			if(!units[i].GetLightControl().CheckTransparency(game)){
 				return false;
 			}
 		}
 		return true;
 	}
-	public void Discover(Level level, Unit unit){
+	public void Discover(Game game, Unit unit){
 		_discovered = true;
 	}
-	public void Interact(Level level, Unit unit){
-		List<Unit> units = level.GetUnits().GetMultiple(_ids);
+	public void Interact(Game game, Unit unit){
+		List<Unit> units = game.GetLevel().GetUnits().GetMultiple(_ids);
 		for(int i = 0; i < units.Count; i++){
-			units[i].GetInteractable().Interact(level, unit);
+			units[i].GetInteractable().Interact(game, unit);
 		}
 	}
-	public void Attacked(Level level, Unit unit, int attack){
-		unit.GetAttacker().OnAttack(level, this);
-		List<Unit> units = level.GetUnits().GetMultiple(_ids);
+	public void Attacked(Game game, Unit unit, int attack){
+		unit.GetAttacker().OnAttack(game, this);
+		List<Unit> units = game.GetLevel().GetUnits().GetMultiple(_ids);
 		for(int i = 0; i < units.Count; i++){
-			units[i].GetAttackable().Attacked(level, unit, attack);
+			units[i].GetAttackable().Attacked(game, unit, attack);
 		}
 	}
-	public bool CheckHostility(Level level, Unit unit){
-		List<Unit> units = level.GetUnits().GetMultiple(_ids);
+	public bool CheckHostility(Game game, Unit unit){
+		List<Unit> units = game.GetLevel().GetUnits().GetMultiple(_ids);
 		for(int i = 0; i < units.Count; i++){
-			if(units[i].GetHostileTarget().CheckHostility(level, unit)){
+			if(units[i].GetHostileTarget().CheckHostility(game, unit)){
 				return true;
 			}
 		}

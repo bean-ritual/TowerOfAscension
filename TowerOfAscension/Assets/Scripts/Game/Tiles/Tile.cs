@@ -7,30 +7,30 @@ public abstract class Tile : GridMap<Tile>.Node{
 	public interface IHasUnits{
 		event EventHandler<Register<Unit>.OnObjectChangedEventArgs> OnUnitAdded;
 		event EventHandler<Register<Unit>.OnObjectChangedEventArgs> OnUnitRemoved;
-		void AddUnit(Level level, Register<Unit>.ID id);
-		bool RemoveUnit(Level level, Register<Unit>.ID id);
-		List<Unit> GetUnits(Level level);
+		void AddUnit(Game game, Register<Unit>.ID id);
+		bool RemoveUnit(Game game, Register<Unit>.ID id);
+		List<Unit> GetUnits(Game game);
 	}
 	public interface IPrintable{
-		void Print(Level level, Unit master, BluePrint.Print print, Tile tile, int x, int y);
-		bool CanPrint(Level level, Unit master, int x, int y);
+		void Print(Game game, Unit master, BluePrint.Print print, Tile tile, int x, int y);
+		bool CanPrint(Game game, Unit master, int x, int y);
 	}
 	public interface IConnectable{
-		bool CanConnect(Level level, Unit master, int x, int y);
+		bool CanConnect(Game game, Unit master, int x, int y);
 	}
 	public interface IWalkable : IHasUnits{
-		void Walk(Level level, Unit unit);
-		bool CanWalk(Level level, Unit unit);
+		void Walk(Game game, Unit unit);
+		bool CanWalk(Game game, Unit unit);
 	}
 	public interface ILightable{
 		void SetLight(int light);
 		int GetLight();
 	}
 	public interface IDiscoverable{
-		void Discover(Level level, Unit unit);
+		void Discover(Game game, Unit unit);
 	}
 	public interface ITargetable{
-		List<Unit> GetTargets(Level level, Unit unit);
+		List<Unit> GetTargets(Game game, Unit unit);
 	}
 	[Serializable]
 	public class NullTile : 
@@ -71,39 +71,39 @@ public abstract class Tile : GridMap<Tile>.Node{
 		public int GetLightUVFactor(){
 			return _NULL_FACTOR;
 		}
-		public void AddUnit(Level level, Register<Unit>.ID id){}
-		public bool RemoveUnit(Level level, Register<Unit>.ID id){
+		public void AddUnit(Game game, Register<Unit>.ID id){}
+		public bool RemoveUnit(Game game, Register<Unit>.ID id){
 			return false;
 		}
-		public List<Unit> GetUnits(Level level){
+		public List<Unit> GetUnits(Game game){
 			return new List<Unit>();
 		}
-		public void Print(Level level, Unit master, BluePrint.Print print, Tile tile, int x, int y){
-			level.Set(x, y, tile);
-			print.OnSpawn(level, master, tile, x, y);
+		public void Print(Game game, Unit master, BluePrint.Print print, Tile tile, int x, int y){
+			game.GetLevel().Set(x, y, tile);
+			print.OnSpawn(game, master, tile, x, y);
 		}
-		public bool CanPrint(Level level, Unit master, int x, int y){
-			return level.CheckBounds(x, y);
+		public bool CanPrint(Game game, Unit master, int x, int y){
+			return game.GetLevel().CheckBounds(x, y);
 		}
-		public bool CanConnect(Level level, Unit master, int x, int y){
+		public bool CanConnect(Game game, Unit master, int x, int y){
 			return false;
 		}
-		public void Walk(Level level, Unit unit){}
-		public bool CanWalk(Level level, Unit unit){
+		public void Walk(Game game, Unit unit){}
+		public bool CanWalk(Game game, Unit unit){
 			return false;
 		}
 		public void SetLight(int light){}
 		public int GetLight(){
 			return _NULL_INDEX;
 		}
-		public bool CheckTransparency(Level level){
+		public bool CheckTransparency(Game game){
 			return false;
 		}
-		public void Discover(Level level, Unit unit){}
-		public void Interact(Level level, Unit unit){}
-		public void Attacked(Level level, Unit unit, int attack){}
+		public void Discover(Game game, Unit unit){}
+		public void Interact(Game game, Unit unit){}
+		public void Attacked(Game game, Unit unit, int attack){}
 		public void OnAttacked(){}
-		public bool CheckHostility(Level level, Unit unit){
+		public bool CheckHostility(Game game, Unit unit){
 			return false;
 		}
 	}

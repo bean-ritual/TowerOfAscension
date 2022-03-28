@@ -6,9 +6,10 @@ using UnityEngine;
 [Serializable]
 public class SmartAI : AI{
 	private static Register<Unit>.ID _TARGET = Register<Unit>.ID.GetNullID();
-	public override bool Process(Level level, Unit self){
+	public override bool Process(Game game, Unit self){
+		Level level = game.GetLevel();
 		Unit target = level.GetUnits().Get(_TARGET);
-		if(!target.GetHostileTarget().CheckHostility(level, self)){
+		if(!target.GetHostileTarget().CheckHostility(game, self)){
 			return level.NextTurn();
 		}
 		//
@@ -28,8 +29,8 @@ public class SmartAI : AI{
 	public static void SetTarget(Register<Unit>.ID id){
 		_TARGET = id;
 	}
-	public static Unit GetTarget(Level level){
-		return level.GetUnits().Get(_TARGET);
+	public static Unit GetTarget(Game game){
+		return game.GetLevel().GetUnits().Get(_TARGET);
 	}
 	public static Register<Unit>.ID GetTarget(){
 		return _TARGET;

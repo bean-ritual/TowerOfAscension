@@ -127,6 +127,19 @@ public abstract class Register<TStoreObject> : Register<TStoreObject>.RegisterEv
 		}
 		return true;
 	}
+	public virtual void Swap(ID id, int index){
+		if(!CheckBounds(index)){
+			return;
+		}
+		ID id2 = _ids[index];
+		for(int i = 0; i < _ids.Count; i++){
+			if(_ids[i].Equals(id)){
+				_ids[index] = id;
+				_ids[i] = id2;
+				return;
+			}	
+		}
+	}
 	public virtual List<TStoreObject> GetAll(){
 		List<TStoreObject> values = new List<TStoreObject>(_ids.Count);
 		for(int i = 0; i < _ids.Count; i++){

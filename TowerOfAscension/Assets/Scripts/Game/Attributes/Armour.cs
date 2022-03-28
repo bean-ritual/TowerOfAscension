@@ -19,11 +19,11 @@ public class Armour :
 		_modifyValue = 0;
 		_baseValue = 0;
 	}
-	public override void Fortify(Level level, Unit self, int value){
+	public override void Fortify(Game game, Unit self, int value){
 		_modifyValue = (_modifyValue + value);
 		AttributeUpdateEvent();
 	}
-	public override void Damage(Level level, Unit self, int value){
+	public override void Damage(Game game, Unit self, int value){
 		_modifyValue = (_modifyValue - value);
 		AttributeUpdateEvent();
 	}
@@ -33,7 +33,7 @@ public class Armour :
 	public override int GetMaxValue(){
 		return _MAX_VALUE;
 	}
-	public int Reduce(Level level, Unit self, int value){
+	public int Reduce(Game game, Unit self, int value){
 		return (int)((float)GetValue() / _MATH_VALUE) * value;
 	}
 	public override Attribute.IReducer GetReducer(){

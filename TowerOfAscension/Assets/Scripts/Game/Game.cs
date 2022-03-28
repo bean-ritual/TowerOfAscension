@@ -12,8 +12,6 @@ public class Game{
 		}
 		public override void NextLevel(){}
 		public override void NewLevel(){}
-		public override void SetPlayer(Unit player){}
-		public override void SetLevel(Level level){}
 		public override Level GetLevel(){
 			return Level.GetNullLevel();
 		}
@@ -25,20 +23,20 @@ public class Game{
 		_player = new Hero();
 	}
 	public virtual bool Process(){
-		_level.GetTrigger().Process(this);
-		return _level.Process();
+		return _level.Process(this);
 	}
 	public virtual void NextLevel(){
-		LoadSystem.Load(LoadSystem.Scene.Game, NewLevel);
+		DungeonMaster.GetInstance().BusyFrame();
+		DungeonMaster.GetInstance().QueueAction(() => LoadSystem.Load(LoadSystem.Scene.Game, NewLevel));
 	}
 	public virtual void NewLevel(){
 		_level = new Level(100, 100);
 		_level.GetMidPoint(out int x, out int y);
 		ClassicGen classic = new ClassicGen(_player, 10);
-		classic.Spawn(_level, x, y);
+		classic.Spawn(this, x, y);
 		const int MAX_SANITY = 1000;
 		for(int sanity = 0; sanity < MAX_SANITY; sanity++){
-			classic.Process(_level);
+			classic.Process(this);
 			if(classic.IsFinished()){
 				UnityEngine.Debug.Log("Game :: NewLevel() :: Completed");
 				//SaveSystem.Save(this);
@@ -47,12 +45,6 @@ public class Game{
 		}
 		UnityEngine.Debug.Log("Game :: NewLevel() :: Failed");
 		NewLevel();
-	}
-	public virtual void SetPlayer(Unit player){
-		_player = player;
-	}
-	public virtual void SetLevel(Level level){
-		_level = level;
 	}
 	public virtual Level GetLevel(){
 		return _level;

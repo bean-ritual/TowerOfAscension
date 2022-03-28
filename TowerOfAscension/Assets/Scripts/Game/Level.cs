@@ -5,10 +5,10 @@ using UnityEngine;
 [Serializable]
 public class Level : GridMap<Tile>{
 	public interface ILightControl{
-		bool CheckTransparency(Level level);
+		bool CheckTransparency(Game game);
 	}
 	public interface ILightSource{
-		int GetLightRange(Level level);
+		int GetLightRange(Game game);
 	}
 	[Serializable]
 	public class NullLevel : Level{
@@ -18,10 +18,10 @@ public class Level : GridMap<Tile>{
 			_NULL_WIDTH,
 			_NULL_HEIGHT
 		){}
-		public override bool Process(){
+		public override bool Process(Game game){
 			return false;
 		}
-		public override void LightUpdate(Unit unit){}
+		public override void LightUpdate(Game game, Unit unit){}
 		public override bool Set(int x, int y, Tile tile){
 			return false;
 		}
@@ -31,12 +31,9 @@ public class Level : GridMap<Tile>{
 		public override bool NextTurn(){
 			return false;
 		}
+		public override void ResetTurn(){}
 		public override Inventory GetUnits(){
 			return Inventory.GetNullInventory();
-		}
-		public override void SetTrigger(Trigger trigger){}
-		public override Trigger GetTrigger(){
-			return Trigger.GetNullTrigger();
 		}
 	}
 	public override Tile GetNullGridObject(){
@@ -52,7 +49,6 @@ public class Level : GridMap<Tile>{
 	//
 	private int _index;
 	private Inventory _units = Inventory.GetNullInventory();
-	private Trigger _trigger = Trigger.GetNullTrigger();
 	//
 	public Level(int width, int height) : 
 	base(
@@ -68,11 +64,11 @@ public class Level : GridMap<Tile>{
 		_units = new Inventory();
 	}
 	//
-	public virtual bool Process(){
-		return _units.Get(_index).GetProcessable().Process(this);
+	public virtual bool Process(Game game){
+		return _units.Get(_index).GetProcessable().Process(game);
 	}
-	public virtual void LightUpdate(Unit unit){
-		int lightRange = unit.GetLightSource().GetLightRange(this);
+	public virtual void LightUpdate(Game game, Unit unit){
+		int lightRange = unit.GetLightSource().GetLightRange(game);
 		if(lightRange <= 0){
 			return;
 		}
@@ -84,11 +80,11 @@ public class Level : GridMap<Tile>{
 		unit.GetPositionable().GetPosition(out int sourceX, out int sourceY);
 		Tile origin = Get(sourceX, sourceY);
 		origin.GetLightable().SetLight(lightRange);
-		unit.GetDiscoverer().Discover(this, origin);
+		unit.GetDiscoverer().Discover(game, origin);
 		List<Tile> tiles = CalculateFov(sourceX, sourceY, lightRange, (int range, Tile tile) => {
 			tile.GetLightable().SetLight(lightRange - (range - 1));
-			unit.GetDiscoverer().Discover(this, tile);
-			return tile.GetLightControl().CheckTransparency(this);
+			unit.GetDiscoverer().Discover(game, tile);
+			return tile.GetLightControl().CheckTransparency(game);
 		});
 		OnLightUpdate?.Invoke(this, EventArgs.Empty);
 	}
@@ -101,14 +97,11 @@ public class Level : GridMap<Tile>{
 		OnNextTurn?.Invoke(this, EventArgs.Empty);
 		return (_index > 0);
 	}
+	public virtual void ResetTurn(){
+		_index = 0;
+	}
 	public virtual Inventory GetUnits(){
 		return _units;
-	}
-	public virtual void SetTrigger(Trigger trigger){
-		_trigger = trigger;
-	}
-	public virtual Trigger GetTrigger(){
-		return _trigger;
 	}
 	public static Level GetNullLevel(){
 		return _NULL_LEVEL;

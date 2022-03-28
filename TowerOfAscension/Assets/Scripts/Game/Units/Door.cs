@@ -28,17 +28,17 @@ public class Door :
 			0
 		);
 	}
-	public void Interact(Level level, Unit unit){
+	public void Interact(Game game, Unit unit){
 		_locked ^= true;
 		RefreshSpriteIndex();
 	}
-	public override bool CheckCollision(Level level, Unit check){
+	public override bool CheckCollision(Game game, Unit check){
 		return _locked;
 	}
-	public override bool GetWorldVisibility(Level level){
+	public override bool GetWorldVisibility(Game game){
 		return true;
 	}
-	public bool CheckTransparency(Level level){
+	public bool CheckTransparency(Game game){
 		return !_locked;
 	}
 	public void RefreshSpriteIndex(){

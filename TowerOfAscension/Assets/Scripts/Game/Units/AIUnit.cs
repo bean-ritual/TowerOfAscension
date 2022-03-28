@@ -32,13 +32,13 @@ public abstract class AIUnit :
 	public virtual bool GetHealthBar(){
 		return true;
 	}
-	public virtual void Move(Level level, Direction direction){
-		Unit.Default_Move(this, level, direction);
+	public virtual void Move(Game game, Direction direction){
+		Unit.Default_Move(this, game, direction);
 	}
-	public virtual void OnMove(Level level, Tile tile){
+	public virtual void OnMove(Game game, Tile tile){
 		tile.GetXY(out int x, out int y);
-		Unit.Default_SetPosition(this, level, x, y, ref _x, ref _y, 1);
-		_ai.GetTurnControl().EndTurn(level, this);
+		Unit.Default_SetPosition(this, game, x, y, ref _x, ref _y, 1);
+		_ai.GetTurnControl().EndTurn(game, this);
 	}
 	public virtual void SetAI(AI ai){
 		_ai = ai;
@@ -46,25 +46,25 @@ public abstract class AIUnit :
 	public virtual AI GetAI(){
 		return _ai;
 	}
-	public virtual void Attacked(Level level, Unit unit, int attack){
-		_health.Damage(level, this, attack);
+	public virtual void Attacked(Game game, Unit unit, int attack){
+		_health.Damage(game, this, attack);
 	}
-	public virtual void Attack(Level level, Direction direction){
-		direction.GetTile(level, _x, _y).GetAttackable().Attacked(level, this, 1);
+	public virtual void Attack(Game game, Direction direction){
+		direction.GetTile(game.GetLevel(), _x, _y).GetAttackable().Attacked(game, this, 1);
 	}
-	public virtual void OnAttack(Level level, Tile tile){
+	public virtual void OnAttack(Game game, Tile tile){
 		tile.GetXY(out int x, out int y);
-		_ai.GetTurnControl().EndTurn(level, this);
-		OnAttackAnimation?.Invoke(this, new WorldUnit.UnitAnimateEventArgs(this, (level.GetWorldPosition(x, y) + level.GetWorldPosition(_x, _y)) / 2));
+		_ai.GetTurnControl().EndTurn(game, this);
+		OnAttackAnimation?.Invoke(this, new WorldUnit.UnitAnimateEventArgs(this, (game.GetLevel().GetWorldPosition(x, y) + game.GetLevel().GetWorldPosition(_x, _y)) / 2));
 	}
-	public virtual void Kill(Level level){
-		Default_Kill(this, level);
+	public virtual void Kill(Game game){
+		Default_Kill(this, game);
 	}
-	public virtual void OnKill(Level level){
+	public virtual void OnKill(Game game){
 		
 	}
-	public override bool Process(Level level){
-		return _ai.Process(level, this);
+	public override bool Process(Game game){
+		return _ai.Process(game, this);
 	}
 	public Attribute GetHealth(){
 		return _health;

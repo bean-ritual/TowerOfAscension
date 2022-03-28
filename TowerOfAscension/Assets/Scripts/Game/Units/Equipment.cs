@@ -7,8 +7,8 @@ public class Equipment :
 	Inventory,
 	Inventory.IPickupable
 	{
-	public void AttemptPickup(Level level, Unit unit){
-		unit.GetPickupable().DoPickup(level, this);
+	public void AttemptPickup(Game game, Unit unit){
+		unit.GetPickupable().DoPickup(game, this);
 	}
 	public override IPickupable GetPickupable(){
 		return this;

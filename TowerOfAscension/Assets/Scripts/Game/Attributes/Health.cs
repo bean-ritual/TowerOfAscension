@@ -19,15 +19,15 @@ public class Health :
 		_value = baseValue;
 		_maxValue = baseValue;
 	}
-	public override void Fortify(Level level, Unit self, int value){
+	public override void Fortify(Game game, Unit self, int value){
 		_value = (_value + value);
 		_value = Mathf.Clamp(_value, _MIN_VALUE, GetMaxValue());
 		AttributeUpdateEvent();
 	}
-	public override void Damage(Level level, Unit self, int value){
+	public override void Damage(Game game, Unit self, int value){
 		_value = (_value - value);
 		if(_value <= 0){
-			self.GetKillable().Kill(level);
+			self.GetKillable().Kill(game);
 		}
 		AttributeUpdateEvent();
 	}
@@ -37,12 +37,12 @@ public class Health :
 	public override int GetMaxValue(){
 		return _maxValue;
 	}
-	public void FortifyMax(Level level, Unit self, int value){
+	public void FortifyMax(Game game, Unit self, int value){
 		_maxValue = (_maxValue + value);
 		_maxValue = Mathf.Clamp(_maxValue, _MIN_MAX_VALUE, _MAX_MAX_VALUE);
 		AttributeUpdateEvent();
 	}
-	public void DamageMax(Level level, Unit self, int value){
+	public void DamageMax(Game game, Unit self, int value){
 		_maxValue = (_maxValue - value);
 		_maxValue = Mathf.Clamp(_maxValue, _MIN_MAX_VALUE, _MAX_MAX_VALUE);
 		if(_value > _maxValue){

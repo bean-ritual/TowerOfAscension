@@ -1230,7 +1230,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 55
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 8400000, guid: 4bdb37e33fa025b4788d580c31f2efb8, type: 2}
   m_TargetDisplay: 0
@@ -1313,7 +1313,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 100/100
+  m_text: 'HP: Text'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1400,7 +1400,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1325618488}
   - component: {fileID: 1325618489}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SpriteOffset
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1482,7 +1482,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1329016317}
   - component: {fileID: 1329016316}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: TileTargetManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1529,7 +1529,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1620330897}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: TileTarget
   m_TagString: Untagged
   m_Icon: {fileID: 0}

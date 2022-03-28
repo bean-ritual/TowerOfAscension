@@ -42,11 +42,11 @@ public class WallTile :
 		}
 		return UNLIT_FACTOR;
 	}
-	public void Print(Level level, Unit master, BluePrint.Print print, Tile tile, int x, int y){
-		level.Set(x, y, tile);
-		print.OnSpawn(level, master, tile, x, y);
+	public void Print(Game game, Unit master, BluePrint.Print print, Tile tile, int x, int y){
+		game.GetLevel().Set(x, y, tile);
+		print.OnSpawn(game, master, tile, x, y);
 	}
-	public bool CanPrint(Level level, Unit master, int x, int y){
+	public bool CanPrint(Game game, Unit master, int x, int y){
 		return true;
 	}
 	public void SetLight(int light){
@@ -55,10 +55,10 @@ public class WallTile :
 	public int GetLight(){
 		return _light;
 	}
-	public bool CheckTransparency(Level level){
+	public bool CheckTransparency(Game game){
 		return false;
 	}
-	public void Discover(Level level, Unit unit){
+	public void Discover(Game game, Unit unit){
 		_discovered = true;
 	}
 	public override LevelMeshManager.ITileMeshData GetTileMeshData(){

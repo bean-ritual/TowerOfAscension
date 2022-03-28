@@ -25,30 +25,30 @@ public class Stairs :
 	public WorldUnit.WorldUnitController GetWorldUnitController(){
 		return _controller;
 	}
-	public bool GetWorldVisibility(Level level){
+	public bool GetWorldVisibility(Game game){
 		return true;
 	}
-	public void Spawn(Level level, int x, int y){
-		Unit.Default_Spawn(this, level, x, y);
+	public void Spawn(Game game, int x, int y){
+		Unit.Default_Spawn(this, game, x, y);
 	}
-	public void Despawn(Level level){
-		Unit.Default_Despawn(this, level);
+	public void Despawn(Game game){
+		Unit.Default_Despawn(this, game);
 	}
-	public void SetPosition(Level level, int x, int y){
-		Unit.Default_SetPosition(this, level, x, y, ref _x, ref _y);
+	public void SetPosition(Game game, int x, int y){
+		Unit.Default_SetPosition(this, game, x, y, ref _x, ref _y);
 	}
 	public void GetPosition(out int x, out int y){
 		x = _x;
 		y = _y;
 	}
-	public void RemovePosition(Level level){
-		Unit.Default_RemovePosition(this, level, _x, _y);
+	public void RemovePosition(Game game){
+		Unit.Default_RemovePosition(this, game, _x, _y);
 	}
 	public Vector3 GetPosition(GridMap<Tile> map){
 		return map.GetWorldPosition(_x, _y);
 	}
-	public Tile GetTile(Level level){
-		return level.Get(_x, _y);
+	public Tile GetTile(Game game){
+		return game.GetLevel().Get(_x, _y);
 	}
 	public void AddToRegister(Register<Unit> register){
 		register.Add(this, ref _id);
@@ -59,8 +59,8 @@ public class Stairs :
 	public Register<Unit>.ID GetID(){
 		return _id;
 	}
-	public void Trip(Level level, Unit unit){
-		unit.GetExitable().Exit(level);
+	public void Trip(Game game, Unit unit){
+		unit.GetExitable().Exit(game);
 	}
 	public override WorldUnit.IWorldUnit GetWorldUnit(){
 		return this;
