@@ -15,6 +15,9 @@ public class Game{
 		}
 		public override void NextLevel(){}
 		public override void NewLevel(){}
+		public override Unit GetPlayer(){
+			return Unit.GetNullUnit();
+		}
 		public override Level GetLevel(){
 			return Level.GetNullLevel();
 		}
@@ -49,6 +52,9 @@ public class Game{
 		}
 		UnityEngine.Debug.Log("Game :: NewLevel() :: Failed");
 		NewLevel();
+	}
+	public virtual Unit GetPlayer(){
+		return _player;
 	}
 	public virtual Level GetLevel(){
 		return _level;

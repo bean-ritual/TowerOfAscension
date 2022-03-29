@@ -15,7 +15,7 @@ public abstract class LevelUnit :
 	protected int _y = Unit.NullUnit.GetNullY();
 	protected Register<Unit>.ID _id = Register<Unit>.ID.GetNullID();
 	public LevelUnit(){}
-	public virtual WorldUnit.WorldUnitController GetWorldUnitController(){
+	public virtual WorldUnit.WorldUnitController GetWorldUnitController(Game game){
 		return _controller;
 	}
 	public virtual bool GetWorldVisibility(Game game){
@@ -24,21 +24,21 @@ public abstract class LevelUnit :
 	public virtual void Spawn(Game game, int x, int y){
 		Unit.Default_Spawn(this, game, x, y);
 	}
-	public void Despawn(Game game){
+	public virtual void Despawn(Game game){
 		Unit.Default_Despawn(this, game);
 	}
 	public void SetPosition(Game game, int x, int y){
 		Unit.Default_SetPosition(this, game, x, y, ref _x, ref _y);
 	}
-	public void GetPosition(out int x, out int y){
+	public void GetPosition(Game game, out int x, out int y){
 		x = _x;
 		y = _y;
 	}
 	public void RemovePosition(Game game){
 		Unit.Default_RemovePosition(this, game, _x, _y);
 	}
-	public Vector3 GetPosition(GridMap<Tile> map){
-		return map.GetWorldPosition(_x, _y);
+	public Vector3 GetPosition(Game game){
+		return game.GetLevel().GetWorldPosition(_x, _y);
 	}
 	public Tile GetTile(Game game){
 		return game.GetLevel().Get(_x, _y);

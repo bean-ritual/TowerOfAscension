@@ -7,7 +7,7 @@ using UnityEngine;
 public class ScanAI : AI{
 	public override bool Process(Game game, Unit self){
 		Level level = game.GetLevel();
-		self.GetPositionable().GetPosition(out int x, out int y);
+		self.GetPositionable().GetPosition(game, out int x, out int y);
 		List<Tile> targets = new List<Tile>();
 		level.CalculateFov(x, y, 5, (int range, Tile tile) => {
 			if(!tile.GetLightControl().CheckTransparency(game)){

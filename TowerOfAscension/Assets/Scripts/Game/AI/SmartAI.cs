@@ -13,8 +13,8 @@ public class SmartAI : AI{
 			return level.NextTurn();
 		}
 		//
-		self.GetPositionable().GetPosition(out int selfX, out int selfY);
-		target.GetPositionable().GetPosition(out int targetX, out int targetY);
+		self.GetPositionable().GetPosition(game, out int selfX, out int selfY);
+		target.GetPositionable().GetPosition(game, out int targetX, out int targetY);
 		int distance = level.CalculateDistanceCost(selfX, selfY, targetX, targetY);
 		if(distance > 80){
 			return level.NextTurn();

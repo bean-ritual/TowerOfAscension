@@ -8,7 +8,7 @@ public class Health :
 	Attribute.IModifiableMaxes
 	{
 	public interface IHasHealth{
-		Attribute GetHealth();
+		Attribute GetHealth(Game game);
 	}
 	private const int _MAX_MAX_VALUE = 999;
 	private const int _MIN_MAX_VALUE = 10;

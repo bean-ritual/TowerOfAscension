@@ -27,6 +27,9 @@ public class WorldUnit : MonoBehaviour{
 			public override int GetMoveSpeed(){
 				return 0;
 			}
+			public override bool IsNull(){
+				return true;
+			}	
 		}
 		[field:NonSerialized]private static readonly NullWorldUnitContoller _NULL_WORLD_UNIT_CONTROLLER = new NullWorldUnitContoller();
 		[field:NonSerialized]public event EventHandler<EventArgs> OnWorldUnitSpriteUpdate;
@@ -91,6 +94,9 @@ public class WorldUnit : MonoBehaviour{
 		public virtual int GetMoveSpeed(){
 			return _moveSpeed;
 		}
+		public virtual bool IsNull(){
+			return false;
+		}
 		public static WorldUnitController GetNullWorldUnitController(){
 			return _NULL_WORLD_UNIT_CONTROLLER;
 		}
@@ -104,14 +110,14 @@ public class WorldUnit : MonoBehaviour{
 		}
 	}
 	public interface IWorldUnit{
-		WorldUnit.WorldUnitController GetWorldUnitController();
+		WorldUnit.WorldUnitController GetWorldUnitController(Game game);
 		bool GetWorldVisibility(Game game);
 	}
 	public interface IWorldUnitUI{
 		event EventHandler<EventArgs> OnWorldUnitUIUpdate;
-		Vector3 GetUIOffset();
-		int GetUISortingOrder();
-		bool GetHealthBar();
+		Vector3 GetUIOffset(Game game);
+		int GetUISortingOrder(Game game);
+		bool GetHealthBar(Game game);
 	}
 	public interface IWorldUnitAnimations{
 		event EventHandler<UnitAnimateEventArgs> OnAttackAnimation;
@@ -129,12 +135,12 @@ public class WorldUnit : MonoBehaviour{
 	public void Setup(Unit unit){
 		UnsubscribeFromEvents();
 		_unit = unit;
-		_controller = unit.GetWorldUnit().GetWorldUnitController();
+		_local = DungeonMaster.GetInstance().GetLocalGame();
+		_controller = unit.GetWorldUnit().GetWorldUnitController(_local);
 		_controller.OnWorldUnitSpriteUpdate += OnWorldUnitSpriteUpdate;
 		_controller.OnWorldUnitSortingOrderUpdate += OnWorldUnitSortingOrderUpdate;
 		_controller.OnWorldUnitWorldPositionUpdate += OnWorldUnitWorldPositionUpdate;
 		_unit.GetWorldUnitAnimations().OnAttackAnimation += OnAttackAnimation;
-		_local = DungeonMaster.GetInstance().GetLocalGame();
 		_level = _local.GetLevel();
 		_level.OnLightUpdate += OnLightUpdate;
 		_worldUnitUI.Setup(_unit);

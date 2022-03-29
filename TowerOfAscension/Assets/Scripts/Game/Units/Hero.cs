@@ -5,6 +5,7 @@ using UnityEngine;
 [Serializable]
 public class Hero : 
 	AIUnit,
+	Unit.IProxyable,
 	Unit.IDiscoverer,
 	Unit.IInteractor,
 	Unit.IHostileTarget,
@@ -26,12 +27,21 @@ public class Hero :
 		_inventory = new Equipment();
 	}
 	public override void Spawn(Game game, int x, int y){
-		base.Spawn(game, x, y);
-		Level level = game.GetLevel();
-		level.GetUnits().Swap(_id, 0);
-		level.ResetTurn();
+		Unit proxy = new Player();
+		proxy.GetSpawnable().Spawn(game, x, y);
+		game.GetLevel().GetUnits().Swap(_id, 0);
+		game.GetLevel().ResetTurn();
 	}
-	public override bool GetHealthBar(){
+	public override void Despawn(Game game){
+		game.GetLevel().GetUnits().Get(_id).GetSpawnable().Despawn(game);
+	}
+	public void SetProxyID(Game game, Register<Unit>.ID id){
+		_id = id;
+	}
+	public void RemoveProxyID(Game game){
+		_id = Register<Unit>.ID.GetNullID();
+	}
+	public override bool GetHealthBar(Game game){
 		return false;
 	}
 	public override void Attack(Game game, Direction direction){
@@ -50,11 +60,14 @@ public class Hero :
 	public void Exit(Game game){
 		game.NextLevel();
 	}
-	public Inventory GetInventory(){
+	public Inventory GetInventory(Game game){
 		return _inventory;
 	}
 	public int GetLightRange(Game game){
 		return 3;
+	}
+	public override IProxyable GetProxyable(){
+		return this;
 	}
 	public override Unit.IDiscoverer GetDiscoverer(){
 		return this;
@@ -74,5 +87,4 @@ public class Hero :
 	public override Level.ILightSource GetLightSource(){
 		return this;
 	}
-	
 }

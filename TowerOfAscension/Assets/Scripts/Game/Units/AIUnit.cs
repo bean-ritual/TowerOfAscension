@@ -23,13 +23,13 @@ public abstract class AIUnit :
 	protected Attribute _health = Attribute.GetNullAttribute();
 	protected Attribute _armour = Attribute.GetNullAttribute();
 	public AIUnit(){}
-	public virtual Vector3 GetUIOffset(){
+	public virtual Vector3 GetUIOffset(Game game){
 		return _UI_OFFSET;
 	}
-	public virtual int GetUISortingOrder(){
+	public virtual int GetUISortingOrder(Game game){
 		return _controller.GetSortingOrder() + uiSortingOrder;
 	}
-	public virtual bool GetHealthBar(){
+	public virtual bool GetHealthBar(Game game){
 		return true;
 	}
 	public virtual void Move(Game game, Direction direction){
@@ -40,10 +40,10 @@ public abstract class AIUnit :
 		Unit.Default_SetPosition(this, game, x, y, ref _x, ref _y, 1);
 		_ai.GetTurnControl().EndTurn(game, this);
 	}
-	public virtual void SetAI(AI ai){
+	public virtual void SetAI(Game game, AI ai){
 		_ai = ai;
 	}
-	public virtual AI GetAI(){
+	public virtual AI GetAI(Game game){
 		return _ai;
 	}
 	public virtual void Attacked(Game game, Unit unit, int attack){
@@ -66,10 +66,10 @@ public abstract class AIUnit :
 	public override bool Process(Game game){
 		return _ai.Process(game, this);
 	}
-	public Attribute GetHealth(){
+	public Attribute GetHealth(Game game){
 		return _health;
 	}
-	public Attribute GetArmour(){
+	public Attribute GetArmour(Game game){
 		return _armour;
 	}
 	public override WorldUnit.IWorldUnitUI GetWorldUnitUI(){

@@ -35,7 +35,7 @@ public class PlayerController : MonoBehaviour{
 		}
 		//
 		Direction dir = MouseDirectionHandling();
-		_player.GetPositionable().GetPosition(out int x, out int y);
+		_player.GetPositionable().GetPosition(_local, out int x, out int y);
 		TileTargetManager.GetInstance().SetTile(dir.GetTile(_level, x, y));
 		//
 		if(Input.GetMouseButtonDown(0)){
@@ -51,12 +51,12 @@ public class PlayerController : MonoBehaviour{
 			return;
 		}
 		if(Input.GetKeyDown(KeyCode.Space)){
-			_player.GetControllable().GetAI().GetTurnControl().EndTurn(_local, _player);
+			_player.GetControllable().GetAI(_local).GetTurnControl().EndTurn(_local, _player);
 			return;
 		}
 	}
 	private Direction MouseDirectionHandling(){
-		Vector3 finalPosition = WorldSpaceUtils.MouseToWorldSpace(_camera.GetCamera()) - _player.GetPositionable().GetPosition(_level) - _level.GetVector3CellOffset();
+		Vector3 finalPosition = WorldSpaceUtils.MouseToWorldSpace(_camera.GetCamera()) - _player.GetPositionable().GetPosition(_local) - _level.GetVector3CellOffset();
 		Vector3Int intgerPosition = Vector3Int.RoundToInt(finalPosition);
 		return Direction.IntToDirection(intgerPosition.x, intgerPosition.y);
 	}
@@ -68,14 +68,14 @@ public class PlayerController : MonoBehaviour{
 		}
 		_previous = _player;
 		_camera.Setup(
-			() => _previous.GetPositionable().GetPosition(_level), 
+			() => _previous.GetPositionable().GetPosition(_local), 
 			() => _cameraZoom, 
 			_cameraOffset, 
 			_cameraSpeed, 
 			true
 		);
 		HUDUIManager.GetInstance().SetUnit(_previous);
-		InventoryUIManager.GetInstance().SetInventory(_previous.GetHasInventory().GetInventory());
+		InventoryUIManager.GetInstance().SetInventory(_previous.GetHasInventory().GetInventory(_local));
 		MinimapUIManager.GetInstance().SetUnit(_previous);
 	}
 	public void ClearPlayer(){

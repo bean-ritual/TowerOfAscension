@@ -25,7 +25,7 @@ public abstract class AI{
 		return _NULL_AI;
 	}
 	public static void Default_Wander(Unit self, Game game){
-		self.GetPositionable().GetPosition(out int x, out int y);
+		self.GetPositionable().GetPosition(game, out int x, out int y);
 		List<Tile> tiles = game.GetLevel().GetNeighbours(x, y);
 		tiles[UnityEngine.Random.Range(0, tiles.Count)].GetXY(out int targetX, out int targetY);
 		self.GetMoveable().Move(game, Direction.IntToDirection(x, y, targetX, targetY));

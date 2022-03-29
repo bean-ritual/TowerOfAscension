@@ -77,7 +77,7 @@ public class Level : GridMap<Tile>{
 				Get(x, y).GetLightable().SetLight(0);
 			}
 		}
-		unit.GetPositionable().GetPosition(out int sourceX, out int sourceY);
+		unit.GetPositionable().GetPosition(game, out int sourceX, out int sourceY);
 		Tile origin = Get(sourceX, sourceY);
 		origin.GetLightable().SetLight(lightRange);
 		unit.GetDiscoverer().Discover(game, origin);

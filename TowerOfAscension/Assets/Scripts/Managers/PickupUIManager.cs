@@ -88,7 +88,7 @@ public class PickupUIManager : MonoBehaviour{
 	public void PickupInteract(Unit item){
 		Unit player = PlayerController.GetInstance().GetPlayer();
 		item.GetPickupable().TryPickup(_local, player);
-		player.GetControllable().GetAI().GetTurnControl().EndTurn(_local, player);
+		player.GetControllable().GetAI(_local).GetTurnControl().EndTurn(_local, player);
 	}
 	private void OnUnitAdded(object sender, Register<Unit>.OnObjectChangedEventArgs e){
 		CreateUIUnit(e.value);

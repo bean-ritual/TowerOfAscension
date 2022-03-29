@@ -22,7 +22,7 @@ public class Item :
 		);
 	}
 	public void TryPickup(Game game, Unit unit){
-		unit.GetHasInventory().GetInventory().GetPickupable().AttemptPickup(game, this);
+		unit.GetHasInventory().GetInventory(game).GetPickupable().AttemptPickup(game, this);
 	}
 	public void DoPickup(Game game, Inventory inventory){
 		GetSpawnable().Despawn(game);

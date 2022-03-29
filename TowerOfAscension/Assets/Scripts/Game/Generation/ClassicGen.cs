@@ -204,7 +204,7 @@ public class ClassicGen :
 				return;
 			}
 			_exits[UnityEngine.Random.Range(0, _exits.Count)].GetExit().PositionMaster(game, master);
-			master.GetPositionable().GetPosition(out int x, out int y);
+			master.GetPositionable().GetPosition(game, out int x, out int y);
 			GetExitToSpawn(game, master, x, y).Spawn(game, master);
 			if(_build >= (_amount + 1)){
 				master.GetClassicGen().OnFinalize(game);
@@ -297,7 +297,7 @@ public class ClassicGen :
 		_minBuild = minBuild;
 		_build = 0;
 	}
-	public WorldUnit.WorldUnitController GetWorldUnitController(){
+	public WorldUnit.WorldUnitController GetWorldUnitController(Game game){
 		return _controller;
 	}
 	public bool GetWorldVisibility(Game game){
@@ -314,15 +314,15 @@ public class ClassicGen :
 	public void SetPosition(Game game, int x, int y){
 		Unit.Default_SetPosition(this, game, x, y, ref _x, ref _y);
 	}
-	public void GetPosition(out int x, out int y){
+	public void GetPosition(Game game, out int x, out int y){
 		x = _x;
 		y = _y;
 	}
 	public void RemovePosition(Game game){
 		Unit.Default_RemovePosition(this, game, _x, _y);
 	}
-	public Vector3 GetPosition(GridMap<Tile> map){
-		return map.GetWorldPosition(_x, _y);
+	public Vector3 GetPosition(Game game){
+		return game.GetLevel().GetWorldPosition(_x, _y);
 	}
 	public Tile GetTile(Game game){
 		return game.GetLevel().Get(_x, _y);

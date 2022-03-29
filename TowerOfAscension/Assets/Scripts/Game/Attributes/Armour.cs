@@ -8,7 +8,7 @@ public class Armour :
 	Attribute.IReducer
 	{
 	public interface IHasArmour{
-		Attribute GetArmour();
+		Attribute GetArmour(Game game);
 	}
 	private const int _MATH_VALUE = 100;
 	private const int _MAX_VALUE = 80;

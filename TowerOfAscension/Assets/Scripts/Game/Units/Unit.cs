@@ -9,9 +9,9 @@ public abstract class Unit{
 	}
 	public interface IPositionable{
 		void SetPosition(Game game, int x, int y);
-		void GetPosition(out int x, out int y);
+		void GetPosition(Game game, out int x, out int y);
 		void RemovePosition(Game game);
-		Vector3 GetPosition(GridMap<Tile> map);
+		Vector3 GetPosition(Game game);
 		Tile GetTile(Game game);
 	}
 	public interface ISpawnable : IPositionable, Register<Unit>.IRegisterable{
@@ -26,8 +26,8 @@ public abstract class Unit{
 		bool CheckCollision(Game game, Unit check);
 	}
 	public interface IControllable{
-		void SetAI(AI ai);
-		AI GetAI();
+		void SetAI(Game game, AI ai);
+		AI GetAI(Game game);
 	}
 	public interface IDiscoverer{
 		void Discover(Game game, Tile tile);
@@ -66,10 +66,18 @@ public abstract class Unit{
 		void Trip(Game game, Unit unit);
 	}
 	public interface IHasInventory{
-		Inventory GetInventory();
+		Inventory GetInventory(Game game);
 	}
 	public interface IHostileTarget{
 		bool CheckHostility(Game game, Unit unit);
+	}
+	public interface IPlayable{
+		void SetPlayer(Game game);
+		void RemovePlayer(Game game);
+	}
+	public interface IProxyable{
+		void SetProxyID(Game game, Register<Unit>.ID id);
+		void RemoveProxyID(Game game);
 	}
 	public interface IClassicGen{
 		void AddStructureSpawner(ClassicGen.Spawner spawner);
@@ -104,6 +112,8 @@ public abstract class Unit{
 		Unit.ITripwire,
 		Unit.IHasInventory,
 		Unit.IHostileTarget,
+		Unit.IPlayable,
+		Unit.IProxyable,
 		Level.ILightControl,
 		Level.ILightSource,
 		Unit.IClassicGen,
@@ -124,31 +134,31 @@ public abstract class Unit{
 		public Register<Unit>.ID GetID(){
 			return Register<Unit>.ID.GetNullID();
 		}
-		public WorldUnit.WorldUnitController GetWorldUnitController(){
+		public WorldUnit.WorldUnitController GetWorldUnitController(Game game){
 			return WorldUnit.WorldUnitController.GetNullWorldUnitController();
 		}
 		public bool GetWorldVisibility(Game game){
 			return false;
 		}
-		public Vector3 GetUIOffset(){
+		public Vector3 GetUIOffset(Game game){
 			return Vector3.zero;
 		}
-		public int GetUISortingOrder(){
+		public int GetUISortingOrder(Game game){
 			return 0;
 		}
-		public bool GetHealthBar(){
+		public bool GetHealthBar(Game game){
 			return false;
 		}
 		public bool Process(Game game){
 			return game.GetLevel().NextTurn();
 		}
 		public void SetPosition(Game game, int x, int y){}
-		public void GetPosition(out int x, out int y){
+		public void GetPosition(Game game, out int x, out int y){
 			x = _NULL_X;
 			y = _NULL_Y;
 		}
 		public void RemovePosition(Game game){}
-		public Vector3 GetPosition(GridMap<Tile> map){
+		public Vector3 GetPosition(Game game){
 			return Vector3.zero;
 		}
 		public Tile GetTile(Game game){
@@ -161,8 +171,8 @@ public abstract class Unit{
 		public bool CheckCollision(Game game, Unit check){
 			return false;
 		}
-		public void SetAI(AI ai){}
-		public AI GetAI(){
+		public void SetAI(Game game, AI ai){}
+		public AI GetAI(Game game){
 			return AI.GetNullAI();
 		}
 		public void Discover(Game game, Tile tile){}
@@ -178,12 +188,16 @@ public abstract class Unit{
 		public void DoPickup(Game game, Inventory inventory){}
 		public void Exit(Game game){}
 		public void Trip(Game game, Unit unit){}
-		public Inventory GetInventory(){
+		public Inventory GetInventory(Game game){
 			return Inventory.GetNullInventory();
 		}
 		public bool CheckHostility(Game game, Unit unit){
 			return false;
 		}
+		public void SetPlayer(Game game){}
+		public void RemovePlayer(Game game){}
+		public void SetProxyID(Game game, Register<Unit>.ID id){}
+		public void RemoveProxyID(Game game){}
 		public bool CheckTransparency(Game game){
 			return true;
 		}
@@ -208,10 +222,10 @@ public abstract class Unit{
 		public static int GetNullY(){
 			return _NULL_Y;
 		}
-		public Attribute GetHealth(){
+		public Attribute GetHealth(Game game){
 			return Attribute.GetNullAttribute();
 		}
-		public Attribute GetArmour(){
+		public Attribute GetArmour(Game game){
 			return Attribute.GetNullAttribute();
 		}
 	}
@@ -286,6 +300,12 @@ public abstract class Unit{
 	public virtual IHostileTarget GetHostileTarget(){
 		return _NULL_UNIT;
 	}
+	public virtual IPlayable GetPlayable(){
+		return _NULL_UNIT;
+	}
+	public virtual IProxyable GetProxyable(){
+		return _NULL_UNIT;
+	}
 	public virtual Level.ILightControl GetLightControl(){
 		return _NULL_UNIT;
 	}
@@ -306,11 +326,13 @@ public abstract class Unit{
 	}
 	public static void Default_Spawn(Unit self, Game game, int x, int y){
 		self.GetRegisterable().AddToRegister(game.GetLevel().GetUnits());
+		self.GetPlayable().SetPlayer(game);
 		self.GetPositionable().SetPosition(game, x, y);
 		game.GetLevel().LightUpdate(game, self);
 	}
 	public static void Default_Despawn(Unit self, Game game){
 		self.GetPositionable().RemovePosition(game);
+		self.GetPlayable().RemovePlayer(game);
 		self.GetRegisterable().RemoveFromRegister(game.GetLevel().GetUnits());
 	}
 	public static void Default_SetPosition(Unit self, Game game, int newX, int newY, ref int x, ref int y, int moveSpeed = 0){
@@ -318,18 +340,24 @@ public abstract class Unit{
 		game.GetLevel().Get(newX, newY).GetHasUnits().AddUnit(game, self.GetRegisterable().GetID());
 		x = newX;
 		y = newY;
-		self.GetWorldUnit().GetWorldUnitController().SetWorldPosition(game.GetLevel().GetWorldPosition(x, y), moveSpeed);
+		self.GetWorldUnit().GetWorldUnitController(game).SetWorldPosition(game.GetLevel().GetWorldPosition(x, y), moveSpeed);
 	}
 	public static void Default_RemovePosition(Unit self, Game game, int x, int y){
 		game.GetLevel().Get(x, y).GetHasUnits().RemoveUnit(game, self.GetRegisterable().GetID());
 	}
 	public static void Default_Move(Unit self, Game game, Direction direction){
-		self.GetPositionable().GetPosition(out int oldX, out int oldY);
+		self.GetPositionable().GetPosition(game, out int oldX, out int oldY);
 		direction.GetTile(game.GetLevel(), oldX, oldY).GetWalkable().Walk(game, self);
 	}
 	public static void Default_Kill(Unit self, Game game){
 		self.GetSpawnable().Despawn(game);
 		self.GetKillable().OnKill(game);
+	}
+	public static void Default_SetPlayer(Game game, ref Register<Unit>.ID id){
+		game.GetPlayer().GetProxyable().SetProxyID(game, id);
+	}
+	public static void Default_RemovePlayer(Game game){
+		game.GetPlayer().GetProxyable().RemoveProxyID(game);
 	}
 	public static Unit GetNullUnit(){
 		return _NULL_UNIT;
