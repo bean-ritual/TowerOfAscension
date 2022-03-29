@@ -193,10 +193,10 @@ public class WorldUnit : MonoBehaviour{
 		Destroy(gameObject);
 	}
 	private void UnsubscribeFromEvents(){
-		_controller.OnWorldUnitSpriteUpdate += OnWorldUnitSpriteUpdate;
-		_controller.OnWorldUnitSortingOrderUpdate += OnWorldUnitSortingOrderUpdate;
-		_controller.OnWorldUnitWorldPositionUpdate += OnWorldUnitWorldPositionUpdate;
-		_unit.GetWorldUnitAnimations().OnAttackAnimation += OnAttackAnimation;
+		_controller.OnWorldUnitSpriteUpdate -= OnWorldUnitSpriteUpdate;
+		_controller.OnWorldUnitSortingOrderUpdate -= OnWorldUnitSortingOrderUpdate;
+		_controller.OnWorldUnitWorldPositionUpdate -= OnWorldUnitWorldPositionUpdate;
+		_unit.GetWorldUnitAnimations().OnAttackAnimation -= OnAttackAnimation;
 		_level.OnLightUpdate -= OnLightUpdate;
 	}
 	private void OnWorldUnitSpriteUpdate(object sender, EventArgs e){

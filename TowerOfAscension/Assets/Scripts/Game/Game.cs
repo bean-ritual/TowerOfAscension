@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 [Serializable]
 public class Game{
+	public static class GAME_DATA{
+		
+	}
 	[Serializable]
 	public class NullGame : Game{
 		public NullGame(){}
@@ -17,16 +20,17 @@ public class Game{
 		}
 	}
 	[field:NonSerialized]private static readonly NullGame _NULL_GAME = new NullGame();
+	private int _floor;
 	private Unit _player = Unit.GetNullUnit();
 	private Level _level = Level.GetNullLevel();
 	public Game(){
+		_floor = 0;
 		_player = new Hero();
 	}
 	public virtual bool Process(){
 		return _level.Process(this);
 	}
 	public virtual void NextLevel(){
-		DungeonMaster.GetInstance().BusyFrame();
 		DungeonMaster.GetInstance().QueueAction(() => LoadSystem.Load(LoadSystem.Scene.Game, NewLevel));
 	}
 	public virtual void NewLevel(){

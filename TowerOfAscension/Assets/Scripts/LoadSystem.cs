@@ -11,6 +11,7 @@ public static class LoadSystem{
 	private const string _LOADING_SCENE = "Loading";
 	private static Action OnLoadCallback;
 	public static void Load(Scene scene, Action GameContent){
+		UnityEngine.Debug.Log("Loading Scene :: " + scene.ToString());
 		OnLoadCallback = () => {
 			GameObject go = new GameObject("Content");
 			go.AddComponent<DummyMonoBehaviour>().StartCoroutine(LoadContent(scene, GameContent));

@@ -36,6 +36,8 @@ public class DungeonMaster : MonoBehaviour{
 	private void LateUpdate(){
 		if(!_busy && _actions.Count > 0){
 			_actions.Dequeue()?.Invoke();
+			_busy = true;
+			return;
 		}
 		_busy = false;
 	}
