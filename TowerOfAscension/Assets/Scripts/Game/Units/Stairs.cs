@@ -5,24 +5,20 @@ using UnityEngine;
 [Serializable]
 public class Stairs :
 	Unit,
-	WorldUnit.IWorldUnit,
+	VisualController.IVisualController,
 	Unit.ISpawnable,
 	Unit.ITripwire
 	{
 	private int _x = Unit.NullUnit.GetNullX();
 	private int _y = Unit.NullUnit.GetNullY();
-	private WorldUnit.WorldUnitController _controller = WorldUnit.WorldUnitController.GetNullWorldUnitController();
+	private VisualController _controller = VisualController.GetNullVisualController();
 	private Register<Unit>.ID _id = Register<Unit>.ID.GetNullID();
 	public Stairs(){
-		_controller = new WorldUnit.WorldUnitController(
-			SpriteSheet.SpriteID.Stairs,
-			0,
-			10,
-			Vector3.zero, 
-			0
-		);
+		_controller = new VisualController();
+		_controller.SetSpriteID(SpriteSheet.SpriteID.Stairs);
+		_controller.SetSortingOrder(10);
 	}
-	public WorldUnit.WorldUnitController GetWorldUnitController(Game game){
+	public virtual VisualController GetVisualController(Game game){
 		return _controller;
 	}
 	public bool GetWorldVisibility(Game game){
@@ -62,7 +58,7 @@ public class Stairs :
 	public void Trip(Game game, Unit unit){
 		unit.GetExitable().Exit(game);
 	}
-	public override WorldUnit.IWorldUnit GetWorldUnit(){
+	public override VisualController.IVisualController GetVisualController(){
 		return this;
 	}
 	public override Unit.ISpawnable GetSpawnable(){

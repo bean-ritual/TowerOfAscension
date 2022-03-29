@@ -8,7 +8,7 @@ public class UIUnit : MonoBehaviour{
 	private static ButtonInteract _NULL_INTERACT = (Unit unit) => {};
 	private Game _local = Game.GetNullGame();
 	private Unit _unit = Unit.GetNullUnit();
-	private WorldUnit.WorldUnitController _controller = WorldUnit.WorldUnitController.GetNullWorldUnitController();
+	private VisualController _controller = VisualController.GetNullVisualController();
 	private ButtonInteract Interact = _NULL_INTERACT;
 	[SerializeField]private Button _button;
 	[SerializeField]private Image _image;
@@ -19,7 +19,7 @@ public class UIUnit : MonoBehaviour{
 		UnsubcribeFromEvents();
 		_unit = unit;
 		_local = DungeonMaster.GetInstance().GetLocalGame();
-		_controller = unit.GetWorldUnit().GetWorldUnitController(_local);
+		_controller = unit.GetVisualController().GetVisualController(_local);
 		this.Interact = Interact;
 		_button.onClick.AddListener(OnClick);
 		Refresh();

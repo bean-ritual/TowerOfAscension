@@ -5,7 +5,7 @@ using UnityEngine;
 [Serializable]
 public class ClassicGen : 
 	Unit,
-	WorldUnit.IWorldUnit,
+	VisualController.IVisualController,
 	Unit.ISpawnable,
 	Unit.IProcessable,
 	Unit.IClassicGen
@@ -274,7 +274,7 @@ public class ClassicGen :
 	private int _x = Unit.NullUnit.GetNullX();
 	private int _y = Unit.NullUnit.GetNullY();
 	private Unit _player = Unit.GetNullUnit();
-	private WorldUnit.WorldUnitController _controller = WorldUnit.WorldUnitController.GetNullWorldUnitController();
+	private VisualController _controller = VisualController.GetNullVisualController();
 	private GenState _state = GenState.Null;
 	private List<Spawner> _structures;
 	private Queue<Spawner> _details;
@@ -283,13 +283,9 @@ public class ClassicGen :
 	private int _minBuild;
 	private int _build;
 	public ClassicGen(Unit player, int minBuild = 10, int maxExits = 1){
-		_controller = new WorldUnit.WorldUnitController(
-			SpriteSheet.SpriteID.Stairs,
-			1,
-			10,
-			Vector3.zero, 
-			0
-		);
+		_controller = new VisualController();
+		_controller.SetSprite(SpriteSheet.SpriteID.Stairs, 1);
+		_controller.SetSortingOrder(10);
 		_player = player;
 		_structures = new List<Spawner>();
 		_details = new Queue<Spawner>();
@@ -297,7 +293,7 @@ public class ClassicGen :
 		_minBuild = minBuild;
 		_build = 0;
 	}
-	public WorldUnit.WorldUnitController GetWorldUnitController(Game game){
+	public VisualController GetVisualController(Game game){
 		return _controller;
 	}
 	public bool GetWorldVisibility(Game game){
@@ -418,7 +414,7 @@ public class ClassicGen :
 		return false;
 	}
 	//
-	public override WorldUnit.IWorldUnit GetWorldUnit(){
+	public override VisualController.IVisualController GetVisualController(){
 		return this;
 	}
 	public override Unit.ISpawnable GetSpawnable(){

@@ -5,8 +5,6 @@ using UnityEngine;
 [Serializable]
 public abstract class AIUnit : 
 	LevelUnit,
-	WorldUnit.IWorldUnitUI,
-	WorldUnit.IWorldUnitAnimations,
 	Unit.IMoveable,
 	Unit.IControllable,
 	Unit.IAttackable,
@@ -15,23 +13,10 @@ public abstract class AIUnit :
 	Health.IHasHealth,
 	Armour.IHasArmour
 	{
-	private static readonly Vector3 _UI_OFFSET = new Vector3(0, 0.9f);
-	[field:NonSerialized]public	event EventHandler<EventArgs> OnWorldUnitUIUpdate;
-	[field:NonSerialized]public event EventHandler<WorldUnit.UnitAnimateEventArgs> OnAttackAnimation;
-	protected int uiSortingOrder = 100;
 	protected AI _ai = AI.GetNullAI();
 	protected Attribute _health = Attribute.GetNullAttribute();
 	protected Attribute _armour = Attribute.GetNullAttribute();
 	public AIUnit(){}
-	public virtual Vector3 GetUIOffset(Game game){
-		return _UI_OFFSET;
-	}
-	public virtual int GetUISortingOrder(Game game){
-		return _controller.GetSortingOrder() + uiSortingOrder;
-	}
-	public virtual bool GetHealthBar(Game game){
-		return true;
-	}
 	public virtual void Move(Game game, Direction direction){
 		Unit.Default_Move(this, game, direction);
 	}
@@ -55,7 +40,7 @@ public abstract class AIUnit :
 	public virtual void OnAttack(Game game, Tile tile){
 		tile.GetXY(out int x, out int y);
 		_ai.GetTurnControl().EndTurn(game, this);
-		OnAttackAnimation?.Invoke(this, new WorldUnit.UnitAnimateEventArgs(this, (game.GetLevel().GetWorldPosition(x, y) + game.GetLevel().GetWorldPosition(_x, _y)) / 2));
+		_controller.InvokeAttackAnimation((game.GetLevel().GetWorldPosition(x, y) + game.GetLevel().GetWorldPosition(_x, _y)) / 2);
 	}
 	public virtual void Kill(Game game){
 		Default_Kill(this, game);
@@ -71,12 +56,6 @@ public abstract class AIUnit :
 	}
 	public Attribute GetArmour(Game game){
 		return _armour;
-	}
-	public override WorldUnit.IWorldUnitUI GetWorldUnitUI(){
-		return this;
-	}
-	public override WorldUnit.IWorldUnitAnimations GetWorldUnitAnimations(){
-		return this;
 	}
 	public override Unit.IMoveable GetMoveable(){
 		return this;

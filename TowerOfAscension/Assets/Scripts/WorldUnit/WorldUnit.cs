@@ -3,129 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 public class WorldUnit : MonoBehaviour{
-	[Serializable]
-	public class WorldUnitController{
-		[Serializable]
-		public class NullWorldUnitContoller : WorldUnitController{
-			public NullWorldUnitContoller(){}
-			public override void SetSpriteID(SpriteSheet.SpriteID spriteID){}
-			public override void SetSpriteIndex(int spriteIndex){}
-			public override void SetSprite(SpriteSheet.SpriteID spriteID, int spriteIndex){}
-			public override Sprite GetSprite(){
-				return SpriteSheet.NullSpriteSheet.GetNullSprite();
-			}
-			public override void SetSortingOrder(int sortingOrder){}
-			public override int GetSortingOrder(){
-				return 0;
-			}
-			public override void SetPosition(Vector3 worldPosition){}
-			public override void SetMoveSpeed(int moveSpeed){}
-			public override void SetWorldPosition(Vector3 worldPosition, int moveSpeed){}
-			public override Vector3 GetWorldPosition(){
-				return Vector3.zero;
-			}
-			public override int GetMoveSpeed(){
-				return 0;
-			}
-			public override bool IsNull(){
-				return true;
-			}	
-		}
-		[field:NonSerialized]private static readonly NullWorldUnitContoller _NULL_WORLD_UNIT_CONTROLLER = new NullWorldUnitContoller();
-		[field:NonSerialized]public event EventHandler<EventArgs> OnWorldUnitSpriteUpdate;
-		[field:NonSerialized]public event EventHandler<EventArgs> OnWorldUnitSortingOrderUpdate;
-		[field:NonSerialized]public event EventHandler<EventArgs> OnWorldUnitWorldPositionUpdate;
-		private SpriteSheet.SpriteID _spriteID;
-		private int _spriteIndex;
-		private int _sortingOrder;
-		private Vector3 _worldPosition;
-		private int _moveSpeed;
-		public WorldUnitController(
-			SpriteSheet.SpriteID spriteID, 
-			int spriteIndex, 
-			int sortingOrder, 
-			Vector3 worldPosition, 
-			int moveSpeed
-			){
-			_spriteID = spriteID;
-			_spriteIndex = spriteIndex;
-			_sortingOrder = sortingOrder;
-			_worldPosition = worldPosition;
-			_moveSpeed = moveSpeed;
-		}
-		public WorldUnitController(){}
-		public virtual void SetSpriteID(SpriteSheet.SpriteID spriteID){
-			_spriteID = spriteID;
-			OnWorldUnitSpriteUpdate?.Invoke(this, EventArgs.Empty);
-		}
-		public virtual void SetSpriteIndex(int spriteIndex){
-			_spriteIndex = spriteIndex;
-			OnWorldUnitSpriteUpdate?.Invoke(this, EventArgs.Empty);
-		}
-		public virtual void SetSprite(SpriteSheet.SpriteID spriteID, int spriteIndex){
-			_spriteID = spriteID;
-			_spriteIndex = spriteIndex;
-			OnWorldUnitSpriteUpdate?.Invoke(this, EventArgs.Empty);
-		}
-		public virtual Sprite GetSprite(){
-			return SpriteSheet.SPRITESHEET_DATA.GetSprite(_spriteID, _spriteIndex);
-		}
-		public virtual void SetSortingOrder(int sortingOrder){
-			_sortingOrder = sortingOrder;
-		}
-		public virtual int GetSortingOrder(){
-			return _sortingOrder;
-		}
-		public virtual void SetPosition(Vector3 worldPosition){
-			_worldPosition = worldPosition;
-			OnWorldUnitWorldPositionUpdate?.Invoke(this, EventArgs.Empty);
-		}
-		public virtual void SetMoveSpeed(int moveSpeed){
-			_moveSpeed = moveSpeed;
-		}
-		public virtual void SetWorldPosition(Vector3 worldPosition, int moveSpeed){
-			_worldPosition = worldPosition;
-			_moveSpeed = moveSpeed;
-			OnWorldUnitWorldPositionUpdate?.Invoke(this, EventArgs.Empty);
-		}
-		public virtual Vector3 GetWorldPosition(){
-			return _worldPosition;
-		}
-		public virtual int GetMoveSpeed(){
-			return _moveSpeed;
-		}
-		public virtual bool IsNull(){
-			return false;
-		}
-		public static WorldUnitController GetNullWorldUnitController(){
-			return _NULL_WORLD_UNIT_CONTROLLER;
-		}
-	}
-	public class UnitAnimateEventArgs : EventArgs{
-		public Unit unit;
-		public Vector3 position;
-		public UnitAnimateEventArgs(Unit unit, Vector3 position){
-			this.unit = unit;
-			this.position = position;
-		}
-	}
-	public interface IWorldUnit{
-		WorldUnit.WorldUnitController GetWorldUnitController(Game game);
-		bool GetWorldVisibility(Game game);
-	}
-	public interface IWorldUnitUI{
-		event EventHandler<EventArgs> OnWorldUnitUIUpdate;
-		Vector3 GetUIOffset(Game game);
-		int GetUISortingOrder(Game game);
-		bool GetHealthBar(Game game);
-	}
-	public interface IWorldUnitAnimations{
-		event EventHandler<UnitAnimateEventArgs> OnAttackAnimation;
-	}
 	private Unit _unit = Unit.GetNullUnit();
-	private WorldUnitController _controller = WorldUnitController.GetNullWorldUnitController();
+	private VisualController _controller = VisualController.GetNullVisualController();
 	private Game _local = Game.GetNullGame();
-	private Level _level = Level.GetNullLevel();
 	[SerializeField]private GameObject _offset;
 	[SerializeField]private SpriteRenderer _renderer;
 	[SerializeField]private WorldUnitUI _worldUnitUI;
@@ -136,22 +16,21 @@ public class WorldUnit : MonoBehaviour{
 		UnsubscribeFromEvents();
 		_unit = unit;
 		_local = DungeonMaster.GetInstance().GetLocalGame();
-		_controller = unit.GetWorldUnit().GetWorldUnitController(_local);
-		_controller.OnWorldUnitSpriteUpdate += OnWorldUnitSpriteUpdate;
-		_controller.OnWorldUnitSortingOrderUpdate += OnWorldUnitSortingOrderUpdate;
-		_controller.OnWorldUnitWorldPositionUpdate += OnWorldUnitWorldPositionUpdate;
-		_unit.GetWorldUnitAnimations().OnAttackAnimation += OnAttackAnimation;
-		_level = _local.GetLevel();
-		_level.OnLightUpdate += OnLightUpdate;
+		_controller = unit.GetVisualController().GetVisualController(_local);
+		_controller.OnSpriteUpdate += OnSpriteUpdate;
+		_controller.OnSortingOrderUpdate += OnSortingOrderUpdate;
+		_controller.OnWorldPositionUpdate += OnWorldPositionUpdate;
+		_controller.OnAttackAnimation += OnAttackAnimation;
+		_local.GetLevel().OnLightUpdate += OnLightUpdate;
 		_worldUnitUI.Setup(_unit);
 		RefreshAll();
 	}
 	public void RefreshAll(){
-		_offset.transform.localPosition = _level.GetVector3CellOffset();
+		_offset.transform.localPosition = _local.GetLevel().GetVector3CellOffset();
 		RefreshSprite();
 		RefreshSortingOrder();
 		this.transform.localPosition = _controller.GetWorldPosition();
-		_worldUnitUI.Refresh();
+		_worldUnitUI.RefreshAll();
 		RefreshVisibility();
 	}
 	public void RefreshSprite(){
@@ -169,7 +48,7 @@ public class WorldUnit : MonoBehaviour{
 		}
 	}
 	public void RefreshVisibility(){
-		_offset.SetActive(_unit.GetWorldUnit().GetWorldVisibility(_local));
+		_offset.SetActive(_unit.GetVisualController().GetWorldVisibility(_local));
 	}
 	public IEnumerator LerpToTarget(Vector3 target, float duration, Action OnAnimationComplete){
 		float time = 0f;
@@ -199,22 +78,22 @@ public class WorldUnit : MonoBehaviour{
 		Destroy(gameObject);
 	}
 	private void UnsubscribeFromEvents(){
-		_controller.OnWorldUnitSpriteUpdate -= OnWorldUnitSpriteUpdate;
-		_controller.OnWorldUnitSortingOrderUpdate -= OnWorldUnitSortingOrderUpdate;
-		_controller.OnWorldUnitWorldPositionUpdate -= OnWorldUnitWorldPositionUpdate;
-		_unit.GetWorldUnitAnimations().OnAttackAnimation -= OnAttackAnimation;
-		_level.OnLightUpdate -= OnLightUpdate;
+		_controller.OnSpriteUpdate -= OnSpriteUpdate;
+		_controller.OnSortingOrderUpdate -= OnSortingOrderUpdate;
+		_controller.OnWorldPositionUpdate -= OnWorldPositionUpdate;
+		_controller.OnAttackAnimation -= OnAttackAnimation;
+		_local.GetLevel().OnLightUpdate -= OnLightUpdate;
 	}
-	private void OnWorldUnitSpriteUpdate(object sender, EventArgs e){
+	private void OnSpriteUpdate(object sender, EventArgs e){
 		RefreshSprite();
 	}
-	private void OnWorldUnitSortingOrderUpdate(object sender, EventArgs e){
+	private void OnSortingOrderUpdate(object sender, EventArgs e){
 		RefreshSortingOrder();
 	}
-	private void OnWorldUnitWorldPositionUpdate(object sender, EventArgs e){
+	private void OnWorldPositionUpdate(object sender, EventArgs e){
 		RefreshWorldPosition();
 	}
-	private void OnAttackAnimation(object sender, UnitAnimateEventArgs e){
+	private void OnAttackAnimation(object sender, VisualController.VisualAnimateEventArgs e){
 		RefreshVisibility();
 		if(!_offset.activeSelf){
 			return;

@@ -91,9 +91,7 @@ public abstract class Unit{
 	public class NullUnit : 
 		Unit,
 		Register<Unit>.IRegisterable,
-		WorldUnit.IWorldUnit,
-		WorldUnit.IWorldUnitUI,
-		WorldUnit.IWorldUnitAnimations,
+		VisualController.IVisualController,
 		Unit.IProcessable,
 		Unit.IPositionable,
 		Unit.ISpawnable,
@@ -121,8 +119,6 @@ public abstract class Unit{
 		Health.IHasHealth,
 		Armour.IHasArmour
 		{
-		[field:NonSerialized]public event EventHandler<EventArgs> OnWorldUnitUIUpdate;
-		[field:NonSerialized]public event EventHandler<WorldUnit.UnitAnimateEventArgs> OnAttackAnimation;
 		private const int _NULL_X = -1;
 		private const int _NULL_Y = -1;
 		public NullUnit(){}
@@ -134,19 +130,10 @@ public abstract class Unit{
 		public Register<Unit>.ID GetID(){
 			return Register<Unit>.ID.GetNullID();
 		}
-		public WorldUnit.WorldUnitController GetWorldUnitController(Game game){
-			return WorldUnit.WorldUnitController.GetNullWorldUnitController();
+		public VisualController GetVisualController(Game game){
+			return VisualController.GetNullVisualController();
 		}
 		public bool GetWorldVisibility(Game game){
-			return false;
-		}
-		public Vector3 GetUIOffset(Game game){
-			return Vector3.zero;
-		}
-		public int GetUISortingOrder(Game game){
-			return 0;
-		}
-		public bool GetHealthBar(Game game){
 			return false;
 		}
 		public bool Process(Game game){
@@ -237,13 +224,7 @@ public abstract class Unit{
 	public virtual Register<Unit>.IRegisterable GetRegisterable(){
 		return _NULL_UNIT;
 	}
-	public virtual WorldUnit.IWorldUnit GetWorldUnit(){
-		return _NULL_UNIT;
-	}
-	public virtual WorldUnit.IWorldUnitUI GetWorldUnitUI(){
-		return _NULL_UNIT;
-	}
-	public virtual WorldUnit.IWorldUnitAnimations GetWorldUnitAnimations(){
+	public virtual VisualController.IVisualController GetVisualController(){
 		return _NULL_UNIT;
 	}
 	public virtual IProcessable GetProcessable(){
@@ -340,7 +321,7 @@ public abstract class Unit{
 		game.GetLevel().Get(newX, newY).GetHasUnits().AddUnit(game, self.GetRegisterable().GetID());
 		x = newX;
 		y = newY;
-		self.GetWorldUnit().GetWorldUnitController(game).SetWorldPosition(game.GetLevel().GetWorldPosition(x, y), moveSpeed);
+		self.GetVisualController().GetVisualController(game).SetWorldPosition(game.GetLevel().GetWorldPosition(x, y), moveSpeed);
 	}
 	public static void Default_RemovePosition(Unit self, Game game, int x, int y){
 		game.GetLevel().Get(x, y).GetHasUnits().RemoveUnit(game, self.GetRegisterable().GetID());

@@ -16,13 +16,9 @@ public class Hero :
 	private Inventory _inventory = Inventory.GetNullInventory();
 	public Hero(){
 		_ai = new PlayerControl();
-		_controller = new WorldUnit.WorldUnitController(
-			SpriteSheet.SpriteID.Hero,
-			0,
-			20,
-			Vector3.zero, 
-			0
-		);
+		_controller = new VisualController();
+		_controller.SetSpriteID(SpriteSheet.SpriteID.Hero);
+		_controller.SetSortingOrder(20);
 		_health = new Health(95);
 		_inventory = new Equipment();
 	}
@@ -40,9 +36,6 @@ public class Hero :
 	}
 	public void RemoveProxyID(Game game){
 		_id = Register<Unit>.ID.GetNullID();
-	}
-	public override bool GetHealthBar(Game game){
-		return false;
 	}
 	public override void Attack(Game game, Direction direction){
 		direction.GetTile(game.GetLevel(), _x, _y).GetAttackable().Attacked(game, this, 100);

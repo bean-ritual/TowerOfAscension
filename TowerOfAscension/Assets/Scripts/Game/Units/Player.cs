@@ -4,9 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 public class Player :
 	Unit,
-	WorldUnit.IWorldUnit,
-	WorldUnit.IWorldUnitUI,
-	WorldUnit.IWorldUnitAnimations,
+	VisualController.IVisualController,
 	Unit.ISpawnable,
 	Unit.IPlayable,
 	Unit.IProcessable,
@@ -25,8 +23,6 @@ public class Player :
 	Armour.IHasArmour,
 	Level.ILightSource
 	{
-	[field:NonSerialized]public	event EventHandler<EventArgs> OnWorldUnitUIUpdate;
-	[field:NonSerialized]public event EventHandler<WorldUnit.UnitAnimateEventArgs> OnAttackAnimation;
 	private Register<Unit>.ID _id = Register<Unit>.ID.GetNullID();
 	public Player(){}
 	//
@@ -67,15 +63,6 @@ public class Player :
 	public int GetLightRange(Game game){
 		return game.GetPlayer().GetLightSource().GetLightRange(game);
 	}
-	public Vector3 GetUIOffset(Game game){
-		return game.GetPlayer().GetWorldUnitUI().GetUIOffset(game);
-	}
-	public int GetUISortingOrder(Game game){
-		return game.GetPlayer().GetWorldUnitUI().GetUISortingOrder(game);
-	}
-	public bool GetHealthBar(Game game){
-		return game.GetPlayer().GetWorldUnitUI().GetHealthBar(game);;
-	}
 	public void Move(Game game, Direction direction){
 		game.GetPlayer().GetMoveable().Move(game, direction);
 	}
@@ -109,11 +96,11 @@ public class Player :
 	public Attribute GetArmour(Game game){
 		return game.GetPlayer().GetHasArmour().GetArmour(game);
 	}
-	public WorldUnit.WorldUnitController GetWorldUnitController(Game game){
-		return game.GetPlayer().GetWorldUnit().GetWorldUnitController(game);
+	public VisualController GetVisualController(Game game){
+		return game.GetPlayer().GetVisualController().GetVisualController(game);
 	}
 	public bool GetWorldVisibility(Game game){
-		return game.GetPlayer().GetWorldUnit().GetWorldVisibility(game);
+		return game.GetPlayer().GetVisualController().GetWorldVisibility(game);
 	}
 	public void SetPosition(Game game, int x, int y){
 		game.GetPlayer().GetPositionable().SetPosition(game, x, y);
@@ -161,7 +148,7 @@ public class Player :
 	public override Level.ILightSource GetLightSource(){
 		return this;
 	}
-	public override WorldUnit.IWorldUnit GetWorldUnit(){
+	public override VisualController.IVisualController GetVisualController(){
 		return this;
 	}
 	public override Unit.ISpawnable GetSpawnable(){
@@ -177,12 +164,6 @@ public class Player :
 		return this;
 	}
 	public override Unit.ICollideable GetCollideable(){
-		return this;
-	}
-	public override WorldUnit.IWorldUnitUI GetWorldUnitUI(){
-		return this;
-	}
-	public override WorldUnit.IWorldUnitAnimations GetWorldUnitAnimations(){
 		return this;
 	}
 	public override Unit.IMoveable GetMoveable(){

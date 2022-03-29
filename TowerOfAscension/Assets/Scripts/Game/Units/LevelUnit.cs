@@ -5,17 +5,17 @@ using UnityEngine;
 [Serializable]
 public abstract class LevelUnit : 
 	Unit,
-	WorldUnit.IWorldUnit,
+	VisualController.IVisualController,
 	Unit.ISpawnable,
 	Unit.IProcessable,
 	Unit.ICollideable
 	{
-	protected WorldUnit.WorldUnitController _controller = WorldUnit.WorldUnitController.GetNullWorldUnitController();
+	protected VisualController _controller = VisualController.GetNullVisualController();
 	protected int _x = Unit.NullUnit.GetNullX();
 	protected int _y = Unit.NullUnit.GetNullY();
 	protected Register<Unit>.ID _id = Register<Unit>.ID.GetNullID();
 	public LevelUnit(){}
-	public virtual WorldUnit.WorldUnitController GetWorldUnitController(Game game){
+	public virtual VisualController GetVisualController(Game game){
 		return _controller;
 	}
 	public virtual bool GetWorldVisibility(Game game){
@@ -58,7 +58,7 @@ public abstract class LevelUnit :
 	public virtual bool CheckCollision(Game game, Unit check){
 		return true;
 	}
-	public override WorldUnit.IWorldUnit GetWorldUnit(){
+	public override VisualController.IVisualController GetVisualController(){
 		return this;
 	}
 	public override Unit.ISpawnable GetSpawnable(){

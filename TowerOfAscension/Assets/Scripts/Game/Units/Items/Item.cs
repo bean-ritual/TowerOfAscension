@@ -13,13 +13,9 @@ public class Item :
 		}
 	}
 	public Item(){
-		_controller = new WorldUnit.WorldUnitController(
-			SpriteSheet.SpriteID.Potions,
-			0,
-			20,
-			Vector3.zero, 
-			0
-		);
+		_controller = new VisualController();
+		_controller.SetSpriteID(SpriteSheet.SpriteID.Potions);
+		_controller.SetSortingOrder(20);
 	}
 	public void TryPickup(Game game, Unit unit){
 		unit.GetHasInventory().GetInventory(game).GetPickupable().AttemptPickup(game, this);

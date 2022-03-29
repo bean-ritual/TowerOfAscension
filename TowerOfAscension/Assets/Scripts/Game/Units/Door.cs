@@ -20,13 +20,9 @@ public class Door :
 	private bool _locked;
 	public Door(){
 		_locked = true;
-		_controller = new WorldUnit.WorldUnitController(
-			SpriteSheet.SpriteID.Door,
-			0,
-			30,
-			Vector3.zero, 
-			0
-		);
+		_controller = new VisualController();
+		_controller.SetSpriteID(SpriteSheet.SpriteID.Door);
+		_controller.SetSortingOrder(30);
 	}
 	public void Interact(Game game, Unit unit){
 		_locked ^= true;
