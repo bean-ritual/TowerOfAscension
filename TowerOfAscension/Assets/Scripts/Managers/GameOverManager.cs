@@ -8,6 +8,9 @@ public class GameOverManager : MonoBehaviour{
 	private Game _over = Game.GetNullGame();
 	[SerializeField]private Button _exit;
 	[SerializeField]private TextMeshProUGUI _scoreText;
+	private void OnDisable(){
+		
+	}
 	private void Awake(){
 		GameManager.GetInstance().RingTheDinkster();
 		if(_INSTANCE != null){
@@ -20,12 +23,11 @@ public class GameOverManager : MonoBehaviour{
 		RefreshScore();
 	}
 	public void RefreshScore(){
-		const string SCORE_TEXT = "Score: ";
+		const string SCORE_TEXT = "Floor: ";
 		_scoreText.text = SCORE_TEXT + _over.GetFloor();
 	}
 	public void OnExit(){
-		UnityEngine.Debug.Log("Exit");
-		DungeonMaster.DUNGEONMASTER_DATA.NewGame();
+		LoadSystem.Load(LoadSystem.Scene.Main, null);
 	}
 	public static GameOverManager GetInstance(){
 		return _INSTANCE;

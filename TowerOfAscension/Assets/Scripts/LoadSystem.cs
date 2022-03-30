@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 public static class LoadSystem{
 	private class DummyMonoBehaviour : MonoBehaviour{}
 	public enum Scene{
+		Main,
 		Game,
 		GameOver,
 	};

@@ -5,7 +5,12 @@ using UnityEngine;
 [Serializable]
 public class Game{
 	public static class GAME_DATA{
-		public static string RandomString(int length){
+		public static Game GetNewGame(){
+			Game game = new Game();
+			game.NewLevel();
+			return game;
+		}
+		public static string GetRandomString(int length){
 			const string letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 			char[] chars = new char[length];
 			for(int i = 0; i < chars.Length; i++){
@@ -45,10 +50,13 @@ public class Game{
 		return _level.Process(this);
 	}
 	public virtual void NextLevel(){
-		_floor = (_floor + 1);
-		DungeonMaster.GetInstance().QueueAction(() => LoadSystem.Load(LoadSystem.Scene.Game, NewLevel));
+		DungeonMaster.GetTriggers().QueueAction(() => LoadSystem.Load(LoadSystem.Scene.Game, NewLevel));
+	}
+	public virtual void GameOver(){
+		DungeonMaster.GetTriggers().QueueAction(() => LoadSystem.Load(LoadSystem.Scene.GameOver, null));
 	}
 	public virtual void NewLevel(){
+		_floor = (_floor + 1);
 		_level = new Level(100, 100);
 		_level.GetMidPoint(out int x, out int y);
 		ClassicGen classic = new ClassicGen(_player, 10);
@@ -58,15 +66,12 @@ public class Game{
 			classic.Process(this);
 			if(classic.IsFinished()){
 				UnityEngine.Debug.Log("Game :: NewLevel() :: Completed");
-				//SaveSystem.Save(this);
+				SaveSystem.Save(this);
 				return;
 			}
 		}
 		UnityEngine.Debug.Log("Game :: NewLevel() :: Failed");
 		NewLevel();
-	}
-	public virtual void GameOver(){
-		DungeonMaster.GetInstance().QueueAction(() => LoadSystem.Load(LoadSystem.Scene.GameOver, null));
 	}
 	public virtual Unit GetPlayer(){
 		return _player;

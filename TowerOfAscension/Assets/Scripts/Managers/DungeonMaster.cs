@@ -2,23 +2,33 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-public class DungeonMaster : MonoBehaviour{
+public class DungeonMaster : 
+	MonoBehaviour,
+	DungeonMaster.IGameTriggers
+	{
 	public static class DUNGEONMASTER_DATA{
 		private static Game _game = Game.GetNullGame();
-		static DUNGEONMASTER_DATA(){
-			NewGame();
-		}
-		public static void NewGame(){
-			_game = new Game();
-			_game.NewLevel();
-		}
 		public static void SetGame(Game game){
 			_game = game;
+		}
+		public static void ClearGame(){
+			_game = Game.GetNullGame();
 		}
 		public static Game GetGame(){
 			return _game;
 		}
 	}
+	public interface IGameTriggers{
+		void QueueAction(Action action);
+	}
+	public class NullGameTriggers :
+		IGameTriggers
+		{
+		public void QueueAction(Action action){
+			UnityEngine.Debug.Log("NullGameTriggers");
+		}
+	}
+	private static readonly NullGameTriggers _NULL_GAME_TRIGGERS = new NullGameTriggers();
 	private static DungeonMaster _INSTANCE;
 	private Game _local = Game.GetNullGame();
 	private Queue<Action> _actions;
@@ -54,15 +64,6 @@ public class DungeonMaster : MonoBehaviour{
 			if(!_local.Process()){
 				yield return _update;
 			}
-			InputHandling();
-		}
-	}
-	public void InputHandling(){
-		if(Input.GetKeyDown(KeyCode.F5)){
-			Save();
-		}
-		if(Input.GetKeyDown(KeyCode.F9)){
-			Load();
 		}
 	}
 	public void QueueAction(Action action){
@@ -86,16 +87,6 @@ public class DungeonMaster : MonoBehaviour{
 			_local.Process();
 		}
 	}
-	public void Save(){
-		SaveSystem.Save(_local);
-	}
-	public void Load(){
-		if(!SaveSystem.Load(out Game file)){
-			file = Game.GetNullGame();
-		}
-		DUNGEONMASTER_DATA.SetGame(file);
-		LoadSystem.Load(LoadSystem.Scene.Game, null);
-	}
 	public Game GetLocalGame(){
 		return _local;
 	}
@@ -103,6 +94,12 @@ public class DungeonMaster : MonoBehaviour{
 		return _local.GetLevel();
 	}
 	public static DungeonMaster GetInstance(){
+		return _INSTANCE;
+	}
+	public static IGameTriggers GetTriggers(){
+		if(_INSTANCE == null){
+			return _NULL_GAME_TRIGGERS;
+		}
 		return _INSTANCE;
 	}
 }
