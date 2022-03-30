@@ -98,7 +98,7 @@ public class Level : GridMap<Tile>{
 		return (_index > 0);
 	}
 	public virtual void ResetTurn(){
-		_index = 0;
+		_index = -1;
 	}
 	public virtual Inventory GetUnits(){
 		return _units;

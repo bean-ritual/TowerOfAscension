@@ -6,8 +6,11 @@ public class DungeonMaster : MonoBehaviour{
 	public static class DUNGEONMASTER_DATA{
 		private static Game _game = Game.GetNullGame();
 		static DUNGEONMASTER_DATA(){
+			NewGame();
+		}
+		public static void NewGame(){
 			_game = new Game();
-			_game.NextLevel();
+			_game.NewLevel();
 		}
 		public static void SetGame(Game game){
 			_game = game;
@@ -26,6 +29,7 @@ public class DungeonMaster : MonoBehaviour{
 		GameManager.GetInstance().RingTheDinkster();
 		if(_INSTANCE != null){
 			Destroy(gameObject);
+			return;
 		}
 		_INSTANCE = this;
 		_actions = new Queue<Action>();

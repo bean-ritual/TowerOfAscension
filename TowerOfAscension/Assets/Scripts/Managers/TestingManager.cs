@@ -3,9 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 public class TestingManager : MonoBehaviour{
-	private Level _level = Level.GetNullLevel();
+	private Game _local = Game.GetNullGame();
 	private void Start(){
-		_level = DungeonMaster.GetInstance().GetLevel();
+		_local = DungeonMaster.GetInstance().GetLocalGame();
 	}
 	private void Update(){
 		if(Input.GetKeyDown(KeyCode.T)){
@@ -13,6 +13,6 @@ public class TestingManager : MonoBehaviour{
 		}
 	}
 	private void Test(){
-
+		_local.GameOver();
 	}
 }

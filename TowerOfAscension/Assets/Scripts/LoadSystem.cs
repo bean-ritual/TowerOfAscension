@@ -7,6 +7,7 @@ public static class LoadSystem{
 	private class DummyMonoBehaviour : MonoBehaviour{}
 	public enum Scene{
 		Game,
+		GameOver,
 	};
 	private const string _LOADING_SCENE = "Loading";
 	private static Action OnLoadCallback;
