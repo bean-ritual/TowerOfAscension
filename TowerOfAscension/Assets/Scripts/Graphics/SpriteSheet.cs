@@ -18,6 +18,7 @@ public class SpriteSheet{
 				SafeCreateSpriteSheet(Resources.LoadAll<Sprite>(SpriteID.Chestplates.ToString())),
 				SafeCreateSpriteSheet(Resources.LoadAll<Sprite>(SpriteID.Boots.ToString())),
 				SafeCreateSpriteSheet(Resources.LoadAll<Sprite>(SpriteID.Gold.ToString())),
+				SafeCreateSpriteSheet(Resources.LoadAll<Sprite>(SpriteID.Grave.ToString())),
 			};
 		}
 		public static SpriteSheet SafeCreateSpriteSheet(Sprite[] sprites){
@@ -46,6 +47,7 @@ public class SpriteSheet{
 				case SpriteID.Chestplates: return _SPRITESHEETS[7];
 				case SpriteID.Boots: return _SPRITESHEETS[8];
 				case SpriteID.Gold: return _SPRITESHEETS[9];
+				case SpriteID.Grave: return _SPRITESHEETS[10];
 			}
 		}
 	}
@@ -84,6 +86,7 @@ public class SpriteSheet{
 		Chestplates,
 		Boots,
 		Gold,
+		Grave,
 	};
 	[field:NonSerialized]private static readonly NullSpriteSheet _NULL_SPRITE_SHEET = new NullSpriteSheet();
 	private const int _DEFAULT_INDEX = 0;

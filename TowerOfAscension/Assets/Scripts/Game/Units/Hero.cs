@@ -31,6 +31,10 @@ public class Hero :
 	public override void Despawn(Game game){
 		game.GetLevel().GetUnits().Get(_id).GetSpawnable().Despawn(game);
 	}
+	public override void OnKill(Game game){
+		HeroGrave grave = new HeroGrave();
+		grave.Spawn(game, _x, _y);
+	}
 	public void SetProxyID(Game game, Register<Unit>.ID id){
 		_id = id;
 	}

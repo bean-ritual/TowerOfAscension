@@ -13,6 +13,7 @@ public class TestingManager : MonoBehaviour{
 		}
 	}
 	private void Test(){
-		_local.GameOver();
+		//_local.GameOver();
+		_local.GetPlayer().GetAttackable().Attacked(_local, Unit.GetNullUnit(), 100);
 	}
 }
