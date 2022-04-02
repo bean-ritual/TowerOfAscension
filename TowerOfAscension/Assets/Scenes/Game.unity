@@ -1028,6 +1028,7 @@ GameObject:
   - component: {fileID: 1239936458}
   - component: {fileID: 1239936457}
   - component: {fileID: 1239936456}
+  - component: {fileID: 1239936463}
   - component: {fileID: 1239936460}
   - component: {fileID: 1239936461}
   - component: {fileID: 1239936462}
@@ -1166,6 +1167,18 @@ MonoBehaviour:
   _prefabMinimap: {fileID: 2942695630886832542, guid: 94e363680c2f1c24db8b5b07d77ff464, type: 3}
   _minimapCamera: {fileID: 1250322579}
   _canvas: {fileID: 1239936458}
+--- !u!114 &1239936463
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1239936455}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f45a1829a602c4040839c3e42dd87c13, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1250322578
 GameObject:
   m_ObjectHideFlags: 0

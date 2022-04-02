@@ -37,6 +37,9 @@ public class Game{
 		public override int GetFloor(){
 			return -1;
 		}
+		public override bool IsNull(){
+			return true;
+		}	
 	}
 	[field:NonSerialized]private static readonly NullGame _NULL_GAME = new NullGame();
 	private int _floor;
@@ -53,7 +56,7 @@ public class Game{
 		DungeonMaster.GetTriggers().QueueAction(() => LoadSystem.Load(LoadSystem.Scene.Game, NewLevel));
 	}
 	public virtual void GameOver(){
-		DungeonMaster.GetTriggers().QueueAction(() => LoadSystem.Load(LoadSystem.Scene.GameOver, null));
+		DungeonMaster.GetTriggers().QueueAction(() => LoadSystem.Load(LoadSystem.Scene.GameOver, () => SaveSystem.Save(this)));
 	}
 	public virtual void NewLevel(){
 		_floor = (_floor + 1);
@@ -81,6 +84,9 @@ public class Game{
 	}
 	public virtual int GetFloor(){
 		return _floor;
+	}
+	public virtual bool IsNull(){
+		return false;
 	}
 	public static Game GetNullGame(){
 		return _NULL_GAME;

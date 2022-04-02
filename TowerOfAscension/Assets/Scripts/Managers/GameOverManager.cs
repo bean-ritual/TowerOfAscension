@@ -27,7 +27,7 @@ public class GameOverManager : MonoBehaviour{
 		_scoreText.text = SCORE_TEXT + _over.GetFloor();
 	}
 	public void OnExit(){
-		LoadSystem.Load(LoadSystem.Scene.Main, null);
+		LoadSystem.Load(LoadSystem.Scene.Main, () => SaveSystem.Save(Game.GetNullGame()));
 	}
 	public static GameOverManager GetInstance(){
 		return _INSTANCE;

@@ -13,12 +13,14 @@ public class PickupUIManager : MonoBehaviour{
 	[SerializeField]private GameObject _prefabUIInventory;
 	[SerializeField]private GameObject _prefabUIItem;
 	[SerializeField]private Canvas _canvas;
-	private void OnDestroy(){
+	private void OnDisable(){
+		SettingsSystem.GetConfig().ground = _uiWindow.GetUISizeData();
 		UnsubcribeFromEvents();
 	}
 	private void Awake(){
 		if(_INSTANCE != null){
 			Destroy(gameObject);
+			return;
 		}
 		_INSTANCE = this;
 		BuildUI();
@@ -32,17 +34,10 @@ public class PickupUIManager : MonoBehaviour{
 		_uiWindow = go.GetComponent<UIWindowManager>();
 		_uiWindow.Setup(
 			"Ground",
-			true,
+			false,
 			_canvas,
-			new UIWindowManager.UISizeData(
-				false,
-				new Vector2(500, 500),
-				new Vector2(250, 250),
-				new Vector2(100, 100),
-				new Vector2(1000, 1000)
-			)
+			SettingsSystem.GetConfig().ground
 		);
-		_uiWindow.SetActive(true);
 		GameObject go2 =  Instantiate(_prefabUIInventory, _uiWindow.GetContent().transform);
 		_content = go2.GetComponent<ContentManager>().GetContent();
 	}

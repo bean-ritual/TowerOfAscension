@@ -19,11 +19,15 @@ public class MainManager : MonoBehaviour{
 		_newGame.onClick.AddListener(OnNewGame);
 		_options.onClick.AddListener(OnOptions);
 		_exit.onClick.AddListener(OnExit);
+		if(SaveSystem.Load(out Game file)){
+			DungeonMaster.DUNGEONMASTER_DATA.SetGame(file);
+		}
+		if(DungeonMaster.DUNGEONMASTER_DATA.GetGame().IsNull()){
+			_continue.interactable = false;
+		}
 	}
 	public void OnContinue(){
-		if(SaveSystem.Load(out Game file)){
-			LoadSystem.Load(LoadSystem.Scene.Game, () => DungeonMaster.DUNGEONMASTER_DATA.SetGame(file));
-		}
+		LoadSystem.Load(LoadSystem.Scene.Game, null);
 	}
 	public void OnNewGame(){
 		LoadSystem.Load(LoadSystem.Scene.Game, () => DungeonMaster.DUNGEONMASTER_DATA.SetGame(Game.GAME_DATA.GetNewGame()));

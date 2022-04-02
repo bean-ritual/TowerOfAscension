@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 73c198cb2c3cafe4cbd4c31a0d4ab4c7
+guid: 4fa54daa065b74b429b0782a3627db09
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
@@ -10,7 +10,8 @@ TrueTypeFontImporter:
   includeFontData: 1
   fontNames:
   - Pixel Arial 11
-  fallbackFontReferences: []
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 73c198cb2c3cafe4cbd4c31a0d4ab4c7, type: 3}
   customCharacters: 
   fontRenderingMode: 0
   ascentCalculationMode: 1

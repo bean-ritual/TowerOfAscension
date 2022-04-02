@@ -20,6 +20,7 @@ public class PlayerController : MonoBehaviour{
 	private void Awake(){
 		if(_INSTANCE != null){
 			Destroy(gameObject);
+			return;
 		}
 		_INSTANCE = this;
 	}

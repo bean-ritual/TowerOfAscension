@@ -7,6 +7,7 @@ public static class SaveSystem{
 	private static readonly string _FILE_NAME = "Save";
 	private static readonly string _EXTENSION = ".save";
 	public static bool Save(Game file){
+		SettingsSystem.Save();
 		return SerializationUtils.SaveSerialized<Game>(
 			_FILE_NAME, 
 			file, 
@@ -16,6 +17,7 @@ public static class SaveSystem{
 		);
 	}
 	public static bool Load(out Game file){
+		SettingsSystem.Load();
 		return SerializationUtils.LoadSerialized<Game>(
 			_FILE_NAME, 
 			out file, 

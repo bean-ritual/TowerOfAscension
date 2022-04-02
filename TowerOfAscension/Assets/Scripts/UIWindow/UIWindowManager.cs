@@ -27,7 +27,7 @@ public class UIWindowManager : MonoBehaviour{
 		new Vector2(0.5f, 1),
 		new Vector2(1, 1),
 	};
-	[Serializable]
+	[Serializable()]
 	public struct UISizeData{
 		public bool forceAlways;
 		public Vector2 position;

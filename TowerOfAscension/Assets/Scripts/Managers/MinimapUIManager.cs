@@ -10,11 +10,17 @@ public class MinimapUIManager : MonoBehaviour{
 	[SerializeField]private GameObject _prefabMinimap;
 	[SerializeField]private CameraManager _minimapCamera;
 	[SerializeField]private Canvas _canvas;
+	private void OnDisable(){
+		SettingsSystem.GetConfig().minimap = _uiWindow.GetUISizeData();
+	}
 	private void Awake(){
 		if(_INSTANCE != null){
 			Destroy(gameObject);
+			return;
 		}
 		_INSTANCE = this;
+	}
+	private void Start(){
 		BuildUI();
 	}
 	public void BuildUI(){
@@ -24,15 +30,9 @@ public class MinimapUIManager : MonoBehaviour{
 			"Minimap",
 			true,
 			_canvas,
-			new UIWindowManager.UISizeData(
-				false,
-				new Vector2(500, 500),
-				new Vector2(250, 250),
-				new Vector2(100, 100),
-				new Vector2(1000, 1000)
-			)
+			SettingsSystem.GetConfig().minimap
 		);
-		_uiWindow.SetActive(true);
+		PlayerMenusManager.GetInstance().AddMenu(_uiWindow);
 		GameObject go2 =  Instantiate(_prefabMinimap, _uiWindow.GetContent().transform);
 		_texNav = go2.GetComponent<TextureNavigationManager>();
 		_texNav.Setup(_minimapCamera, _uiWindow);

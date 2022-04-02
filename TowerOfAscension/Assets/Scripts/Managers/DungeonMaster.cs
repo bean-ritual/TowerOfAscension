@@ -42,9 +42,11 @@ public class DungeonMaster :
 			return;
 		}
 		_INSTANCE = this;
-		_actions = new Queue<Action>();
 		_local = DUNGEONMASTER_DATA.GetGame();
-		//
+		_actions = new Queue<Action>();
+		if(_local.IsNull()){
+			_actions.Enqueue(() => LoadSystem.Load(LoadSystem.Scene.Main, () => SaveSystem.Save(_local)));
+		}
 		Play();
 	}
 	private void LateUpdate(){
