@@ -9,9 +9,9 @@ public class PlayerController : MonoBehaviour{
 	private Level _level = Level.GetNullLevel();
 	private Unit _player = Unit.GetNullUnit();
 	private Unit _previous = Unit.GetNullUnit();
-	[SerializeField]private float _cameraZoom = 7.5f;
-	[SerializeField]private float _cameraSpeed = 0.1f;
-	[SerializeField]private Vector3 _cameraOffset = new Vector3(0, 0, -10);
+	private const float _CAMERA_ZOOM = 10f;
+	private const float _CAMERA_SPEED = 10f;
+	private static readonly Vector3 _CAMERA_OFFSET = new Vector3(0, 0, -10);
 	[SerializeField]private CameraManager _camera;
 	private void OnDestroy(){
 		PlayerControl.OnPlayerControl -= OnPlayerControl;
@@ -70,9 +70,9 @@ public class PlayerController : MonoBehaviour{
 		_previous = _player;
 		_camera.Setup(
 			() => _previous.GetPositionable().GetPosition(_local), 
-			() => _cameraZoom, 
-			_cameraOffset, 
-			_cameraSpeed, 
+			() => _CAMERA_ZOOM, 
+			_CAMERA_OFFSET, 
+			_CAMERA_SPEED, 
 			true
 		);
 		HUDUIManager.GetInstance().SetUnit(_previous);

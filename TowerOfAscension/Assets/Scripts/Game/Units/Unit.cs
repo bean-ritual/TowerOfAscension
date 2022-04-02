@@ -54,10 +54,11 @@ public abstract class Unit{
 	}
 	public interface IPickupable{
 		void TryPickup(Game game, Unit unit);
-		void DoPickup(Game game, Inventory inventory);
+		void DoPickup(Game game, Unit unit, Inventory inventory);
 	}
 	public interface IDroppable{
-		void DoDrop(Game game, Inventory inventory);
+		void TryDrop(Game game, Unit unit);
+		void DoDrop(Game game, Unit unit, Inventory inventory);
 	}
 	public interface IExitable{
 		void Exit(Game game);
@@ -70,6 +71,10 @@ public abstract class Unit{
 	}
 	public interface IHostileTarget{
 		bool CheckHostility(Game game, Unit unit);
+	}
+	public interface IWeaponable{
+		void TryEquipWeapon(Game game, Unit unit);
+		void TryUnequipWeapon(Game game, Unit unit);
 	}
 	public interface IPlayable{
 		void SetPlayer(Game game);
@@ -106,10 +111,12 @@ public abstract class Unit{
 		Unit.IAttacker,
 		Unit.IKillable,
 		Unit.IPickupable,
+		Unit.IDroppable,
 		Unit.IExitable,
 		Unit.ITripwire,
 		Unit.IHasInventory,
 		Unit.IHostileTarget,
+		Unit.IWeaponable,
 		Unit.IPlayable,
 		Unit.IProxyable,
 		Level.ILightControl,
@@ -172,7 +179,9 @@ public abstract class Unit{
 		public void Kill(Game game){}
 		public void OnKill(Game game){}
 		public void TryPickup(Game game, Unit unit){}
-		public void DoPickup(Game game, Inventory inventory){}
+		public void DoPickup(Game game, Unit unit, Inventory inventory){}
+		public void TryDrop(Game game, Unit unit){}
+		public void DoDrop(Game game, Unit unit, Inventory inventory){}
 		public void Exit(Game game){}
 		public void Trip(Game game, Unit unit){}
 		public Inventory GetInventory(Game game){
@@ -181,6 +190,8 @@ public abstract class Unit{
 		public bool CheckHostility(Game game, Unit unit){
 			return false;
 		}
+		public void TryEquipWeapon(Game game, Unit unit){}
+		public void TryUnequipWeapon(Game game, Unit unit){}
 		public void SetPlayer(Game game){}
 		public void RemovePlayer(Game game){}
 		public void SetProxyID(Game game, Register<Unit>.ID id){}
@@ -269,6 +280,9 @@ public abstract class Unit{
 	public virtual IPickupable GetPickupable(){
 		return _NULL_UNIT;
 	}
+	public virtual IDroppable GetDroppable(){
+		return _NULL_UNIT;
+	}
 	public virtual IExitable GetExitable(){
 		return _NULL_UNIT;
 	}
@@ -279,6 +293,9 @@ public abstract class Unit{
 		return _NULL_UNIT;
 	}
 	public virtual IHostileTarget GetHostileTarget(){
+		return _NULL_UNIT;
+	}
+	public virtual IWeaponable GetWeaponable(){
 		return _NULL_UNIT;
 	}
 	public virtual IPlayable GetPlayable(){

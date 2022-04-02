@@ -39,12 +39,12 @@ public static class SettingsSystem{
 	private static readonly string _EXTENSION = ".cfg";
 	private static Config _config;
 	static SettingsSystem(){
-		if(!Load()){
-			_config = new Config();
+		if(_config == null){
+			Load();
 		}
 	}
-	public static bool Save(){
-		return SerializationUtils.SaveSerialized<Config>(
+	public static void Save(){
+		SerializationUtils.SaveSerialized<Config>(
 			_FILE_NAME, 
 			_config, 
 			SerializationUtils.BinaryFormatter(), 
@@ -52,14 +52,18 @@ public static class SettingsSystem{
 			_EXTENSION
 		);
 	}
-	public static bool Load(){
-		return SerializationUtils.LoadSerialized<Config>(
+	public static void Load(){
+		if(SerializationUtils.LoadSerialized<Config>(
 			_FILE_NAME, 
-			out _config, 
+			out Config config, 
 			SerializationUtils.BinaryFormatter(), 
 			_DIRECTORY, 
 			_EXTENSION
-		);
+		)){
+			_config = config;
+		}else{
+			_config = new Config();
+		}
 	}
 	public static Config GetConfig(){
 		return _config;

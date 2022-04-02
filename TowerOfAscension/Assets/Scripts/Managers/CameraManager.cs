@@ -5,8 +5,8 @@ using UnityEngine;
 public class CameraManager : MonoBehaviour{
 	private Func<Vector3> _following;
 	private Func<float> _zooming;
-	[SerializeField]private Vector3 _offset = new Vector3(0, 0, -10);
-	[SerializeField]private float _followSpeed = 0.1f;
+	private Vector3 _offset = new Vector3(0, 0, -10);
+	private float _followSpeed = 10f;
 	[SerializeField]private Camera _camera;
 	private void Update(){
 		Movement();
@@ -17,7 +17,7 @@ public class CameraManager : MonoBehaviour{
 			return;
 		}
 		Vector3 follow = _following() + _offset;
-		Vector3 smooth = Vector3.Lerp(_camera.transform.position, follow, _followSpeed);
+		Vector3 smooth = Vector3.Lerp(_camera.transform.position, follow, (_followSpeed * Time.deltaTime));
 		transform.position = smooth;
 	}
 	private void Zoom(){

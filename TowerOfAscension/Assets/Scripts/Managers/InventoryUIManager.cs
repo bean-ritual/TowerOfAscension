@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 public class InventoryUIManager : MonoBehaviour{
 	private static InventoryUIManager _INSTANCE;
-	private Level _level = Level.GetNullLevel();
+	private Game _local = Game.GetNullGame();
 	private Inventory _inventory = Inventory.GetNullInventory();
 	private Dictionary<Unit, UIUnit> _uiUnits;
 	private UIWindowManager _uiWindow;
@@ -25,7 +25,7 @@ public class InventoryUIManager : MonoBehaviour{
 		_INSTANCE = this;
 	}
 	private void Start(){
-		_level = DungeonMaster.GetInstance().GetLevel();
+		_local = DungeonMaster.GetInstance().GetLocalGame();
 		BuildUI();
 	}
 	public void BuildUI(){
@@ -55,7 +55,7 @@ public class InventoryUIManager : MonoBehaviour{
 	public void CreateUIUnit(Unit unit){
 		GameObject go = Instantiate(_prefabUIItem, _content);
 		UIUnit uiUnit = go.GetComponent<UIUnit>();
-		uiUnit.Setup(unit, UIUnit.GetNullInteract());
+		uiUnit.Setup(unit, InventoryInteract);
 		_uiUnits.Add(unit, uiUnit);
 	}
 	public void RemoveUIUnit(Unit unit){
@@ -68,6 +68,12 @@ public class InventoryUIManager : MonoBehaviour{
 	public void UnsubcribeFromEvents(){
 		_inventory.OnObjectAdded -= OnObjectAdded;
 		_inventory.OnObjectRemoved -= OnObjectRemoved;
+	}
+	public void InventoryInteract(Unit item){
+		Unit player = PlayerController.GetInstance().GetPlayer();
+		if(Input.GetKey(KeyCode.LeftShift)){
+			item.GetDroppable().TryDrop(_local, player);
+		}
 	}
 	private void OnObjectAdded(object sender, Register<Unit>.OnObjectChangedEventArgs e){
 		CreateUIUnit(e.value);

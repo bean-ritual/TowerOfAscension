@@ -5,15 +5,16 @@ using UnityEngine;
 [Serializable]
 public class Inventory : Register<Unit>{
 	public interface IPickupable{
-		void AttemptPickup(Game game, Unit unit);
+		void TryPickup(Game game, Unit holder, Unit item);
 	}
 	public interface IDroppable{
-		void TryDrop(Game game, Register<Unit>.ID id);
+		void TryDrop(Game game, Unit holder, Unit item);
 	}
 	[Serializable]
 	public class NullInventory : 
 		Inventory,
-		Inventory.IPickupable
+		Inventory.IPickupable,
+		Inventory.IDroppable
 		{
 		public NullInventory(){}
 		public override bool IsNull(){
@@ -33,6 +34,9 @@ public class Inventory : Register<Unit>{
 			return Register<Unit>.ID.GetNullID();
 		}
 		public override bool Contains(Register<Unit>.ID id){
+			return false;
+		}
+		public override bool Contains(Unit unit){
 			return false;
 		}
 		public override bool Contains(int index){
@@ -56,7 +60,8 @@ public class Inventory : Register<Unit>{
 		public override int GetCount(){
 			return 0;
 		}
-		public void AttemptPickup(Game game, Unit unit){}
+		public void TryPickup(Game game, Unit holder, Unit item){}
+		public void TryDrop(Game game, Unit holder, Unit item){}
 	}
 	[field:NonSerialized]private static readonly NullInventory _NULL_INVENTORY = new NullInventory();
 	public Inventory(){}
@@ -67,6 +72,9 @@ public class Inventory : Register<Unit>{
 		return Unit.GetNullUnit();
 	}
 	public virtual IPickupable GetPickupable(){
+		return _NULL_INVENTORY;
+	}
+	public virtual IDroppable GetDroppable(){
 		return _NULL_INVENTORY;
 	}
 	public static Inventory GetNullInventory(){

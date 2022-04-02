@@ -115,6 +115,9 @@ public abstract class Register<TStoreObject> : Register<TStoreObject>.RegisterEv
 	public virtual bool Contains(ID id){
 		return _register.ContainsKey(id);
 	}
+	public virtual bool Contains(TStoreObject value){
+		return _register.ContainsValue(value);
+	}
 	public virtual bool Contains(int index){
 		return _register.ContainsKey(_ids[index]);
 	}
