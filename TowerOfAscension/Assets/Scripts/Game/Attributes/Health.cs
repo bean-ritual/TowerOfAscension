@@ -30,6 +30,7 @@ public class Health :
 			self.GetKillable().Kill(game);
 		}
 		AttributeUpdateEvent();
+		self.GetVisualController().GetVisualController(game).InvokeDamagePopup("-" + value);
 	}
 	public override int GetValue(){
 		return _value;

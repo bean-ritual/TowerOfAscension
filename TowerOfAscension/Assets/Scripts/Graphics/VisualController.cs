@@ -46,11 +46,18 @@ public class VisualController{
 			return true;
 		}
 		public override void InvokeAttackAnimation(Vector3 position){}
+		public override void InvokeDamagePopup(string damage){}
 	}
 	public class VisualAnimateEventArgs : EventArgs{
 		public Vector3 position;
 		public VisualAnimateEventArgs(Vector3 position){
 			this.position = position;
+		}
+	}
+	public class DamagePopupEventArgs : EventArgs{
+		public string text;
+		public DamagePopupEventArgs(string text){
+			this.text = text;
 		}
 	}
 	[field:NonSerialized]private static readonly NullVisualController _NULL_VISUAL_CONTROLLER = new NullVisualController();
@@ -61,6 +68,7 @@ public class VisualController{
 	[field:NonSerialized]public event EventHandler<EventArgs> OnUISortingOrderUpdate;
 	[field:NonSerialized]public event EventHandler<EventArgs> OnHealthBarActiveUpdate;
 	[field:NonSerialized]public event EventHandler<VisualAnimateEventArgs> OnAttackAnimation;
+	[field:NonSerialized]public event EventHandler<DamagePopupEventArgs> OnDamagePopup;
 	private SpriteSheet.SpriteID _spriteID;
 	private int _spriteIndex;
 	private int _sortingOrder;
@@ -143,6 +151,9 @@ public class VisualController{
 	}
 	public virtual void InvokeAttackAnimation(Vector3 position){
 		OnAttackAnimation?.Invoke(this, new VisualAnimateEventArgs(position));
+	}
+	public virtual void InvokeDamagePopup(string damage){
+		OnDamagePopup?.Invoke(this, new DamagePopupEventArgs(damage));
 	}
 	//
 	public virtual bool IsNull(){

@@ -21,6 +21,7 @@ public class WorldUnit : MonoBehaviour{
 		_controller.OnSortingOrderUpdate += OnSortingOrderUpdate;
 		_controller.OnWorldPositionUpdate += OnWorldPositionUpdate;
 		_controller.OnAttackAnimation += OnAttackAnimation;
+		_controller.OnDamagePopup += OnDamagePopup;
 		_local.GetLevel().OnLightUpdate += OnLightUpdate;
 		_worldUnitUI.Setup(_unit);
 		RefreshAll();
@@ -99,6 +100,9 @@ public class WorldUnit : MonoBehaviour{
 			return;
 		}
 		DungeonMaster.GetInstance().QueueAction(() => AttackAnimation(e.position));
+	}
+	private void OnDamagePopup(object sender, VisualController.DamagePopupEventArgs e){
+		TextPopupManager.GetInstance().PopText(e.text, (_controller.GetWorldPosition() + _local.GetLevel().GetVector3CellOffset()));
 	}
 	private void OnLightUpdate(object sender, EventArgs e){
 		RefreshVisibility();
