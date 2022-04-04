@@ -30,6 +30,9 @@ public abstract class Register<TStoreObject> : Register<TStoreObject>.RegisterEv
 			public override int GetHashCode(){
 				return _NULL;
 			}
+			public override bool IsNull(){
+				return true;
+			}	
 		}
 		[field:NonSerialized]private static readonly NullID _NULL_ID = new NullID();
 		private readonly int _id;
@@ -50,6 +53,9 @@ public abstract class Register<TStoreObject> : Register<TStoreObject>.RegisterEv
 		}
 		public override int GetHashCode(){
 			return _id;
+		}
+		public virtual bool IsNull(){
+			return false;
 		}
 		public static ID GetNullID(){
 			return _NULL_ID;

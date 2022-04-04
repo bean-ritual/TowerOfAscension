@@ -7,6 +7,7 @@ public abstract class LevelUnit :
 	Unit,
 	VisualController.IVisualController,
 	Unit.ISpawnable,
+	Unit.ITileable,
 	Unit.IProcessable,
 	Unit.ICollideable
 	{
@@ -43,6 +44,9 @@ public abstract class LevelUnit :
 	public Tile GetTile(Game game){
 		return game.GetLevel().Get(_x, _y);
 	}
+	public Tile GetTileFrom(Game game, int x, int y){
+		return game.GetLevel().Get((x + _x), (y + _y));
+	}
 	public void AddToRegister(Register<Unit> register){
 		register.Add(this, ref _id);
 	}
@@ -62,6 +66,9 @@ public abstract class LevelUnit :
 		return this;
 	}
 	public override Unit.ISpawnable GetSpawnable(){
+		return this;
+	}
+	public override Unit.ITileable GetTileable(){
 		return this;
 	}
 	public override Unit.IPositionable GetPositionable(){

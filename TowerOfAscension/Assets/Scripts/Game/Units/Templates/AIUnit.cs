@@ -7,8 +7,8 @@ public abstract class AIUnit :
 	LevelUnit,
 	Unit.IMoveable,
 	Unit.IControllable,
-	Unit.IAttackable,
 	Unit.IAttacker,
+	Unit.IAttackable,
 	Unit.IKillable,
 	Health.IHasHealth,
 	Armour.IHasArmour
@@ -31,16 +31,26 @@ public abstract class AIUnit :
 	public virtual AI GetAI(Game game){
 		return _ai;
 	}
-	public virtual void Attacked(Game game, Unit unit, int attack){
-		_health.Damage(game, this, attack);
+	public virtual void TryAttack(Game game, Direction direction){
+		//if(GetInventory().GetWe)
+		BasicAttack(game, direction);
 	}
-	public virtual void Attack(Game game, Direction direction){
-		direction.GetTile(game.GetLevel(), _x, _y).GetAttackable().Attacked(game, this, 1);
-	}
-	public virtual void OnAttack(Game game, Tile tile){
-		tile.GetXY(out int x, out int y);
+	public virtual void BasicAttack(Game game, Direction direction){
+		direction.GetTileFromUnit(game, this).GetAttackable().Attack(game, this, this);
 		_ai.GetTurnControl().EndTurn(game, this);
-		_controller.InvokeAttackAnimation((game.GetLevel().GetWorldPosition(x, y) + game.GetLevel().GetWorldPosition(_x, _y)) / 2);
+	}
+	public virtual void WeaponAttack(){
+		
+	}
+	public virtual void CastSpell(){
+		
+	}
+	public virtual void DoAttack(Game game, Unit skills, Unit target){
+		target.GetHasHealth().GetHealth(game).Damage(game, target, 1);
+		_controller.InvokeAttackAnimation((GetPositionable().GetPosition(game) + target.GetPositionable().GetPosition(game)) / 2);
+	}
+	public virtual void CheckAttack(Game game, Unit skills, Unit attack){
+		attack.GetAttacker().DoAttack(game, skills, this);
 	}
 	public virtual void Kill(Game game){
 		Default_Kill(this, game);
@@ -63,10 +73,10 @@ public abstract class AIUnit :
 	public override Unit.IControllable GetControllable(){
 		return this;
 	}
-	public override Unit.IAttackable GetAttackable(){
+	public override Unit.IAttacker GetAttacker(){
 		return this;
 	}
-	public override Unit.IAttacker GetAttacker(){
+	public override Unit.IAttackable GetAttackable(){
 		return this;
 	}
 	public override IKillable GetKillable(){

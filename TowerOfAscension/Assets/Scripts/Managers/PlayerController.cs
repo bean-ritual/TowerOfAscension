@@ -6,16 +6,16 @@ using UnityEngine.EventSystems;
 public class PlayerController : MonoBehaviour{
 	private static PlayerController _INSTANCE;
 	private Game _local = Game.GetNullGame();
-	private Level _level = Level.GetNullLevel();
 	private Unit _player = Unit.GetNullUnit();
 	private Unit _previous = Unit.GetNullUnit();
+	private Direction _direction = Direction.GetNullDirection();
 	private const float _CAMERA_ZOOM = 10f;
 	private const float _CAMERA_SPEED = 10f;
 	private static readonly Vector3 _CAMERA_OFFSET = new Vector3(0, 0, -10);
 	[SerializeField]private CameraManager _camera;
 	private void OnDestroy(){
+		_local.GetLevel().OnNextTurn -= OnNextTurn;
 		PlayerControl.OnPlayerControl -= OnPlayerControl;
-		_level.OnNextTurn -= OnNextTurn;
 	}
 	private void Awake(){
 		if(_INSTANCE != null){
@@ -26,8 +26,7 @@ public class PlayerController : MonoBehaviour{
 	}
 	private void Start(){
 		_local = DungeonMaster.GetInstance().GetLocalGame();
-		_level = _local.GetLevel();
-		_level.OnNextTurn += OnNextTurn;
+		_local.GetLevel().OnNextTurn += OnNextTurn;
 		PlayerControl.OnPlayerControl += OnPlayerControl;
 	}
 	private void Update(){
@@ -35,20 +34,19 @@ public class PlayerController : MonoBehaviour{
 			return;
 		}
 		//
-		Direction dir = MouseDirectionHandling();
-		_player.GetPositionable().GetPosition(_local, out int x, out int y);
-		TileTargetManager.GetInstance().SetTile(dir.GetTile(_level, x, y));
+		_direction = MouseDirectionHandling();
+		TileTargetManager.GetInstance().SetTile(_direction.GetTileFromUnit(_local, _player));
 		//
 		if(Input.GetMouseButtonDown(0)){
 			if(Input.GetKey(KeyCode.A)){
-				_player.GetAttacker().Attack(_local, dir);
+				_player.GetAttacker().TryAttack(_local, _direction);
 				return;
 			}
 			if(Input.GetKey(KeyCode.LeftShift)){
-				_player.GetInteractor().Interact(_local, dir);
+				_player.GetInteractor().Interact(_local, _direction);
 				return;
 			}
-			_player.GetMoveable().Move(_local, dir);
+			_player.GetMoveable().Move(_local, _direction);
 			return;
 		}
 		if(Input.GetKeyDown(KeyCode.Space)){
@@ -57,7 +55,7 @@ public class PlayerController : MonoBehaviour{
 		}
 	}
 	private Direction MouseDirectionHandling(){
-		Vector3 finalPosition = WorldSpaceUtils.MouseToWorldSpace(_camera.GetCamera()) - _player.GetPositionable().GetPosition(_local) - _level.GetVector3CellOffset();
+		Vector3 finalPosition = WorldSpaceUtils.MouseToWorldSpace(_camera.GetCamera()) - _player.GetPositionable().GetPosition(_local) - _local.GetLevel().GetVector3CellOffset();
 		Vector3Int intgerPosition = Vector3Int.RoundToInt(finalPosition);
 		return Direction.IntToDirection(intgerPosition.x, intgerPosition.y);
 	}

@@ -3,20 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 [Serializable]
-public class Item : 
+public abstract class Item : 
 	LevelUnit,
 	Unit.IPickupable,
 	Unit.IDroppable
 	{
 	public static class ITEM_DATA{
 		public static Unit GetLevelledItem(int level){
-			return new Item();
+			return new Weapon();
 		}
-	}
-	public Item(){
-		_controller = new VisualController();
-		_controller.SetSpriteID(SpriteSheet.SpriteID.Potions);
-		_controller.SetSortingOrder(20);
 	}
 	public void TryPickup(Game game, Unit unit){
 		unit.GetHasInventory().GetInventory(game).GetPickupable().TryPickup(game, unit, this);
@@ -27,9 +22,10 @@ public class Item :
 		unit.GetControllable().GetAI(game).GetTurnControl().EndTurn(game, unit);
 	}
 	public void TryDrop(Game game, Unit unit){
-		unit.GetHasInventory().GetInventory(game).GetDroppable().TryDrop(game, unit, this);
+		unit.GetHasInventory().GetInventory(game).GetDroppable().TryDrop(game, unit, _id);
 	}
 	public void DoDrop(Game game, Unit unit, Inventory inventory){
+		GetEquippable().TryUnequip(game, unit);
 		inventory.Remove(_id);
 		_id = Register<Unit>.ID.GetNullID();
 		unit.GetPositionable().GetPosition(game, out int x, out int y);

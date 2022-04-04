@@ -114,7 +114,7 @@ public class SpriteSheet{
 		if(index < 0){
 			return false;
 		}
-		if(index > _sprites.Length){
+		if(index >= _sprites.Length){
 			return false;
 		}
 		return true;

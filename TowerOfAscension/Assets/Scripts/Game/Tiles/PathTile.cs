@@ -8,13 +8,13 @@ public class PathTile :
 	LevelMeshManager.ITileMeshData,
 	LightMeshManager.ILightMeshData,
 	Tile.IWalkable,
+	Tile.IAttackable,
 	Tile.IPrintable,
 	Tile.IConnectable,
 	Tile.ILightable,
 	Level.ILightControl,
 	Tile.IDiscoverable,
 	Unit.IInteractable,
-	Unit.IAttackable,
 	Unit.IHostileTarget
 	{
 	[field:NonSerialized]public event EventHandler<Register<Unit>.OnObjectChangedEventArgs> OnUnitAdded;
@@ -83,6 +83,12 @@ public class PathTile :
 		}
 		return true;
 	}
+	public void Attack(Game game, Unit skills, Unit attack){
+		List<Unit> units = game.GetLevel().GetUnits().GetMultiple(_ids);
+		for(int i = 0; i < units.Count; i++){
+			units[i].GetAttackable().CheckAttack(game, skills, attack);
+		}
+	}
 	public void Print(Game game, Unit master, BluePrint.Print print, Tile tile, int x, int y){}
 	public bool CanPrint(Game game, Unit master, int x, int y){
 		return false;
@@ -114,13 +120,6 @@ public class PathTile :
 			units[i].GetInteractable().Interact(game, unit);
 		}
 	}
-	public void Attacked(Game game, Unit unit, int attack){
-		unit.GetAttacker().OnAttack(game, this);
-		List<Unit> units = game.GetLevel().GetUnits().GetMultiple(_ids);
-		for(int i = 0; i < units.Count; i++){
-			units[i].GetAttackable().Attacked(game, unit, attack);
-		}
-	}
 	public bool CheckHostility(Game game, Unit unit){
 		List<Unit> units = game.GetLevel().GetUnits().GetMultiple(_ids);
 		for(int i = 0; i < units.Count; i++){
@@ -137,6 +136,9 @@ public class PathTile :
 		return this;
 	}
 	public override Tile.IWalkable GetWalkable(){
+		return this;
+	}
+	public override Tile.IAttackable GetAttackable(){
 		return this;
 	}
 	public override Tile.IHasUnits GetHasUnits(){
@@ -158,9 +160,6 @@ public class PathTile :
 		return this;
 	}
 	public override Unit.IInteractable GetInteractable(){
-		return this;
-	}
-	public override Unit.IAttackable GetAttackable(){
 		return this;
 	}
 	public override Unit.IHostileTarget GetHostileTarget(){

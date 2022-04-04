@@ -42,11 +42,15 @@ public class VisualController{
 		public override bool GetHealthBarActive(){
 			return false;
 		}
-		public override bool IsNull(){
-			return true;
+		public override void SetItemBorder(bool border){}
+		public override bool GetItemBorder(){
+			return false;
 		}
 		public override void InvokeAttackAnimation(Vector3 position){}
 		public override void InvokeDamagePopup(string damage){}
+		public override bool IsNull(){
+			return true;
+		}
 	}
 	public class VisualAnimateEventArgs : EventArgs{
 		public Vector3 position;
@@ -67,6 +71,7 @@ public class VisualController{
 	[field:NonSerialized]public event EventHandler<EventArgs> OnUIOffsetUpdate;
 	[field:NonSerialized]public event EventHandler<EventArgs> OnUISortingOrderUpdate;
 	[field:NonSerialized]public event EventHandler<EventArgs> OnHealthBarActiveUpdate;
+	[field:NonSerialized]public event EventHandler<EventArgs> OnItemBorderUpdate;
 	[field:NonSerialized]public event EventHandler<VisualAnimateEventArgs> OnAttackAnimation;
 	[field:NonSerialized]public event EventHandler<DamagePopupEventArgs> OnDamagePopup;
 	private SpriteSheet.SpriteID _spriteID;
@@ -77,6 +82,7 @@ public class VisualController{
 	private Vector3 _uiOffset;
 	private int _uiSortingOrder;
 	private bool _healthBarActive;
+	private bool _itemBorder;
 	public VisualController(){
 		_spriteID = SpriteSheet.SpriteID.Null;
 		_spriteIndex = 0;
@@ -86,6 +92,7 @@ public class VisualController{
 		_uiOffset = Vector3.zero;
 		_uiSortingOrder = 0;
 		_healthBarActive = false;
+		_itemBorder = false;
 	}
 	public virtual void SetSpriteID(SpriteSheet.SpriteID spriteID){
 		_spriteID = spriteID;
@@ -148,6 +155,13 @@ public class VisualController{
 	}
 	public virtual bool GetHealthBarActive(){
 		return _healthBarActive;
+	}
+	public virtual void SetItemBorder(bool border){
+		_itemBorder = border;
+		OnItemBorderUpdate?.Invoke(this, EventArgs.Empty);
+	}
+	public virtual bool GetItemBorder(){
+		return _itemBorder;
 	}
 	public virtual void InvokeAttackAnimation(Vector3 position){
 		OnAttackAnimation?.Invoke(this, new VisualAnimateEventArgs(position));

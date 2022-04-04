@@ -18,7 +18,7 @@ public class Hero :
 		_ai = new PlayerControl();
 		_controller = new VisualController();
 		_controller.SetSpriteID(SpriteSheet.SpriteID.Hero);
-		_controller.SetSortingOrder(20);
+		_controller.SetSortingOrder(25);
 		_health = new Health(95);
 		_inventory = new Equipment();
 	}
@@ -41,14 +41,11 @@ public class Hero :
 	public void RemoveProxyID(Game game){
 		_id = Register<Unit>.ID.GetNullID();
 	}
-	public override void Attack(Game game, Direction direction){
-		direction.GetTile(game.GetLevel(), _x, _y).GetAttackable().Attacked(game, this, 100);
-	}
 	public void Discover(Game game, Tile tile){
 		tile.GetDiscoverable().Discover(game, this);
 	}
 	public void Interact(Game game, Direction direction){
-		direction.GetTile(game.GetLevel(), _x, _y).GetInteractable().Interact(game, this);
+		direction.GetTileFromUnit(game, this).GetInteractable().Interact(game, this);
 		_ai.GetTurnControl().EndTurn(game, this);
 	}
 	public bool CheckHostility(Game game, Unit unit){

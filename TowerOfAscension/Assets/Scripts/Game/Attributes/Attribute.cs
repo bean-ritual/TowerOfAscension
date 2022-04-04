@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 [Serializable]
 public abstract class Attribute{
+	public interface IAttackable{
+		void Attack(Game game, Unit self, int value);
+	}
 	public interface IReducer{
 		int Reduce(Game game, Unit self, int value);
 	}
@@ -14,9 +17,11 @@ public abstract class Attribute{
 	[Serializable]
 	public class NullAttribute : 
 		Attribute,
+		IAttackable,
 		IReducer,
 		IModifiableMaxes
 		{
+		public void Attack(Game game, Unit self, int value){}
 		public override void Fortify(Game game, Unit self, int value){}
 		public override void Damage(Game game, Unit self, int value){}
 		public override int GetValue(){

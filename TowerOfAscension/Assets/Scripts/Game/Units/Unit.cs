@@ -14,6 +14,10 @@ public abstract class Unit{
 		Vector3 GetPosition(Game game);
 		Tile GetTile(Game game);
 	}
+	public interface ITileable{
+		Tile GetTile(Game game);
+		Tile GetTileFrom(Game game, int x, int y);
+	}
 	public interface ISpawnable : IPositionable, Register<Unit>.IRegisterable{
 		void Spawn(Game game, int x, int y);
 		void Despawn(Game game);
@@ -38,15 +42,12 @@ public abstract class Unit{
 	public interface IInteractor{
 		void Interact(Game game, Direction direction);
 	}
-	public interface IDamageable{
-		void TakeDamage(Game game, Unit unit, int damage);
+	public interface IAttacker{
+		void TryAttack(Game game, Direction direction);
+		void DoAttack(Game game, Unit skills, Unit target);
 	}
 	public interface IAttackable{
-		void Attacked(Game game, Unit unit, int attack);
-	}
-	public interface IAttacker{
-		void Attack(Game game, Direction direction);
-		void OnAttack(Game game, Tile tile);
+		void CheckAttack(Game game, Unit skills, Unit attack);
 	}
 	public interface IKillable : ISpawnable{
 		void Kill(Game game);
@@ -72,9 +73,14 @@ public abstract class Unit{
 	public interface IHostileTarget{
 		bool CheckHostility(Game game, Unit unit);
 	}
-	public interface IWeaponable{
-		void TryEquipWeapon(Game game, Unit unit);
-		void TryUnequipWeapon(Game game, Unit unit);
+	public interface IUseable{
+		void TryUse(Game game, Unit unit);
+	}
+	public interface IEquippable{
+		void TryEquip(Game game, Unit unit);
+		void DoEquip(Game game, Unit unit, Inventory inventory, ref Register<Unit>.ID id);
+		void TryUnequip(Game game, Unit unit);
+		void DoUnequip(Game game, Unit unit, Inventory inventory, ref Register<Unit>.ID id);
 	}
 	public interface IPlayable{
 		void SetPlayer(Game game);
@@ -99,6 +105,7 @@ public abstract class Unit{
 		VisualController.IVisualController,
 		Unit.IProcessable,
 		Unit.IPositionable,
+		Unit.ITileable,
 		Unit.ISpawnable,
 		Unit.IMoveable,
 		Unit.ICollideable,
@@ -106,9 +113,8 @@ public abstract class Unit{
 		Unit.IDiscoverer,
 		Unit.IInteractable,
 		Unit.IInteractor,
-		Unit.IDamageable,
-		Unit.IAttackable,
 		Unit.IAttacker,
+		Unit.IAttackable,
 		Unit.IKillable,
 		Unit.IPickupable,
 		Unit.IDroppable,
@@ -116,7 +122,8 @@ public abstract class Unit{
 		Unit.ITripwire,
 		Unit.IHasInventory,
 		Unit.IHostileTarget,
-		Unit.IWeaponable,
+		Unit.IUseable,
+		Unit.IEquippable,
 		Unit.IPlayable,
 		Unit.IProxyable,
 		Level.ILightControl,
@@ -158,6 +165,9 @@ public abstract class Unit{
 		public Tile GetTile(Game game){
 			return Tile.GetNullTile();
 		}
+		public Tile GetTileFrom(Game game, int x, int y){
+			return Tile.GetNullTile();
+		}
 		public void Spawn(Game game, int x, int y){}
 		public void Despawn(Game game){}
 		public void Move(Game game, Direction direction){}
@@ -172,10 +182,9 @@ public abstract class Unit{
 		public void Discover(Game game, Tile tile){}
 		public void Interact(Game game, Unit unit){}
 		public void Interact(Game game, Direction direction){}
-		public void TakeDamage(Game game, Unit unit, int damage){}
-		public void Attacked(Game game, Unit unit, int attack){}
-		public void Attack(Game game, Direction direction){}
-		public void OnAttack(Game game, Tile tile){}
+		public void TryAttack(Game game, Direction direction){}
+		public void DoAttack(Game game, Unit skills, Unit target){}
+		public void CheckAttack(Game game, Unit skills, Unit attack){}
 		public void Kill(Game game){}
 		public void OnKill(Game game){}
 		public void TryPickup(Game game, Unit unit){}
@@ -190,8 +199,11 @@ public abstract class Unit{
 		public bool CheckHostility(Game game, Unit unit){
 			return false;
 		}
-		public void TryEquipWeapon(Game game, Unit unit){}
-		public void TryUnequipWeapon(Game game, Unit unit){}
+		public void TryUse(Game game, Unit unit){}
+		public void TryEquip(Game game, Unit unit){}
+		public void DoEquip(Game game, Unit unit, Inventory inventory, ref Register<Unit>.ID id){}
+		public void TryUnequip(Game game, Unit unit){}
+		public void DoUnequip(Game game, Unit unit, Inventory inventory, ref Register<Unit>.ID id){}
 		public void SetPlayer(Game game){}
 		public void RemovePlayer(Game game){}
 		public void SetProxyID(Game game, Register<Unit>.ID id){}
@@ -244,6 +256,9 @@ public abstract class Unit{
 	public virtual IPositionable GetPositionable(){
 		return _NULL_UNIT;
 	}
+	public virtual ITileable GetTileable(){
+		return _NULL_UNIT;
+	}
 	public virtual ISpawnable GetSpawnable(){
 		return _NULL_UNIT;
 	}
@@ -265,13 +280,10 @@ public abstract class Unit{
 	public virtual IInteractor GetInteractor(){
 		return _NULL_UNIT;
 	}
-	public virtual IDamageable GetDamageable(){
+	public virtual IAttacker GetAttacker(){
 		return _NULL_UNIT;
 	}
 	public virtual IAttackable GetAttackable(){
-		return _NULL_UNIT;
-	}
-	public virtual IAttacker GetAttacker(){
 		return _NULL_UNIT;
 	}
 	public virtual IKillable GetKillable(){
@@ -295,7 +307,10 @@ public abstract class Unit{
 	public virtual IHostileTarget GetHostileTarget(){
 		return _NULL_UNIT;
 	}
-	public virtual IWeaponable GetWeaponable(){
+	public virtual IUseable GetUseable(){
+		return _NULL_UNIT;
+	}
+	public virtual IEquippable GetEquippable(){
 		return _NULL_UNIT;
 	}
 	public virtual IPlayable GetPlayable(){
@@ -344,8 +359,7 @@ public abstract class Unit{
 		game.GetLevel().Get(x, y).GetHasUnits().RemoveUnit(game, self.GetRegisterable().GetID());
 	}
 	public static void Default_Move(Unit self, Game game, Direction direction){
-		self.GetPositionable().GetPosition(game, out int oldX, out int oldY);
-		direction.GetTile(game.GetLevel(), oldX, oldY).GetWalkable().Walk(game, self);
+		direction.GetTileFromUnit(game, self).GetWalkable().Walk(game, self);
 	}
 	public static void Default_Kill(Unit self, Game game){
 		self.GetSpawnable().Despawn(game);

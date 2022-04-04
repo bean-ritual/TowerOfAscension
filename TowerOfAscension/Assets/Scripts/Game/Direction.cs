@@ -6,7 +6,10 @@ using UnityEngine;
 public abstract class Direction{
 	[Serializable]
 	public class NullDirection : Direction{
-		public override Tile GetTile(Level level, int x, int y){
+		public override Tile GetTileFromTile(Game game, Tile tile){
+			return Tile.GetNullTile();
+		}
+		public override Tile GetTileFromUnit(Game game, Unit unit){
 			return Tile.GetNullTile();
 		}
 	}
@@ -14,64 +17,88 @@ public abstract class Direction{
 	public class North : Direction{
 		private const int _X = 0;
 		private const int _Y = 1;
-		public override Tile GetTile(Level level, int x, int y){
-			return level.Get((x + _X), (y + _Y));
+		public override Tile GetTileFromTile(Game game, Tile tile){
+			return tile.GetTileable().GetTileFrom(game, _X, _Y);
+		}
+		public override Tile GetTileFromUnit(Game game, Unit unit){
+			return unit.GetTileable().GetTileFrom(game, _X, _Y);
 		}
 	}
 	[Serializable]
 	public class South : Direction{
 		private const int _X = 0;
 		private const int _Y = -1;
-		public override Tile GetTile(Level level, int x, int y){
-			return level.Get((x + _X), (y + _Y));
+		public override Tile GetTileFromTile(Game game, Tile tile){
+			return tile.GetTileable().GetTileFrom(game, _X, _Y);
+		}
+		public override Tile GetTileFromUnit(Game game, Unit unit){
+			return unit.GetTileable().GetTileFrom(game, _X, _Y);
 		}
 	}
 	[Serializable]
 	public class East : Direction{
 		private const int _X = 1;
 		private const int _Y = 0;
-		public override Tile GetTile(Level level, int x, int y){
-			return level.Get((x + _X), (y + _Y));
+		public override Tile GetTileFromTile(Game game, Tile tile){
+			return tile.GetTileable().GetTileFrom(game, _X, _Y);
+		}
+		public override Tile GetTileFromUnit(Game game, Unit unit){
+			return unit.GetTileable().GetTileFrom(game, _X, _Y);
 		}
 	}
 	[Serializable]
 	public class West : Direction{
 		private const int _X = -1;
 		private const int _Y = 0;
-		public override Tile GetTile(Level level, int x, int y){
-			return level.Get((x + _X), (y + _Y));
+		public override Tile GetTileFromTile(Game game, Tile tile){
+			return tile.GetTileable().GetTileFrom(game, _X, _Y);
+		}
+		public override Tile GetTileFromUnit(Game game, Unit unit){
+			return unit.GetTileable().GetTileFrom(game, _X, _Y);
 		}
 	}
 	[Serializable]
 	public class NorthEast : Direction{
 		private const int _X = 1;
 		private const int _Y = 1;
-		public override Tile GetTile(Level level, int x, int y){
-			return level.Get((x + _X), (y + _Y));
+		public override Tile GetTileFromTile(Game game, Tile tile){
+			return tile.GetTileable().GetTileFrom(game, _X, _Y);
+		}
+		public override Tile GetTileFromUnit(Game game, Unit unit){
+			return unit.GetTileable().GetTileFrom(game, _X, _Y);
 		}
 	}
 	[Serializable]
 	public class NorthWest : Direction{
 		private const int _X = -1;
 		private const int _Y = 1;
-		public override Tile GetTile(Level level, int x, int y){
-			return level.Get((x + _X), (y + _Y));
+		public override Tile GetTileFromTile(Game game, Tile tile){
+			return tile.GetTileable().GetTileFrom(game, _X, _Y);
+		}
+		public override Tile GetTileFromUnit(Game game, Unit unit){
+			return unit.GetTileable().GetTileFrom(game, _X, _Y);
 		}
 	}
 	[Serializable]
 	public class SouthEast : Direction{
 		private const int _X = 1;
 		private const int _Y = -1;
-		public override Tile GetTile(Level level, int x, int y){
-			return level.Get((x + _X), (y + _Y));
+		public override Tile GetTileFromTile(Game game, Tile tile){
+			return tile.GetTileable().GetTileFrom(game, _X, _Y);
+		}
+		public override Tile GetTileFromUnit(Game game, Unit unit){
+			return unit.GetTileable().GetTileFrom(game, _X, _Y);
 		}
 	}
 	[Serializable]
 	public class SouthWest : Direction{
 		private const int _X = -1;
 		private const int _Y = -1;
-		public override Tile GetTile(Level level, int x, int y){
-			return level.Get((x + _X), (y + _Y));
+		public override Tile GetTileFromTile(Game game, Tile tile){
+			return tile.GetTileable().GetTileFrom(game, _X, _Y);
+		}
+		public override Tile GetTileFromUnit(Game game, Unit unit){
+			return unit.GetTileable().GetTileFrom(game, _X, _Y);
 		}
 	}
 	[field:NonSerialized]private static readonly NullDirection _NULL_DIRECTION = new NullDirection();
@@ -84,7 +111,8 @@ public abstract class Direction{
 	[field:NonSerialized]private static readonly SouthEast _SOUTH_EAST = new SouthEast();
 	[field:NonSerialized]private static readonly SouthWest _SOUTH_WEST = new SouthWest();
 	//
-	public abstract Tile GetTile(Level level, int x, int y);
+	public abstract Tile GetTileFromTile(Game game, Tile tile);
+	public abstract Tile GetTileFromUnit(Game game, Unit unit);
 	//
 	public static Direction IntToDirection(int x, int y){
 		if(y > 0){

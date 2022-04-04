@@ -22,6 +22,9 @@ public abstract class Tile : GridMap<Tile>.Node{
 		void Walk(Game game, Unit unit);
 		bool CanWalk(Game game, Unit unit);
 	}
+	public interface IAttackable{
+		void Attack(Game game, Unit skills, Unit attack);
+	}
 	public interface ILightable{
 		void SetLight(int light);
 		int GetLight();
@@ -37,15 +40,16 @@ public abstract class Tile : GridMap<Tile>.Node{
 		Tile,
 		LevelMeshManager.ITileMeshData,
 		LightMeshManager.ILightMeshData,
+		Unit.ITileable,
 		Tile.IHasUnits,
 		Tile.IPrintable,
 		Tile.IConnectable,
 		Tile.IWalkable,
+		Tile.IAttackable,
 		Tile.ILightable,
 		Level.ILightControl,
 		Tile.IDiscoverable,
 		Unit.IInteractable,
-		Unit.IAttackable,
 		Unit.IHostileTarget
 		{
 		[field:NonSerialized]public event EventHandler<Register<Unit>.OnObjectChangedEventArgs> OnUnitAdded;
@@ -71,6 +75,12 @@ public abstract class Tile : GridMap<Tile>.Node{
 		public int GetLightUVFactor(){
 			return _NULL_FACTOR;
 		}
+		public Tile GetTile(Game game){
+			return Tile.GetNullTile();
+		}
+		public Tile GetTileFrom(Game game, int x, int y){
+			return Tile.GetNullTile();
+		}
 		public void AddUnit(Game game, Register<Unit>.ID id){}
 		public bool RemoveUnit(Game game, Register<Unit>.ID id){
 			return false;
@@ -92,6 +102,7 @@ public abstract class Tile : GridMap<Tile>.Node{
 		public bool CanWalk(Game game, Unit unit){
 			return false;
 		}
+		public void Attack(Game game, Unit skills, Unit attack){}
 		public void SetLight(int light){}
 		public int GetLight(){
 			return _NULL_INDEX;
@@ -101,8 +112,6 @@ public abstract class Tile : GridMap<Tile>.Node{
 		}
 		public void Discover(Game game, Unit unit){}
 		public void Interact(Game game, Unit unit){}
-		public void Attacked(Game game, Unit unit, int attack){}
-		public void OnAttacked(){}
 		public bool CheckHostility(Game game, Unit unit){
 			return false;
 		}
@@ -114,6 +123,9 @@ public abstract class Tile : GridMap<Tile>.Node{
 		return _NULL_TILE;
 	}
 	public virtual LightMeshManager.ILightMeshData GetLightMeshData(){
+		return _NULL_TILE;
+	}
+	public virtual Unit.ITileable GetTileable(){
 		return _NULL_TILE;
 	}
 	public virtual IHasUnits GetHasUnits(){
@@ -128,6 +140,9 @@ public abstract class Tile : GridMap<Tile>.Node{
 	public virtual IWalkable GetWalkable(){
 		return _NULL_TILE;
 	}
+	public virtual IAttackable GetAttackable(){
+		return _NULL_TILE;
+	}
 	public virtual ILightable GetLightable(){
 		return _NULL_TILE;
 	}
@@ -138,9 +153,6 @@ public abstract class Tile : GridMap<Tile>.Node{
 		return _NULL_TILE;
 	}
 	public virtual Unit.IInteractable GetInteractable(){
-		return _NULL_TILE;
-	}
-	public virtual Unit.IAttackable GetAttackable(){
 		return _NULL_TILE;
 	}
 	public virtual Unit.IHostileTarget GetHostileTarget(){

@@ -14,6 +14,6 @@ public class TestingManager : MonoBehaviour{
 	}
 	private void Test(){
 		//_local.GameOver();
-		_local.GetPlayer().GetAttackable().Attacked(_local, Unit.GetNullUnit(), 100);
+		_local.GetPlayer().GetHasHealth().GetHealth(_local).Damage(_local, _local.GetPlayer(), 100);
 	}
 }

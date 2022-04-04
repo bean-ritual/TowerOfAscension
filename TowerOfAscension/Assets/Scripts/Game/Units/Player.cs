@@ -12,8 +12,8 @@ public class Player :
 	Unit.ICollideable,
 	Unit.IMoveable,
 	Unit.IControllable,
-	Unit.IAttackable,
 	Unit.IAttacker,
+	Unit.IAttackable,
 	Unit.IKillable,
 	Unit.IDiscoverer,
 	Unit.IInteractor,
@@ -76,14 +76,14 @@ public class Player :
 	public AI GetAI(Game game){
 		return game.GetPlayer().GetControllable().GetAI(game);
 	}
-	public void Attacked(Game game, Unit unit, int attack){
-		game.GetPlayer().GetAttackable().Attacked(game, unit, attack);
+	public void TryAttack(Game game, Direction direction){
+		game.GetPlayer().GetAttacker().TryAttack(game, direction);
 	}
-	public void Attack(Game game, Direction direction){
-		game.GetPlayer().GetAttacker().Attack(game, direction);
+	public void DoAttack(Game game, Unit skills, Unit target){
+		game.GetPlayer().GetAttacker().DoAttack(game, skills, target);
 	}
-	public void OnAttack(Game game, Tile tile){
-		game.GetPlayer().GetAttacker().OnAttack(game, tile);
+	public void CheckAttack(Game game, Unit skills, Unit attack){
+		game.GetPlayer().GetAttackable().CheckAttack(game, skills, attack);
 	}
 	public void Kill(Game game){
 		game.GetPlayer().GetKillable().Kill(game);
@@ -173,10 +173,10 @@ public class Player :
 	public override Unit.IControllable GetControllable(){
 		return this;
 	}
-	public override Unit.IAttackable GetAttackable(){
+	public override Unit.IAttacker GetAttacker(){
 		return this;
 	}
-	public override Unit.IAttacker GetAttacker(){
+	public override Unit.IAttackable GetAttackable(){
 		return this;
 	}
 	public override IKillable GetKillable(){

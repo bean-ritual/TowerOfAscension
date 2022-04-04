@@ -73,7 +73,9 @@ public class InventoryUIManager : MonoBehaviour{
 		Unit player = PlayerController.GetInstance().GetPlayer();
 		if(Input.GetKey(KeyCode.LeftShift)){
 			item.GetDroppable().TryDrop(_local, player);
+			return;
 		}
+		item.GetUseable().TryUse(_local, player);
 	}
 	private void OnObjectAdded(object sender, Register<Unit>.OnObjectChangedEventArgs e){
 		CreateUIUnit(e.value);

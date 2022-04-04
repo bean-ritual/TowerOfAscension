@@ -26,7 +26,7 @@ public class ScanAI : AI{
 		Tile tile = targets[UnityEngine.Random.Range(0, targets.Count)];
 		tile.GetXY(out int finalX, out int finalY);
 		if((level.CalculateDistanceCost(x, y, finalX, finalY) / 10) <= 1){
-			self.GetAttacker().Attack(game, Direction.IntToDirection(x, y, finalX, finalY));
+			self.GetAttacker().TryAttack(game, Direction.IntToDirection(x, y, finalX, finalY));
 			return level.NextTurn();
 		}
 		List<Tile> route = level.FindPath(x, y, finalX, finalY, (Tile tile) => tile.GetWalkable().CanWalk(game, self));

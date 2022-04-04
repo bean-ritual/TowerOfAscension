@@ -8,13 +8,19 @@ public class Inventory : Register<Unit>{
 		void TryPickup(Game game, Unit holder, Unit item);
 	}
 	public interface IDroppable{
-		void TryDrop(Game game, Unit holder, Unit item);
+		void TryDrop(Game game, Unit holder, Register<Unit>.ID id);
+	}
+	public interface IWeaponEquippable{
+		void EquipWeapon(Game game, Unit self, Register<Unit>.ID id);
+		void UnequipWeapon(Game game, Unit self, Register<Unit>.ID id);
+		Unit GetWeapon(Game game, Unit self);
 	}
 	[Serializable]
 	public class NullInventory : 
 		Inventory,
 		Inventory.IPickupable,
-		Inventory.IDroppable
+		Inventory.IDroppable,
+		Inventory.IWeaponEquippable
 		{
 		public NullInventory(){}
 		public override bool IsNull(){
@@ -61,7 +67,12 @@ public class Inventory : Register<Unit>{
 			return 0;
 		}
 		public void TryPickup(Game game, Unit holder, Unit item){}
-		public void TryDrop(Game game, Unit holder, Unit item){}
+		public void TryDrop(Game game, Unit holder, Register<Unit>.ID id){}
+		public void EquipWeapon(Game game, Unit self, Register<Unit>.ID id){}
+		public void UnequipWeapon(Game game, Unit self, Register<Unit>.ID id){}
+		public Unit GetWeapon(Game game, Unit self){
+			return Unit.GetNullUnit();
+		}
 	}
 	[field:NonSerialized]private static readonly NullInventory _NULL_INVENTORY = new NullInventory();
 	public Inventory(){}
@@ -75,6 +86,9 @@ public class Inventory : Register<Unit>{
 		return _NULL_INVENTORY;
 	}
 	public virtual IDroppable GetDroppable(){
+		return _NULL_INVENTORY;
+	}
+	public virtual IWeaponEquippable GetWeaponEquippable(){
 		return _NULL_INVENTORY;
 	}
 	public static Inventory GetNullInventory(){
