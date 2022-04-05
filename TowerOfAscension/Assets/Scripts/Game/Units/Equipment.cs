@@ -20,14 +20,12 @@ public class Equipment :
 	public void EquipWeapon(Game game, Unit self, Register<Unit>.ID id){
 		Get(_weapon).GetEquippable().TryUnequip(game, self);
 		if(_weapon.IsNull()){
-			UnityEngine.Debug.Log("test :: null");
-			Get(id).GetEquippable().DoEquip(game, self, this, ref id);
+			Get(id).GetEquippable().DoEquip(game, self, this, ref _weapon);
 		}
 	}
 	public void UnequipWeapon(Game game, Unit self, Register<Unit>.ID id){
-		UnityEngine.Debug.Log("test");
 		if(_weapon.Equals(id)){
-			Get(id).GetEquippable().DoUnequip(game, self, this, ref id);
+			Get(id).GetEquippable().DoUnequip(game, self, this, ref _weapon);
 		}
 	}
 	public Unit GetWeapon(Game game, Unit self){
