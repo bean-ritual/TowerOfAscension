@@ -82,6 +82,9 @@ public abstract class Unit{
 		void TryUnequip(Game game, Unit unit);
 		void DoUnequip(Game game, Unit unit, Inventory inventory, ref Register<Unit>.ID id);
 	}
+	public interface IItemToolTip{
+		string GetToolTip(Game game);
+	}
 	public interface IPlayable{
 		void SetPlayer(Game game);
 		void RemovePlayer(Game game);
@@ -124,6 +127,7 @@ public abstract class Unit{
 		Unit.IHostileTarget,
 		Unit.IUseable,
 		Unit.IEquippable,
+		Unit.IItemToolTip,
 		Unit.IPlayable,
 		Unit.IProxyable,
 		Level.ILightControl,
@@ -204,6 +208,9 @@ public abstract class Unit{
 		public void DoEquip(Game game, Unit unit, Inventory inventory, ref Register<Unit>.ID id){}
 		public void TryUnequip(Game game, Unit unit){}
 		public void DoUnequip(Game game, Unit unit, Inventory inventory, ref Register<Unit>.ID id){}
+		public string GetToolTip(Game game){
+			return "";
+		}
 		public void SetPlayer(Game game){}
 		public void RemovePlayer(Game game){}
 		public void SetProxyID(Game game, Register<Unit>.ID id){}
@@ -311,6 +318,9 @@ public abstract class Unit{
 		return _NULL_UNIT;
 	}
 	public virtual IEquippable GetEquippable(){
+		return _NULL_UNIT;
+	}
+	public virtual IItemToolTip GetItemToolTip(){
 		return _NULL_UNIT;
 	}
 	public virtual IPlayable GetPlayable(){

@@ -111,7 +111,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -0.5, y: -0.5}
   m_SizeDelta: {x: 1, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &6151631811077874414
@@ -264,7 +264,6 @@ MonoBehaviour:
   _offset: {fileID: 2483940976167652509}
   _renderer: {fileID: 6854748354284080760}
   _worldUnitUI: {fileID: 3502214427143173046}
-  _prefabTextPopup: {fileID: 2934025882487176293, guid: 512e058eb15d7414084f7455a744fc2d, type: 3}
 --- !u!1 &2483940976167652509
 GameObject:
   m_ObjectHideFlags: 0

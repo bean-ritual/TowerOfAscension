@@ -7,7 +7,8 @@ public class Weapon :
 	Item,
 	Unit.IUseable,
 	Unit.IAttacker,
-	Unit.IEquippable
+	Unit.IEquippable,
+	Unit.IItemToolTip
 	{
 	private int _attack;
 	private bool _equipped = false;
@@ -46,6 +47,9 @@ public class Weapon :
 		_equipped = false;
 		_controller.SetItemBorder(_equipped);
 	}
+	public string GetToolTip(Game game){
+		return "Weapon\n\n" + _attack + " Damage";
+	}
 	public override IUseable GetUseable(){
 		return this;
 	}
@@ -53,6 +57,9 @@ public class Weapon :
 		return this;
 	}
 	public override IEquippable GetEquippable(){
+		return this;
+	}
+	public override IItemToolTip GetItemToolTip(){
 		return this;
 	}
 }

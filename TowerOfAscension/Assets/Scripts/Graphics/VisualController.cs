@@ -48,6 +48,7 @@ public class VisualController{
 		}
 		public override void InvokeAttackAnimation(Vector3 position){}
 		public override void InvokeDamagePopup(string damage){}
+		
 		public override bool IsNull(){
 			return true;
 		}

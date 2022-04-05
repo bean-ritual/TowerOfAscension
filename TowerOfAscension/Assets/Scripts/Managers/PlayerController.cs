@@ -84,7 +84,9 @@ public class PlayerController : MonoBehaviour{
 		return _player;
 	}
 	private void OnPlayerControl(object sender, PlayerControl.OnPlayerControlEventArgs e){
-		SetPlayer(e.player);
+		if(!DungeonMaster.GetInstance().IsBusy()){
+			SetPlayer(e.player);
+		}
 	}
 	private void OnNextTurn(object sender, EventArgs e){
 		ClearPlayer();

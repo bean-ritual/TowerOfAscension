@@ -3,7 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-public class UIUnit : MonoBehaviour{
+using UnityEngine.EventSystems;
+public class UIUnit : 
+	MonoBehaviour,
+	IPointerEnterHandler,
+	IPointerExitHandler
+	{
 	public delegate void ButtonInteract(Unit unit);
 	private static ButtonInteract _NULL_INTERACT = (Unit unit) => {};
 	private Game _local = Game.GetNullGame();
@@ -38,14 +43,21 @@ public class UIUnit : MonoBehaviour{
 		_border.SetActive(_controller.GetItemBorder());
 	}
 	public void OnClick(){
-		Interact(_unit);
+		Interact(_unit); 
 	}
 	public void UnsubcribeFromEvents(){
 		_controller.OnSpriteUpdate -= OnSpriteUpdate;
 		_controller.OnItemBorderUpdate -= OnItemBorderUpdate;
 	}
 	public void UnitDestroy(){
+		ToolTipManager.GetInstance().HideToolTip();
 		Destroy(gameObject);
+	}
+	public void OnPointerEnter(PointerEventData eventData){
+		ToolTipManager.GetInstance().ShowToolTip(_unit.GetItemToolTip().GetToolTip(_local));
+	}
+	public void OnPointerExit(PointerEventData eventData){
+		ToolTipManager.GetInstance().HideToolTip();
 	}
 	private void OnSpriteUpdate(object sender, EventArgs e){
 		RefreshSprite();

@@ -2,7 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-public class WorldUnit : MonoBehaviour{
+using UnityEngine.EventSystems;
+public class WorldUnit : 
+	MonoBehaviour,
+	IPointerEnterHandler,
+	IPointerExitHandler
+	{
 	private Unit _unit = Unit.GetNullUnit();
 	private VisualController _controller = VisualController.GetNullVisualController();
 	private Game _local = Game.GetNullGame();
@@ -77,6 +82,12 @@ public class WorldUnit : MonoBehaviour{
 	}
 	public void UnitDestroy(){
 		Destroy(gameObject);
+	}
+	public void OnPointerEnter(PointerEventData eventData){
+		ToolTipManager.GetInstance().ShowToolTip("Unit");
+	}
+	public void OnPointerExit(PointerEventData eventData){
+		ToolTipManager.GetInstance().HideToolTip();
 	}
 	private void UnsubscribeFromEvents(){
 		_controller.OnSpriteUpdate -= OnSpriteUpdate;

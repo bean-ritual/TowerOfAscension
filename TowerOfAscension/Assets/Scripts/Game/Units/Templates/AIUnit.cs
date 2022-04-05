@@ -32,18 +32,12 @@ public abstract class AIUnit :
 		return _ai;
 	}
 	public virtual void TryAttack(Game game, Direction direction){
-		//if(GetInventory().GetWe)
-		BasicAttack(game, direction);
-	}
-	public virtual void BasicAttack(Game game, Direction direction){
-		direction.GetTileFromUnit(game, this).GetAttackable().Attack(game, this, this);
+		Unit attack = GetHasInventory().GetInventory(game).GetWeaponEquippable().GetWeapon(game, this);
+		if(attack.IsNull()){
+			attack = this;
+		}
+		direction.GetTileFromUnit(game, this).GetAttackable().Attack(game, this, attack);
 		_ai.GetTurnControl().EndTurn(game, this);
-	}
-	public virtual void WeaponAttack(){
-		
-	}
-	public virtual void CastSpell(){
-		
 	}
 	public virtual void DoAttack(Game game, Unit skills, Unit target){
 		target.GetHasHealth().GetHealth(game).Damage(game, target, 1);
