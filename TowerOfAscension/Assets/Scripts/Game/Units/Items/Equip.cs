@@ -3,21 +3,25 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 [Serializable]
-public class Weapon : 
+public class Equip : 
 	Item,
 	Unit.IUseable,
-	Unit.IAttacker,
 	Unit.IEquippable,
 	Unit.IItemToolTip
 	{
-	private int _attack;
+	public enum EquipSlot{
+		Null,
+		Chestplate,
+		Boots,
+	};
+	private EquipSlot _slot;
+	private int _armour;
 	private bool _equipped;
-	public Weapon(){
+	public Equip(){
 		_controller = new VisualController();
-		_controller.SetSprite(SpriteSheet.SpriteID.Swords, UnityEngine.Random.Range(0, 5));
+		_controller.SetSprite(SpriteSheet.SpriteID.Chestplates, UnityEngine.Random.Range(0, 5));
 		_controller.SetSortingOrder(20);
-		_attack = UnityEngine.Random.Range(5, 50);
-		_equipped = false;
+		_armour = UnityEngine.Random.Range(5, 50);
 	}
 	public void TryUse(Game game, Unit unit){
 		if(_equipped){
@@ -25,12 +29,6 @@ public class Weapon :
 		}else{
 			TryEquip(game, unit);
 		}
-	}
-	public void TryAttack(Game game, Direction direction){
-		
-	}
-	public void DoAttack(Game game, Unit skills, Unit target){
-		target.GetHasHealth().GetHealth(game).Damage(game, target, _attack);
 	}
 	public void TryEquip(Game game, Unit unit){
 		unit.GetHasInventory().GetInventory(game).GetWeaponEquippable().EquipWeapon(game, unit, _id);
@@ -49,12 +47,9 @@ public class Weapon :
 		_controller.SetItemBorder(_equipped);
 	}
 	public string GetToolTip(Game game){
-		return "Weapon\n\n" + _attack + " Damage";
+		return "Chestplate\n\n" + _armour + " Armour";
 	}
 	public override IUseable GetUseable(){
-		return this;
-	}
-	public override IAttacker GetAttacker(){
 		return this;
 	}
 	public override IEquippable GetEquippable(){

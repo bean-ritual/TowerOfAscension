@@ -15,12 +15,25 @@ public class Inventory : Register<Unit>{
 		void UnequipWeapon(Game game, Unit self, Register<Unit>.ID id);
 		Unit GetWeapon(Game game, Unit self);
 	}
+	public interface IChestplateEquippable{
+		void EquipChestplate(Game game, Unit self, Register<Unit>.ID id);
+		void UnequipChestplate(Game game, Unit self, Register<Unit>.ID id);
+		Unit GetChestplate(Game game, Unit self);
+	}
+	public interface IBootsEquippable{
+		void EquipBoots(Game game, Unit self, Register<Unit>.ID id);
+		void UnequipBoots(Game game, Unit self, Register<Unit>.ID id);
+		Unit GetBoots(Game game, Unit self);
+	}
 	[Serializable]
 	public class NullInventory : 
 		Inventory,
 		Inventory.IPickupable,
 		Inventory.IDroppable,
-		Inventory.IWeaponEquippable
+		Inventory.IWeaponEquippable,
+		Inventory.IChestplateEquippable,
+		Inventory.IBootsEquippable,
+		EquipSlots.IHasEquipSlots
 		{
 		public NullInventory(){}
 		public override bool IsNull(){
@@ -73,6 +86,19 @@ public class Inventory : Register<Unit>{
 		public Unit GetWeapon(Game game, Unit self){
 			return Unit.GetNullUnit();
 		}
+		public void EquipChestplate(Game game, Unit self, Register<Unit>.ID id){}
+		public void UnequipChestplate(Game game, Unit self, Register<Unit>.ID id){}
+		public Unit GetChestplate(Game game, Unit self){
+			return Unit.GetNullUnit();
+		}
+		public void EquipBoots(Game game, Unit self, Register<Unit>.ID id){}
+		public void UnequipBoots(Game game, Unit self, Register<Unit>.ID id){}
+		public Unit GetBoots(Game game, Unit self){
+			return Unit.GetNullUnit();
+		}
+		public Attribute GetEquipSlots(Game game){
+			return Attribute.GetNullAttribute();
+		}
 	}
 	[field:NonSerialized]private static readonly NullInventory _NULL_INVENTORY = new NullInventory();
 	public Inventory(){}
@@ -89,6 +115,15 @@ public class Inventory : Register<Unit>{
 		return _NULL_INVENTORY;
 	}
 	public virtual IWeaponEquippable GetWeaponEquippable(){
+		return _NULL_INVENTORY;
+	}
+	public virtual IChestplateEquippable GetChestplateEquippable(){
+		return _NULL_INVENTORY;
+	}
+	public virtual IBootsEquippable GetBootsEquippable(){
+		return _NULL_INVENTORY;
+	}
+	public virtual EquipSlots.IHasEquipSlots GetHasEquipSlots(){
 		return _NULL_INVENTORY;
 	}
 	public static Inventory GetNullInventory(){
