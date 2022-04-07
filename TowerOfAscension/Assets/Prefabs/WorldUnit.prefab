@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2539417645395960821}
   - component: {fileID: 5895622827910116694}
   - component: {fileID: 7039552456366596098}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: HealthBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -87,7 +87,7 @@ GameObject:
   - component: {fileID: 7279272275223849101}
   - component: {fileID: 6021091910817962336}
   - component: {fileID: 3502214427143173046}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: UnitUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -227,7 +227,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2483940975670085679}
   - component: {fileID: 2483940975670085678}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: WorldUnit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -274,7 +274,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2483940976167652510}
   - component: {fileID: 6854748354284080760}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: UnitSprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -357,7 +357,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5415050086160300523}
   - component: {fileID: 3886701971710317530}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: Slider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -447,7 +447,7 @@ GameObject:
   - component: {fileID: 6746902999528675756}
   - component: {fileID: 2019877166963745414}
   - component: {fileID: 3584104200184038821}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: Fill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -522,7 +522,7 @@ GameObject:
   - component: {fileID: 4494629026583866420}
   - component: {fileID: 4668451014177959164}
   - component: {fileID: 3185725269409745957}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}

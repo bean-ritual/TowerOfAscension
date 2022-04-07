@@ -640,8 +640,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: New Game
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: f583fecd2d987e948b9028338a0ba370, type: 2}
-  m_sharedMaterial: {fileID: 8456645425788003887, guid: f583fecd2d987e948b9028338a0ba370, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: f7da2bea580f50543bed04b7c65f6977, type: 2}
+  m_sharedMaterial: {fileID: -3947643623871773210, guid: f7da2bea580f50543bed04b7c65f6977, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -665,8 +665,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 18
-  m_fontSizeBase: 18
+  m_fontSize: 16
+  m_fontSizeBase: 16
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -774,8 +774,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Tower of Ascension
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 15b83d45e08cacd4f9769478e2939535, type: 2}
-  m_sharedMaterial: {fileID: -7882429652406123556, guid: 15b83d45e08cacd4f9769478e2939535, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8407cae936b51974c8642ba89ac564d8, type: 2}
+  m_sharedMaterial: {fileID: 2521775458178899310, guid: 8407cae936b51974c8642ba89ac564d8, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -991,8 +991,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Options
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: f583fecd2d987e948b9028338a0ba370, type: 2}
-  m_sharedMaterial: {fileID: 8456645425788003887, guid: f583fecd2d987e948b9028338a0ba370, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: f7da2bea580f50543bed04b7c65f6977, type: 2}
+  m_sharedMaterial: {fileID: -3947643623871773210, guid: f7da2bea580f50543bed04b7c65f6977, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1016,8 +1016,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 18
-  m_fontSizeBase: 18
+  m_fontSize: 16
+  m_fontSizeBase: 16
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -1125,8 +1125,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Exit
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: f583fecd2d987e948b9028338a0ba370, type: 2}
-  m_sharedMaterial: {fileID: 8456645425788003887, guid: f583fecd2d987e948b9028338a0ba370, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: f7da2bea580f50543bed04b7c65f6977, type: 2}
+  m_sharedMaterial: {fileID: -3947643623871773210, guid: f7da2bea580f50543bed04b7c65f6977, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1150,8 +1150,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 18
-  m_fontSizeBase: 18
+  m_fontSize: 16
+  m_fontSizeBase: 16
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -1751,8 +1751,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Continue
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: f583fecd2d987e948b9028338a0ba370, type: 2}
-  m_sharedMaterial: {fileID: 8456645425788003887, guid: f583fecd2d987e948b9028338a0ba370, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: f7da2bea580f50543bed04b7c65f6977, type: 2}
+  m_sharedMaterial: {fileID: -3947643623871773210, guid: f7da2bea580f50543bed04b7c65f6977, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1776,8 +1776,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 18
-  m_fontSizeBase: 18
+  m_fontSize: 16
+  m_fontSizeBase: 16
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -1877,7 +1877,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
-  m_ScaleFactor: 1
+  m_ScaleFactor: 0.5
   m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
