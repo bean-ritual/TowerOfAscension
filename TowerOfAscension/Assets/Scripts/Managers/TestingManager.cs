@@ -12,8 +12,9 @@ public class TestingManager : MonoBehaviour{
 			Test();
 		}
 	}
-	private void Test(){
-		//_local.GameOver();
-		_local.GetPlayer().GetHasHealth().GetHealth(_local).Damage(_local, _local.GetPlayer(), 100);
+	public void Test(){
+		UnityEngine.Debug.Log(
+			_local.GetPlayer().GetHasArmour().GetArmour(_local).GetValue() + ""
+		);
 	}
 }

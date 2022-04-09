@@ -14,12 +14,17 @@ public abstract class Attribute{
 		void FortifyMax(Game game, Unit self, int value);
 		void DamageMax(Game game, Unit self, int value);
 	}
+	public interface IConditionable{
+		bool IsMinned();
+		bool IsMaxed();
+	}
 	[Serializable]
 	public class NullAttribute : 
 		Attribute,
 		IAttackable,
 		IReducer,
-		IModifiableMaxes
+		IModifiableMaxes,
+		IConditionable
 		{
 		public void Attack(Game game, Unit self, int value){}
 		public override void Fortify(Game game, Unit self, int value){}
@@ -36,6 +41,12 @@ public abstract class Attribute{
 		}
 		public void FortifyMax(Game game, Unit self, int value){}
 		public void DamageMax(Game game, Unit self, int value){}
+		public bool IsMinned(){
+			return false;
+		}
+		public bool IsMaxed(){
+			return false;
+		}
 	}
 	[field:NonSerialized]public event EventHandler<EventArgs> OnAttributeUpdate;
 	[field:NonSerialized]private static readonly NullAttribute _NULL_ATTRIBUTE = new NullAttribute();
@@ -51,6 +62,9 @@ public abstract class Attribute{
 		return _NULL_ATTRIBUTE;
 	}
 	public virtual IModifiableMaxes GetModifiableMaxes(){
+		return _NULL_ATTRIBUTE;
+	}
+	public virtual IConditionable GetConditionable(){
 		return _NULL_ATTRIBUTE;
 	}
 	public static Attribute GetNullAttribute(){

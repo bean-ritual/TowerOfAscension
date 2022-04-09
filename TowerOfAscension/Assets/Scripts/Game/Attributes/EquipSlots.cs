@@ -3,7 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 [Serializable]
-public class EquipSlots : Attribute{
+public class EquipSlots : 
+	Attribute,
+	Attribute.IConditionable
+	{
 	public interface IHasEquipSlots{
 		Attribute GetEquipSlots(Game game);
 	}
@@ -26,5 +29,14 @@ public class EquipSlots : Attribute{
 	}
 	public override int GetMaxValue(){
 		return _MAX_VALUE;
+	}
+	public bool IsMinned(){
+		return _MIN_VALUE >= _value;
+	}
+	public bool IsMaxed(){
+		return _MAX_VALUE <= _value;
+	}
+	public override IConditionable GetConditionable(){
+		return this;
 	}
 }

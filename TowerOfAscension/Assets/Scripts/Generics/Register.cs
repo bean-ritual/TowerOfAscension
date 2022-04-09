@@ -63,8 +63,6 @@ public abstract class Register<TStoreObject> : Register<TStoreObject>.RegisterEv
 	}
 	[field:NonSerialized]public event EventHandler<OnObjectChangedEventArgs> OnObjectAdded;
 	[field:NonSerialized]public event EventHandler<OnObjectChangedEventArgs> OnObjectRemoved;
-	//[field:NonSerialized]public event EventHandler<OnObjectSwappedEventArgs> OnObjectSwapped;
-	//[field:NonSerialized]public event EventHandler<EventArgs> OnRegisterSort;
 	public class OnObjectChangedEventArgs : EventArgs{
 		public ID id;
 		public TStoreObject value;
@@ -147,6 +145,14 @@ public abstract class Register<TStoreObject> : Register<TStoreObject>.RegisterEv
 				_ids[i] = id2;
 				return;
 			}	
+		}
+	}
+	public virtual void Insert(ID id, int index){
+		if(!CheckBounds(index)){
+			return;
+		}
+		if(_ids.Remove(id)){
+			_ids.Insert(index, id);
 		}
 	}
 	public virtual List<TStoreObject> GetAll(){

@@ -5,6 +5,7 @@ using UnityEngine;
 [Serializable]
 public class Equipment : 
 	Inventory,
+	Inventory.ISortable,
 	Inventory.IPickupable,
 	Inventory.IDroppable,
 	Inventory.IWeaponEquippable,
@@ -12,6 +13,7 @@ public class Equipment :
 	Inventory.IBootsEquippable,
 	EquipSlots.IHasEquipSlots
 	{
+	[field:NonSerialized]public event EventHandler<EventArgs> OnInventorySort;
 	private Attribute _equipSlots = Attribute.GetNullAttribute();
 	private Register<Unit>.ID[] _equips = {
 		Register<Unit>.ID.GetNullID(),
@@ -23,46 +25,32 @@ public class Equipment :
 	public Equipment(){
 		_equipSlots = new EquipSlots();
 	}
+	public void Sort(Game game){
+		Inventory.Default_Sort(this, game, _equips);
+	}
 	public void TryPickup(Game game, Unit holder, Unit item){
-		item.GetPickupable().DoPickup(game, holder, this);
+		Inventory.Default_TryPickup(this, game, holder, item);
 	}
 	public void TryDrop(Game game, Unit holder, Register<Unit>.ID id){
-		Get(id).GetDroppable().DoDrop(game, holder, this);
+		Inventory.Default_TryDrop(this, game, holder, id);
 	}
 	public void EquipWeapon(Game game, Unit self, Register<Unit>.ID id){
-		Equip(game, self, id, 0);
+		Inventory.Default_Equip(this, game, self, id, ref _equips[0], Attribute.GetNullAttribute());
 	}
 	public void UnequipWeapon(Game game, Unit self, Register<Unit>.ID id){
-		Unequip(game, self, id, 0);
+		Inventory.Default_Unequip(this, game, self, id, ref _equips[0]);
 	}
 	public void EquipChestplate(Game game, Unit self, Register<Unit>.ID id){
-		if(_equipSlots.GetValue() >= _equipSlots.GetMaxValue()){
-			return;
-		}
-		Equip(game, self, id, 1);
+		Inventory.Default_Equip(this, game, self, id, ref _equips[1], _equipSlots);
 	}
 	public void UnequipChestplate(Game game, Unit self, Register<Unit>.ID id){
-		Unequip(game, self, id, 1);
+		Inventory.Default_Unequip(this, game, self, id, ref _equips[1]);
 	}
 	public void EquipBoots(Game game, Unit self, Register<Unit>.ID id){
-		if(_equipSlots.GetValue() >= _equipSlots.GetMaxValue()){
-			return;
-		}
-		Equip(game, self, id, 2);
+		Inventory.Default_Equip(this, game, self, id, ref _equips[2], _equipSlots);
 	}
 	public void UnequipBoots(Game game, Unit self, Register<Unit>.ID id){
-		Unequip(game, self, id, 2);
-	}
-	private void Equip(Game game, Unit self, Register<Unit>.ID id, int index){
-		Get(_equips[index]).GetEquippable().TryUnequip(game, self);
-		if(_equips[index].IsNull()){
-			Get(id).GetEquippable().DoEquip(game, self, this, ref _equips[index]);
-		}
-	}
-	private void Unequip(Game game, Unit self, Register<Unit>.ID id, int index){
-		if(_equips[index].Equals(id)){
-			Get(id).GetEquippable().DoUnequip(game, self, this, ref _equips[index]);
-		}
+		Inventory.Default_Unequip(this, game, self, id, ref _equips[2]);
 	}
 	public Unit GetWeapon(Game game, Unit self){
 		return Get(_equips[0]);
@@ -75,6 +63,9 @@ public class Equipment :
 	}
 	public Attribute GetEquipSlots(Game game){
 		return _equipSlots;
+	}
+	public override ISortable GetSortable(){
+		return this;
 	}
 	public override IPickupable GetPickupable(){
 		return this;

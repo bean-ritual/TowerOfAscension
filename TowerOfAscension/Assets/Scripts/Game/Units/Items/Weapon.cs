@@ -33,20 +33,16 @@ public class Weapon :
 		target.GetHasHealth().GetHealth(game).Damage(game, target, _attack);
 	}
 	public void TryEquip(Game game, Unit unit){
-		unit.GetHasInventory().GetInventory(game).GetWeaponEquippable().EquipWeapon(game, unit, _id);
+		Unit.Default_TryEquipWeapon(game, unit, ref _id);
 	}
 	public void DoEquip(Game game, Unit unit, Inventory inventory, ref Register<Unit>.ID id){
-		id = _id;
-		_equipped = true;
-		_controller.SetItemBorder(_equipped);
+		Unit.Default_DoEquip(this, game, unit, ref id, ref _id, ref _equipped);
 	}
 	public void TryUnequip(Game game, Unit unit){
-		unit.GetHasInventory().GetInventory(game).GetWeaponEquippable().UnequipWeapon(game, unit, _id);
+		Unit.Default_TryUnequipWeapon(game, unit, ref _id);
 	}
 	public void DoUnequip(Game game, Unit unit, Inventory inventory, ref Register<Unit>.ID id){
-		id = Register<Unit>.ID.GetNullID();
-		_equipped = false;
-		_controller.SetItemBorder(_equipped);
+		Unit.Default_DoUnequip(this, game, unit, ref id, ref _equipped);
 	}
 	public string GetToolTip(Game game){
 		return "Weapon\n\n" + _attack + " Damage";

@@ -10,27 +10,23 @@ public abstract class Item :
 	{
 	public static class ITEM_DATA{
 		public static Unit GetLevelledItem(int level){
-			return new Weapon();
+			if(UnityEngine.Random.Range(0, 100) < 50){
+				return new Weapon();
+			}
+			return new Chestplate();
 		}
 	}
 	public void TryPickup(Game game, Unit unit){
-		unit.GetHasInventory().GetInventory(game).GetPickupable().TryPickup(game, unit, this);
+		Unit.Default_TryPickup(this, game, unit);
 	}
 	public void DoPickup(Game game, Unit unit, Inventory inventory){
-		GetSpawnable().Despawn(game);
-		inventory.Add(this, ref _id);
-		unit.GetControllable().GetAI(game).GetTurnControl().EndTurn(game, unit);
+		Unit.Default_DoPickup(this, game, unit, ref _id);
 	}
 	public void TryDrop(Game game, Unit unit){
-		unit.GetHasInventory().GetInventory(game).GetDroppable().TryDrop(game, unit, _id);
+		Unit.Default_TryDrop(this, game, unit, ref _id);
 	}
 	public void DoDrop(Game game, Unit unit, Inventory inventory){
-		GetEquippable().TryUnequip(game, unit);
-		inventory.Remove(_id);
-		_id = Register<Unit>.ID.GetNullID();
-		unit.GetPositionable().GetPosition(game, out int x, out int y);
-		GetSpawnable().Spawn(game, x, y);
-		unit.GetControllable().GetAI(game).GetTurnControl().EndTurn(game, unit);
+		Unit.Default_DoDrop(this, game, unit, ref _id);
 	}
 	public override bool CheckCollision(Game game, Unit check){
 		return false;

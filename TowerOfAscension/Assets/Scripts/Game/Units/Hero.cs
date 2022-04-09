@@ -20,6 +20,7 @@ public class Hero :
 		_controller.SetSpriteID(SpriteSheet.SpriteID.Hero);
 		_controller.SetSortingOrder(25);
 		_health = new Health(95);
+		_armour = new Armour();
 		_inventory = new Equipment();
 	}
 	public override void Spawn(Game game, int x, int y){

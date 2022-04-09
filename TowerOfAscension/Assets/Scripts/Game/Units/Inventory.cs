@@ -4,6 +4,10 @@ using System.Collections.Generic;
 using UnityEngine;
 [Serializable]
 public class Inventory : Register<Unit>{
+	public interface ISortable{
+		event EventHandler<EventArgs> OnInventorySort;
+		void Sort(Game game);
+	}
 	public interface IPickupable{
 		void TryPickup(Game game, Unit holder, Unit item);
 	}
@@ -28,6 +32,7 @@ public class Inventory : Register<Unit>{
 	[Serializable]
 	public class NullInventory : 
 		Inventory,
+		Inventory.ISortable,
 		Inventory.IPickupable,
 		Inventory.IDroppable,
 		Inventory.IWeaponEquippable,
@@ -35,6 +40,7 @@ public class Inventory : Register<Unit>{
 		Inventory.IBootsEquippable,
 		EquipSlots.IHasEquipSlots
 		{
+		[field:NonSerialized]public event EventHandler<EventArgs> OnInventorySort;
 		public NullInventory(){}
 		public override bool IsNull(){
 			return true;
@@ -79,6 +85,7 @@ public class Inventory : Register<Unit>{
 		public override int GetCount(){
 			return 0;
 		}
+		public void Sort(Game game){}
 		public void TryPickup(Game game, Unit holder, Unit item){}
 		public void TryDrop(Game game, Unit holder, Register<Unit>.ID id){}
 		public void EquipWeapon(Game game, Unit self, Register<Unit>.ID id){}
@@ -108,6 +115,9 @@ public class Inventory : Register<Unit>{
 	public override Unit GetNullStoreObject(){
 		return Unit.GetNullUnit();
 	}
+	public virtual ISortable GetSortable(){
+		return _NULL_INVENTORY;
+	}
 	public virtual IPickupable GetPickupable(){
 		return _NULL_INVENTORY;
 	}
@@ -125,6 +135,31 @@ public class Inventory : Register<Unit>{
 	}
 	public virtual EquipSlots.IHasEquipSlots GetHasEquipSlots(){
 		return _NULL_INVENTORY;
+	}
+	public static void Default_Sort(Inventory self, Game game, Register<Unit>.ID[] ids){
+		for(int i = (ids.Length - 1); i >= 0; i--){
+			self.Insert(ids[i], 0);
+		}
+	}
+	public static void Default_TryPickup(Inventory self, Game game, Unit holder, Unit item){
+		item.GetPickupable().DoPickup(game, holder, self);
+	}
+	public static void Default_TryDrop(Inventory self, Game game, Unit holder, Register<Unit>.ID id){
+		self.Get(id).GetDroppable().DoDrop(game, holder, self);
+	}
+	public static void Default_Equip(Inventory self, Game game, Unit holder, Register<Unit>.ID id, ref Register<Unit>.ID slot, Attribute slots){
+		self.Get(slot).GetEquippable().TryUnequip(game, holder);
+		if(slots.GetConditionable().IsMaxed()){
+			return;
+		}
+		if(slot.IsNull()){
+			self.Get(id).GetEquippable().DoEquip(game, holder, self, ref slot);
+		}
+	}
+	public static void Default_Unequip(Inventory self, Game game, Unit holder, Register<Unit>.ID id, ref Register<Unit>.ID slot){
+		if(slot.Equals(id)){
+			self.Get(id).GetEquippable().DoUnequip(game, holder, self, ref slot);
+		}
 	}
 	public static Inventory GetNullInventory(){
 		return _NULL_INVENTORY;

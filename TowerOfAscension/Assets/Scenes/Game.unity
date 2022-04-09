@@ -190,7 +190,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6372891}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d703dfc76ad49ea40b95dd50498d27e0, type: 3}
+  m_Script: {fileID: 11500000, guid: 4177a65e72f777948b32e26bb3f2f40b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &6564913
@@ -536,8 +536,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Tooltip Text
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: f7da2bea580f50543bed04b7c65f6977, type: 2}
-  m_sharedMaterial: {fileID: -3947643623871773210, guid: f7da2bea580f50543bed04b7c65f6977, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 43430fa2124d4264f87f15c6816ab6b0, type: 2}
+  m_sharedMaterial: {fileID: -9217503540128332289, guid: 43430fa2124d4264f87f15c6816ab6b0, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1686,8 +1686,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'HP: Text'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: f7da2bea580f50543bed04b7c65f6977, type: 2}
-  m_sharedMaterial: {fileID: -3947643623871773210, guid: f7da2bea580f50543bed04b7c65f6977, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 43430fa2124d4264f87f15c6816ab6b0, type: 2}
+  m_sharedMaterial: {fileID: -9217503540128332289, guid: 43430fa2124d4264f87f15c6816ab6b0, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

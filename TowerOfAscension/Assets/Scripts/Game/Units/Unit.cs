@@ -381,6 +381,57 @@ public abstract class Unit{
 	public static void Default_RemovePlayer(Game game){
 		game.GetPlayer().GetProxyable().RemoveProxyID(game);
 	}
+	public static void Default_TryPickup(Unit self, Game game, Unit unit){
+		unit.GetHasInventory().GetInventory(game).GetPickupable().TryPickup(game, unit, self);
+	}
+	public static void Default_DoPickup(Unit self, Game game, Unit unit, ref Register<Unit>.ID id){
+		self.GetSpawnable().Despawn(game);
+		unit.GetHasInventory().GetInventory(game).Add(self, ref id);
+		unit.GetControllable().GetAI(game).GetTurnControl().EndTurn(game, unit);
+	}
+	public static void Default_TryDrop(Unit self, Game game, Unit unit, ref Register<Unit>.ID id){
+		unit.GetHasInventory().GetInventory(game).GetDroppable().TryDrop(game, unit, id);
+	}
+	public static void Default_DoDrop(Unit self, Game game, Unit unit, ref Register<Unit>.ID id){
+		self.GetEquippable().TryUnequip(game, unit);
+		unit.GetHasInventory().GetInventory(game).Remove(id);
+		id = Register<Unit>.ID.GetNullID();
+		unit.GetPositionable().GetPosition(game, out int x, out int y);
+		self.GetSpawnable().Spawn(game, x, y);
+		unit.GetControllable().GetAI(game).GetTurnControl().EndTurn(game, unit);
+	}
+	public static void Default_TryEquipWeapon(Game game, Unit unit, ref Register<Unit>.ID id){
+		unit.GetHasInventory().GetInventory(game).GetWeaponEquippable().EquipWeapon(game, unit, id);
+	}
+	public static void Default_TryUnequipWeapon(Game game, Unit unit, ref Register<Unit>.ID id){
+		unit.GetHasInventory().GetInventory(game).GetWeaponEquippable().UnequipWeapon(game, unit, id);
+	}
+	public static void Default_TryEquipChestplate(Game game, Unit unit, ref Register<Unit>.ID id){
+		unit.GetHasInventory().GetInventory(game).GetChestplateEquippable().EquipChestplate(game, unit, id);
+	}
+	public static void Default_TryUnequipChestplate(Game game, Unit unit, ref Register<Unit>.ID id){
+		unit.GetHasInventory().GetInventory(game).GetChestplateEquippable().UnequipChestplate(game, unit, id);
+	}
+	public static void Default_TryEquipBoots(Game game, Unit unit, ref Register<Unit>.ID id){
+		unit.GetHasInventory().GetInventory(game).GetBootsEquippable().EquipBoots(game, unit, id);
+	}
+	public static void Default_TryUnequipBoots(Game game, Unit unit, ref Register<Unit>.ID id){
+		unit.GetHasInventory().GetInventory(game).GetBootsEquippable().UnequipBoots(game, unit, id);
+	}
+	public static void Default_DoEquip(Unit self, Game game, Unit unit, ref Register<Unit>.ID slot, ref Register<Unit>.ID id, ref bool equipped){
+		slot = id;
+		equipped = true;
+		self.GetVisualController().GetVisualController(game).SetItemBorder(equipped);
+		unit.GetHasInventory().GetInventory(game).GetSortable().Sort(game);
+		unit.GetControllable().GetAI(game).GetTurnControl().EndTurn(game, unit);
+	}
+	public static void Default_DoUnequip(Unit self, Game game, Unit unit, ref Register<Unit>.ID slot, ref bool equipped){
+		slot = Register<Unit>.ID.GetNullID();
+		equipped = false;
+		self.GetVisualController().GetVisualController(game).SetItemBorder(equipped);
+		unit.GetHasInventory().GetInventory(game).GetSortable().Sort(game);
+		unit.GetControllable().GetAI(game).GetTurnControl().EndTurn(game, unit);
+	}
 	public static Unit GetNullUnit(){
 		return _NULL_UNIT;
 	}
