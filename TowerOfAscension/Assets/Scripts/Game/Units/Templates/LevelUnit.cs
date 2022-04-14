@@ -9,13 +9,23 @@ public abstract class LevelUnit :
 	Unit.ISpawnable,
 	Unit.ITileable,
 	Unit.IProcessable,
+	Unit.ITaggable,
 	Unit.ICollideable
 	{
 	protected VisualController _controller = VisualController.GetNullVisualController();
 	protected int _x = Unit.NullUnit.GetNullX();
 	protected int _y = Unit.NullUnit.GetNullY();
 	protected Register<Unit>.ID _id = Register<Unit>.ID.GetNullID();
-	public LevelUnit(){}
+	protected Dictionary<Tag.ID, Tag> _tags = new Dictionary<Tag.ID, Tag>();
+	public LevelUnit(){
+		_tags = new Dictionary<Tag.ID, Tag>();
+	}
+	public LevelUnit(Game game, Tag[] array){
+		_tags = new Dictionary<Tag.ID, Tag>(array.Length);
+		for(int i = 0; i < array.Length; i++){
+			AddTag(game, array[i]);
+		}
+	}
 	public virtual VisualController GetVisualController(Game game){
 		return _controller;
 	}
@@ -59,6 +69,18 @@ public abstract class LevelUnit :
 	public virtual bool Process(Game game){
 		return game.GetLevel().NextTurn();
 	}
+	public void AddTag(Game game, Tag tag){
+		tag.Add(_tags);
+	}
+	public void RemoveTag(Game game, Tag.ID id){
+		GetTag(game, id).Remove(_tags);
+	}
+	public Tag GetTag(Game game, Tag.ID id){
+		if(!_tags.TryGetValue(id, out Tag tag)){
+			tag = Tag.GetNullTag();
+		}
+		return tag;
+	}
 	public virtual bool CheckCollision(Game game, Unit check){
 		return true;
 	}
@@ -78,6 +100,9 @@ public abstract class LevelUnit :
 		return this;
 	}
 	public override IProcessable GetProcessable(){
+		return this;
+	}
+	public override Unit.ITaggable GetTaggable(){
 		return this;
 	}
 	public override Unit.ICollideable GetCollideable(){

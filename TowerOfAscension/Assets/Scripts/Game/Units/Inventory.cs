@@ -37,8 +37,7 @@ public class Inventory : Register<Unit>{
 		Inventory.IDroppable,
 		Inventory.IWeaponEquippable,
 		Inventory.IChestplateEquippable,
-		Inventory.IBootsEquippable,
-		EquipSlots.IHasEquipSlots
+		Inventory.IBootsEquippable
 		{
 		[field:NonSerialized]public event EventHandler<EventArgs> OnInventorySort;
 		public NullInventory(){}
@@ -103,9 +102,6 @@ public class Inventory : Register<Unit>{
 		public Unit GetBoots(Game game, Unit self){
 			return Unit.GetNullUnit();
 		}
-		public Attribute GetEquipSlots(Game game){
-			return Attribute.GetNullAttribute();
-		}
 	}
 	[field:NonSerialized]private static readonly NullInventory _NULL_INVENTORY = new NullInventory();
 	public Inventory(){}
@@ -133,9 +129,6 @@ public class Inventory : Register<Unit>{
 	public virtual IBootsEquippable GetBootsEquippable(){
 		return _NULL_INVENTORY;
 	}
-	public virtual EquipSlots.IHasEquipSlots GetHasEquipSlots(){
-		return _NULL_INVENTORY;
-	}
 	public static void Default_Sort(Inventory self, Game game, Register<Unit>.ID[] ids){
 		for(int i = (ids.Length - 1); i >= 0; i--){
 			self.Insert(ids[i], 0);
@@ -147,11 +140,8 @@ public class Inventory : Register<Unit>{
 	public static void Default_TryDrop(Inventory self, Game game, Unit holder, Register<Unit>.ID id){
 		self.Get(id).GetDroppable().DoDrop(game, holder, self);
 	}
-	public static void Default_Equip(Inventory self, Game game, Unit holder, Register<Unit>.ID id, ref Register<Unit>.ID slot, Attribute slots){
+	public static void Default_Equip(Inventory self, Game game, Unit holder, Register<Unit>.ID id, ref Register<Unit>.ID slot){
 		self.Get(slot).GetEquippable().TryUnequip(game, holder);
-		if(slots.GetConditionable().IsMaxed()){
-			return;
-		}
 		if(slot.IsNull()){
 			self.Get(id).GetEquippable().DoEquip(game, holder, self, ref slot);
 		}

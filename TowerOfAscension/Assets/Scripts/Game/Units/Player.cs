@@ -9,6 +9,7 @@ public class Player :
 	Unit.ISpawnable,
 	Unit.IPlayable,
 	Unit.IProcessable,
+	Unit.ITaggable,
 	Unit.ICollideable,
 	Unit.IMoveable,
 	Unit.IControllable,
@@ -20,8 +21,6 @@ public class Player :
 	Unit.IHostileTarget,
 	Unit.IExitable,
 	Unit.IHasInventory,
-	Health.IHasHealth,
-	Armour.IHasArmour,
 	Level.ILightSource
 	{
 	private Register<Unit>.ID _id = Register<Unit>.ID.GetNullID();
@@ -46,6 +45,15 @@ public class Player :
 		register.Remove(_id);
 	}
 	//
+	public void AddTag(Game game, Tag tag){
+		game.GetPlayer().GetTaggable().AddTag(game, tag);
+	}
+	public void RemoveTag(Game game, Tag.ID id){
+		game.GetPlayer().GetTaggable().RemoveTag(game, id);
+	}
+	public Tag GetTag(Game game, Tag.ID id){
+		return game.GetPlayer().GetTaggable().GetTag(game, id);
+	}
 	public void Discover(Game game, Tile tile){
 		game.GetPlayer().GetDiscoverer().Discover(game, tile);
 	}
@@ -91,12 +99,6 @@ public class Player :
 	public void OnKill(Game game){
 		game.GetPlayer().GetKillable().OnKill(game);
 	}
-	public Attribute GetHealth(Game game){
-		return game.GetPlayer().GetHasHealth().GetHealth(game);
-	}
-	public Attribute GetArmour(Game game){
-		return game.GetPlayer().GetHasArmour().GetArmour(game);
-	}
 	public VisualController GetVisualController(Game game){
 		return game.GetPlayer().GetVisualController().GetVisualController(game);
 	}
@@ -129,6 +131,9 @@ public class Player :
 	}
 	//
 	public override Unit.IPlayable GetPlayable(){
+		return this;
+	}
+	public override Unit.ITaggable GetTaggable(){
 		return this;
 	}
 	public override Unit.IDiscoverer GetDiscoverer(){
@@ -180,12 +185,6 @@ public class Player :
 		return this;
 	}
 	public override IKillable GetKillable(){
-		return this;
-	}
-	public override Health.IHasHealth GetHasHealth(){
-		return this;
-	}
-	public override Armour.IHasArmour GetHasArmour(){
 		return this;
 	}
 }

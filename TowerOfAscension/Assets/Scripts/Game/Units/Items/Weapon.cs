@@ -30,7 +30,7 @@ public class Weapon :
 		
 	}
 	public void DoAttack(Game game, Unit skills, Unit target){
-		target.GetHasHealth().GetHealth(game).Damage(game, target, _attack);
+		//target.GetHasHealth().GetHealth(game).Damage(game, target, _attack);
 	}
 	public void TryEquip(Game game, Unit unit){
 		Unit.Default_TryEquipWeapon(game, unit, ref _id);

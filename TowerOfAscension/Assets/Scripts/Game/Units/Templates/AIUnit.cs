@@ -9,13 +9,9 @@ public abstract class AIUnit :
 	Unit.IControllable,
 	Unit.IAttacker,
 	Unit.IAttackable,
-	Unit.IKillable,
-	Health.IHasHealth,
-	Armour.IHasArmour
+	Unit.IKillable
 	{
 	protected AI _ai = AI.GetNullAI();
-	protected Attribute _health = Attribute.GetNullAttribute();
-	protected Attribute _armour = Attribute.GetNullAttribute();
 	public AIUnit(){}
 	public virtual void Move(Game game, Direction direction){
 		Unit.Default_Move(this, game, direction);
@@ -40,7 +36,7 @@ public abstract class AIUnit :
 		_ai.GetTurnControl().EndTurn(game, this);
 	}
 	public virtual void DoAttack(Game game, Unit skills, Unit target){
-		target.GetHasHealth().GetHealth(game).Damage(game, target, 1);
+		//target.GetHasHealth().GetHealth(game).Damage(game, target, 1);
 		_controller.InvokeAttackAnimation((GetPositionable().GetPosition(game) + target.GetPositionable().GetPosition(game)) / 2);
 	}
 	public virtual void CheckAttack(Game game, Unit skills, Unit attack){
@@ -55,12 +51,6 @@ public abstract class AIUnit :
 	public override bool Process(Game game){
 		return _ai.Process(game, this);
 	}
-	public Attribute GetHealth(Game game){
-		return _health;
-	}
-	public Attribute GetArmour(Game game){
-		return _armour;
-	}
 	public override Unit.IMoveable GetMoveable(){
 		return this;
 	}
@@ -74,12 +64,6 @@ public abstract class AIUnit :
 		return this;
 	}
 	public override IKillable GetKillable(){
-		return this;
-	}
-	public override Health.IHasHealth GetHasHealth(){
-		return this;
-	}
-	public override Armour.IHasArmour GetHasArmour(){
 		return this;
 	}
 }

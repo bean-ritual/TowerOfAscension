@@ -47,7 +47,7 @@ public class Game{
 	private Level _level = Level.GetNullLevel();
 	public Game(){
 		_floor = 0;
-		_player = new Hero();
+		_player = new Hero(this);
 	}
 	public virtual bool Process(){
 		return _level.Process(this);

@@ -246,7 +246,7 @@ public class ClassicGen :
 	public class MonsterSpawner : Spawner{
 		public MonsterSpawner(int x, int y) : base(x, y){}
 		public override void Spawn(Game game, Unit master){
-			Monster.MONSTER_DATA.GetLevelledMonster(0).GetSpawnable().Spawn(game, _x, _y);
+			Monster.MONSTER_DATA.GetLevelledMonster(game, 0).GetSpawnable().Spawn(game, _x, _y);
 		}
 		public override void AddToMaster(Game game, Unit master){
 			master.GetClassicGen().AddDetailSpawner(this);

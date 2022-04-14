@@ -13,8 +13,6 @@ public class TestingManager : MonoBehaviour{
 		}
 	}
 	public void Test(){
-		UnityEngine.Debug.Log(
-			_local.GetPlayer().GetHasArmour().GetArmour(_local).GetValue() + ""
-		);
+
 	}
 }

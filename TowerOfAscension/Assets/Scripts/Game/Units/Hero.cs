@@ -14,14 +14,15 @@ public class Hero :
 	Level.ILightSource
 	{
 	private Inventory _inventory = Inventory.GetNullInventory();
-	public Hero(){
+	public Hero(Game game){
 		_ai = new PlayerControl();
 		_controller = new VisualController();
 		_controller.SetSpriteID(SpriteSheet.SpriteID.Hero);
 		_controller.SetSortingOrder(25);
-		_health = new Health(95);
-		_armour = new Armour();
 		_inventory = new Equipment();
+		AddTag(game, Alive.Create());
+		AddTag(game, Health.Create(95));
+		AddTag(game, Grave.Create());
 	}
 	public override void Spawn(Game game, int x, int y){
 		Unit proxy = new Player();

@@ -7,6 +7,11 @@ public abstract class Unit{
 	public interface IProcessable{
 		bool Process(Game game);
 	}
+	public interface ITaggable{
+		void AddTag(Game game, Tag tag);
+		void RemoveTag(Game game, Tag.ID id);
+		Tag GetTag(Game game, Tag.ID id);
+	}
 	public interface IPositionable{
 		void SetPosition(Game game, int x, int y);
 		void GetPosition(Game game, out int x, out int y);
@@ -107,6 +112,7 @@ public abstract class Unit{
 		Register<Unit>.IRegisterable,
 		VisualController.IVisualController,
 		Unit.IProcessable,
+		Unit.ITaggable,
 		Unit.IPositionable,
 		Unit.ITileable,
 		Unit.ISpawnable,
@@ -133,9 +139,7 @@ public abstract class Unit{
 		Level.ILightControl,
 		Level.ILightSource,
 		Unit.IClassicGen,
-		ClassicGen.Spawner.IFinalize,
-		Health.IHasHealth,
-		Armour.IHasArmour
+		ClassicGen.Spawner.IFinalize
 		{
 		private const int _NULL_X = -1;
 		private const int _NULL_Y = -1;
@@ -156,6 +160,11 @@ public abstract class Unit{
 		}
 		public bool Process(Game game){
 			return game.GetLevel().NextTurn();
+		}
+		public void AddTag(Game game, Tag tag){}
+		public void RemoveTag(Game game, Tag.ID id){}
+		public Tag GetTag(Game game, Tag.ID id){
+			return Tag.GetNullTag();
 		}
 		public void SetPosition(Game game, int x, int y){}
 		public void GetPosition(Game game, out int x, out int y){
@@ -239,12 +248,6 @@ public abstract class Unit{
 		public static int GetNullY(){
 			return _NULL_Y;
 		}
-		public Attribute GetHealth(Game game){
-			return Attribute.GetNullAttribute();
-		}
-		public Attribute GetArmour(Game game){
-			return Attribute.GetNullAttribute();
-		}
 	}
 	[field:NonSerialized]private static readonly NullUnit _NULL_UNIT = new NullUnit();
 	public Unit(){}
@@ -258,6 +261,9 @@ public abstract class Unit{
 		return _NULL_UNIT;
 	}
 	public virtual IProcessable GetProcessable(){
+		return _NULL_UNIT;
+	}
+	public virtual Unit.ITaggable GetTaggable(){
 		return _NULL_UNIT;
 	}
 	public virtual IPositionable GetPositionable(){
@@ -339,12 +345,6 @@ public abstract class Unit{
 		return _NULL_UNIT;
 	}
 	public virtual ClassicGen.Spawner.IFinalize GetFinalize(){
-		return _NULL_UNIT;
-	}
-	public virtual Health.IHasHealth GetHasHealth(){
-		return _NULL_UNIT;
-	}
-	public virtual Armour.IHasArmour GetHasArmour(){
 		return _NULL_UNIT;
 	}
 	public static void Default_Spawn(Unit self, Game game, int x, int y){

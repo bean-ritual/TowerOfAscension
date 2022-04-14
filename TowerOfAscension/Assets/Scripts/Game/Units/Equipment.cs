@@ -10,11 +10,9 @@ public class Equipment :
 	Inventory.IDroppable,
 	Inventory.IWeaponEquippable,
 	Inventory.IChestplateEquippable,
-	Inventory.IBootsEquippable,
-	EquipSlots.IHasEquipSlots
+	Inventory.IBootsEquippable
 	{
 	[field:NonSerialized]public event EventHandler<EventArgs> OnInventorySort;
-	private Attribute _equipSlots = Attribute.GetNullAttribute();
 	private Register<Unit>.ID[] _equips = {
 		Register<Unit>.ID.GetNullID(),
 		Register<Unit>.ID.GetNullID(),
@@ -22,9 +20,6 @@ public class Equipment :
 		Register<Unit>.ID.GetNullID(),
 		Register<Unit>.ID.GetNullID()
 	};
-	public Equipment(){
-		_equipSlots = new EquipSlots();
-	}
 	public void Sort(Game game){
 		Inventory.Default_Sort(this, game, _equips);
 	}
@@ -35,19 +30,19 @@ public class Equipment :
 		Inventory.Default_TryDrop(this, game, holder, id);
 	}
 	public void EquipWeapon(Game game, Unit self, Register<Unit>.ID id){
-		Inventory.Default_Equip(this, game, self, id, ref _equips[0], Attribute.GetNullAttribute());
+		Inventory.Default_Equip(this, game, self, id, ref _equips[0]);
 	}
 	public void UnequipWeapon(Game game, Unit self, Register<Unit>.ID id){
 		Inventory.Default_Unequip(this, game, self, id, ref _equips[0]);
 	}
 	public void EquipChestplate(Game game, Unit self, Register<Unit>.ID id){
-		Inventory.Default_Equip(this, game, self, id, ref _equips[1], _equipSlots);
+		Inventory.Default_Equip(this, game, self, id, ref _equips[1]);
 	}
 	public void UnequipChestplate(Game game, Unit self, Register<Unit>.ID id){
 		Inventory.Default_Unequip(this, game, self, id, ref _equips[1]);
 	}
 	public void EquipBoots(Game game, Unit self, Register<Unit>.ID id){
-		Inventory.Default_Equip(this, game, self, id, ref _equips[2], _equipSlots);
+		Inventory.Default_Equip(this, game, self, id, ref _equips[2]);
 	}
 	public void UnequipBoots(Game game, Unit self, Register<Unit>.ID id){
 		Inventory.Default_Unequip(this, game, self, id, ref _equips[2]);
@@ -60,9 +55,6 @@ public class Equipment :
 	}
 	public Unit GetBoots(Game game, Unit self){
 		return Get(_equips[2]);
-	}
-	public Attribute GetEquipSlots(Game game){
-		return _equipSlots;
 	}
 	public override ISortable GetSortable(){
 		return this;
@@ -80,9 +72,6 @@ public class Equipment :
 		return this;
 	}
 	public override IBootsEquippable GetBootsEquippable(){
-		return this;
-	}
-	public override EquipSlots.IHasEquipSlots GetHasEquipSlots(){
 		return this;
 	}
 }

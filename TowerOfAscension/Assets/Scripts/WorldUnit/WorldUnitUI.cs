@@ -22,7 +22,7 @@ public class WorldUnitUI : MonoBehaviour{
 		_controller.OnUIOffsetUpdate += OnUIOffsetUpdate;
 		_controller.OnUISortingOrderUpdate += OnUISortingOrderUpdate;
 		_controller.OnHealthBarActiveUpdate += OnHealthBarActiveUpdate;
-		_health.SetHealth(_unit.GetHasHealth().GetHealth(_local));
+		_health.SetHealth(_unit, _unit.GetTaggable().GetTag(_local, Tag.ID.Health));
 		RefreshAll();
 	}
 	public void RefreshAll(){

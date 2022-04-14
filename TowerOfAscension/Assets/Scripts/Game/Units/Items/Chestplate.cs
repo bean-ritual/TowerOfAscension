@@ -30,14 +30,14 @@ public class Chestplate :
 	}
 	public void DoEquip(Game game, Unit unit, Inventory inventory, ref Register<Unit>.ID id){
 		Unit.Default_DoEquip(this, game, unit, ref id, ref _id, ref _equipped);
-		unit.GetHasArmour().GetArmour(game).Fortify(game, unit, _armour);
+		//unit.GetHasArmour().GetArmour(game).Fortify(game, unit, _armour);
 	}
 	public void TryUnequip(Game game, Unit unit){
 		Unit.Default_TryUnequipChestplate(game, unit, ref _id);
 	}
 	public void DoUnequip(Game game, Unit unit, Inventory inventory, ref Register<Unit>.ID id){
 		Unit.Default_DoUnequip(this, game, unit, ref id, ref _equipped);
-		unit.GetHasArmour().GetArmour(game).Damage(game, unit, _armour);
+		//unit.GetHasArmour().GetArmour(game).Damage(game, unit, _armour);
 	}
 	public string GetToolTip(Game game){
 		return "Chestplate\n\n" + _armour + " Armour";
