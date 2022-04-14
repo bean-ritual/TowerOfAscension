@@ -9,6 +9,7 @@ public abstract class Tile : GridMap<Tile>.Node{
 		event EventHandler<Register<Unit>.OnObjectChangedEventArgs> OnUnitRemoved;
 		void AddUnit(Game game, Register<Unit>.ID id);
 		bool RemoveUnit(Game game, Register<Unit>.ID id);
+		void DoUnits(Game game, Func<Tile, Unit, bool> DoUnit);
 		List<Unit> GetUnits(Game game);
 	}
 	public interface IPrintable{
@@ -85,6 +86,7 @@ public abstract class Tile : GridMap<Tile>.Node{
 		public bool RemoveUnit(Game game, Register<Unit>.ID id){
 			return false;
 		}
+		public void DoUnits(Game game, Func<Tile, Unit, bool> DoUnit){}
 		public List<Unit> GetUnits(Game game){
 			return new List<Unit>();
 		}

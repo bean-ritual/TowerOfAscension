@@ -16,6 +16,12 @@ public abstract class Tag{
 		Collision,
 		Loot,
 		AI,
+		Basic_Attack,
+		Damage_Physical,
+		Damage_Magic,
+		Damage_Poison,
+		Fortify_Health,
+		Fortify_Armour,
 	};
 	public enum Collider{
 		Null,
@@ -105,7 +111,8 @@ public abstract class Tag{
 		Tag.IReduce<int>,
 		Tag.IGetIntValue1,
 		Tag.IGetIntValue2,
-		Tag.IGetCollider
+		Tag.IGetCollider,
+		Tag.IInput<Direction>
 		{
 		public void Process(Game game, Unit self){}
 		public bool Check(Game game, Unit self){
@@ -136,6 +143,7 @@ public abstract class Tag{
 		public Tag.Collider GetCollider(Game game, Unit self){
 			return Tag.Collider.Null;
 		}
+		public void Input(Game game, Unit self, Direction direction){}
 		//
 		public override Tag.ID GetTagID(){
 			const Tag.ID TAG_ID = Tag.ID.Null;
@@ -230,6 +238,9 @@ public abstract class Tag{
 		return _NULL_TAG;
 	}
 	public virtual Tag.IGetCollider GetIGetCollider(){
+		return _NULL_TAG;
+	}
+	public virtual Tag.IInput<Direction> GetIInputDirection(){
 		return _NULL_TAG;
 	}
 	public static Tag GetNullTag(){

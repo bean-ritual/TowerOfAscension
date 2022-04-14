@@ -23,6 +23,7 @@ public class Hero :
 		AddTag(game, Alive.Create());
 		AddTag(game, Health.Create(95));
 		AddTag(game, Grave.Create());
+		AddTag(game, BasicAttack.Create());
 	}
 	public override void Spawn(Game game, int x, int y){
 		Unit proxy = new Player();

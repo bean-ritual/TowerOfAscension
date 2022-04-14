@@ -22,5 +22,7 @@ public class Monster :
 		_controller.SetHealthBarActive(true);
 		AddTag(game, Alive.Create());
 		AddTag(game, Health.Create(5));
+		AddTag(game, BasicAttack.Create());
+		AddTag(game, Value.Create(Tag.ID.Damage_Physical, 1));
 	}
 }

@@ -62,6 +62,12 @@ public class PathTile :
 		}
 		return false;
 	}
+	public void DoUnits(Game game, Func<Tile, Unit, bool> DoUnit){
+		Inventory inventory = game.GetLevel().GetUnits();
+		for(int i = 0; i < _ids.Count; i++){
+			DoUnit(this, inventory.Get(_ids[i]));
+		}
+	}
 	public List<Unit> GetUnits(Game game){
 		return game.GetLevel().GetUnits().GetMultiple(_ids);
 	}
