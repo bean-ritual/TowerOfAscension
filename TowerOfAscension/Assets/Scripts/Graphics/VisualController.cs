@@ -46,7 +46,7 @@ public class VisualController{
 		public override bool GetItemBorder(){
 			return false;
 		}
-		public override void InvokeAttackAnimation(Vector3 position){}
+		public override void InvokeAttackAnimation(Direction direction){}
 		public override void InvokeDamagePopup(string damage){}
 		
 		public override bool IsNull(){
@@ -54,9 +54,9 @@ public class VisualController{
 		}
 	}
 	public class VisualAnimateEventArgs : EventArgs{
-		public Vector3 position;
-		public VisualAnimateEventArgs(Vector3 position){
-			this.position = position;
+		public Direction direction = Direction.GetNullDirection();
+		public VisualAnimateEventArgs(Direction direction){
+			this.direction = direction;
 		}
 	}
 	public class DamagePopupEventArgs : EventArgs{
@@ -164,8 +164,8 @@ public class VisualController{
 	public virtual bool GetItemBorder(){
 		return _itemBorder;
 	}
-	public virtual void InvokeAttackAnimation(Vector3 position){
-		OnAttackAnimation?.Invoke(this, new VisualAnimateEventArgs(position));
+	public virtual void InvokeAttackAnimation(Direction direction){
+		OnAttackAnimation?.Invoke(this, new VisualAnimateEventArgs(direction));
 	}
 	public virtual void InvokeDamagePopup(string damage){
 		OnDamagePopup?.Invoke(this, new DamagePopupEventArgs(damage));

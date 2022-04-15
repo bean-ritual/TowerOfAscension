@@ -147,8 +147,8 @@ public abstract class Unit{
 		public override bool IsNull(){
 			return true;
 		}
-		public void AddToRegister(Register<Unit> register){}
-		public void RemoveFromRegister(Register<Unit> register){}
+		public void Add(Register<Unit> register){}
+		public void Remove(Register<Unit> register){}
 		public Register<Unit>.ID GetID(){
 			return Register<Unit>.ID.GetNullID();
 		}
@@ -348,7 +348,7 @@ public abstract class Unit{
 		return _NULL_UNIT;
 	}
 	public static void Default_Spawn(Unit self, Game game, int x, int y){
-		self.GetRegisterable().AddToRegister(game.GetLevel().GetUnits());
+		self.GetRegisterable().Add(game.GetLevel().GetUnits());
 		self.GetPlayable().SetPlayer(game);
 		self.GetPositionable().SetPosition(game, x, y);
 		game.GetLevel().LightUpdate(game, self);
@@ -356,7 +356,7 @@ public abstract class Unit{
 	public static void Default_Despawn(Unit self, Game game){
 		self.GetPositionable().RemovePosition(game);
 		self.GetPlayable().RemovePlayer(game);
-		self.GetRegisterable().RemoveFromRegister(game.GetLevel().GetUnits());
+		self.GetRegisterable().Remove(game.GetLevel().GetUnits());
 	}
 	public static void Default_SetPosition(Unit self, Game game, int newX, int newY, ref int x, ref int y, int moveSpeed = 0){
 		self.GetPositionable().RemovePosition(game);

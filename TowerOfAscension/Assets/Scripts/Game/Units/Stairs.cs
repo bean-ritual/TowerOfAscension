@@ -46,10 +46,10 @@ public class Stairs :
 	public Tile GetTile(Game game){
 		return game.GetLevel().Get(_x, _y);
 	}
-	public void AddToRegister(Register<Unit> register){
+	public void Add(Register<Unit> register){
 		register.Add(this, ref _id);
 	}
-	public void RemoveFromRegister(Register<Unit> register){
+	public void Remove(Register<Unit> register){
 		register.Remove(_id);
 	}
 	public Register<Unit>.ID GetID(){

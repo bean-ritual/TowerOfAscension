@@ -23,6 +23,7 @@ public class Monster :
 		AddTag(game, Alive.Create());
 		AddTag(game, Health.Create(5));
 		AddTag(game, BasicAttack.Create());
+		AddTag(game, Attackable.Create());
 		AddTag(game, Value.Create(Tag.ID.Damage_Physical, 1));
 	}
 }

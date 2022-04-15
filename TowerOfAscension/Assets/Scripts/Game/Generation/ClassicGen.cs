@@ -256,7 +256,7 @@ public class ClassicGen :
 	public class LootSpawner : Spawner{
 		public LootSpawner(int x, int y) : base(x, y){}
 		public override void Spawn(Game game, Unit master){
-			Item.ITEM_DATA.GetLevelledItem(0).GetSpawnable().Spawn(game, _x, _y);
+			Item.ITEM_DATA.GetLevelledItem(game, 0).GetSpawnable().Spawn(game, _x, _y);
 		}
 		public override void AddToMaster(Game game, Unit master){
 			master.GetClassicGen().AddDetailSpawner(this);
@@ -323,10 +323,10 @@ public class ClassicGen :
 	public Tile GetTile(Game game){
 		return game.GetLevel().Get(_x, _y);
 	}
-	public void AddToRegister(Register<Unit> register){
+	public void Add(Register<Unit> register){
 		register.Add(this, ref _id);
 	}
-	public void RemoveFromRegister(Register<Unit> register){
+	public void Remove(Register<Unit> register){
 		register.Remove(_id);
 	}
 	public Register<Unit>.ID GetID(){

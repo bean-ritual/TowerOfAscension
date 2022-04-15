@@ -110,7 +110,7 @@ public class WorldUnit :
 		if(!_offset.activeSelf){
 			return;
 		}
-		DungeonMaster.GetInstance().QueueAction(() => AttackAnimation(e.position));
+		DungeonMaster.GetInstance().QueueAction(() => AttackAnimation((e.direction.GetWorldDirection(_local) / 2) + this.transform.localPosition));
 	}
 	private void OnDamagePopup(object sender, VisualController.DamagePopupEventArgs e){
 		TextPopupManager.GetInstance().PopText(e.text, (_controller.GetWorldPosition() + _local.GetLevel().GetVector3CellOffset()));

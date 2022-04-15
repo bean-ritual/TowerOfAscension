@@ -12,10 +12,13 @@ public abstract class Tag{
 		Armour,
 		Move,
 		Inventory,
+		Pickup,
+		Drop,
 		Light,
 		Collision,
 		Loot,
 		AI,
+		Attackable,
 		Basic_Attack,
 		Damage_Physical,
 		Damage_Magic,
@@ -27,8 +30,11 @@ public abstract class Tag{
 		Null,
 		Basic,
 	};
-	public enum DamageType{
+	public enum EquipSlot{
 		Null,
+		Weapon,
+		Chestplate,
+		Boots,
 	};
 	public interface IProcess{
 		void Process(Game game, Unit self);
@@ -78,17 +84,23 @@ public abstract class Tag{
 	public interface IGetCollider{
 		Collider GetCollider(Game game, Unit self);
 	}
-	public interface IAttempt<TValue>{
-		void Attempt(Game game, Unit self, TValue value);
+	public interface IGetRegisterEvents{
+		Register<Unit>.IRegisterEvents GetRegisterEvents(Game game, Unit self);
 	}
-	public interface IExecute<TValue>{
-		void Execute(Game game, Unit self, TValue value);
+	public interface ITrigger<TValue>{
+		void Trigger(Game game, Unit self, TValue value);
 	}
 	public interface IInput<TValue>{
 		void Input(Game game, Unit self, TValue value);
 	}
-	public interface IInteract<TValue>{
-		void Interact(Game game, Unit self, TValue value);
+	public interface IInput<TValue1, TValue2>{
+		void Input(Game game, Unit self, TValue1 value1, TValue2 value2);
+	}
+	public interface IAdd<TValue>{
+		void Add(Game game, Unit self, TValue value);
+	}
+	public interface IRemove<TValue>{
+		void Remove(Game game, Unit self, TValue value);
 	}
 	public interface IReduce<TValue>{
 		TValue Reduce(Game game, Unit self, TValue value);
@@ -112,7 +124,12 @@ public abstract class Tag{
 		Tag.IGetIntValue1,
 		Tag.IGetIntValue2,
 		Tag.IGetCollider,
-		Tag.IInput<Direction>
+		Tag.IGetRegisterEvents,
+		Tag.IInput<Direction>,
+		Tag.IInput<Unit>,
+		Tag.IInput<Unit, Unit>,
+		Tag.IAdd<Unit>,
+		Tag.IRemove<Register<Unit>.ID>
 		{
 		public void Process(Game game, Unit self){}
 		public bool Check(Game game, Unit self){
@@ -143,7 +160,14 @@ public abstract class Tag{
 		public Tag.Collider GetCollider(Game game, Unit self){
 			return Tag.Collider.Null;
 		}
+		public Register<Unit>.IRegisterEvents GetRegisterEvents(Game game, Unit self){
+			return Inventory.GetNullInventory();
+		}
 		public void Input(Game game, Unit self, Direction direction){}
+		public void Input(Game game, Unit self, Unit unit){}
+		public void Input(Game game, Unit self, Unit unit1, Unit unit2){}
+		public void Add(Game game, Unit self, Unit unit){}
+		public void Remove(Game game, Unit self, Register<Unit>.ID unit){}
 		//
 		public override Tag.ID GetTagID(){
 			const Tag.ID TAG_ID = Tag.ID.Null;
@@ -240,7 +264,22 @@ public abstract class Tag{
 	public virtual Tag.IGetCollider GetIGetCollider(){
 		return _NULL_TAG;
 	}
+	public virtual Tag.IGetRegisterEvents GetIGetRegisterEvents(){
+		return _NULL_TAG;
+	}
 	public virtual Tag.IInput<Direction> GetIInputDirection(){
+		return _NULL_TAG;
+	}
+	public virtual Tag.IInput<Unit> GetIInputUnit(){
+		return _NULL_TAG;
+	}
+	public virtual Tag.IInput<Unit, Unit> GetIInput2Units(){
+		return _NULL_TAG;
+	}
+	public virtual Tag.IAdd<Unit> GetIAddUnit(){
+		return _NULL_TAG;
+	}
+	public virtual Tag.IRemove<Register<Unit>.ID> GetIRemoveUnitID(){
 		return _NULL_TAG;
 	}
 	public static Tag GetNullTag(){

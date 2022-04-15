@@ -57,10 +57,10 @@ public abstract class LevelUnit :
 	public Tile GetTileFrom(Game game, int x, int y){
 		return game.GetLevel().Get((x + _x), (y + _y));
 	}
-	public void AddToRegister(Register<Unit> register){
+	public void Add(Register<Unit> register){
 		register.Add(this, ref _id);
 	}
-	public void RemoveFromRegister(Register<Unit> register){
+	public void Remove(Register<Unit> register){
 		register.Remove(_id);
 	}
 	public Register<Unit>.ID GetID(){

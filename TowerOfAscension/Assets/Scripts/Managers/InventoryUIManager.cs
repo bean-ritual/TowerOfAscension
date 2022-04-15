@@ -5,7 +5,7 @@ using UnityEngine;
 public class InventoryUIManager : MonoBehaviour{
 	private static InventoryUIManager _INSTANCE;
 	private Game _local = Game.GetNullGame();
-	private Inventory _inventory = Inventory.GetNullInventory();
+	private Register<Unit>.IRegisterEvents _inventory = Inventory.GetNullInventory();
 	private Dictionary<Unit, UIUnit> _uiUnits;
 	private UIWindowManager _uiWindow;
 	private RectTransform _content;
@@ -41,13 +41,14 @@ public class InventoryUIManager : MonoBehaviour{
 		GameObject go2 =  Instantiate(_prefabUIInventory, _uiWindow.GetContent().transform);
 		_content = go2.GetComponent<ContentManager>().GetContent();
 	}
-	public void SetInventory(Inventory inventory){
+	public void SetInventory(Register<Unit>.IRegisterEvents inventory){
 		UnsubcribeFromEvents();
 		_uiUnits = new Dictionary<Unit, UIUnit>();
 		GameObjectUtils.DestroyAllChildren(_content);
 		_inventory = inventory;
-		for(int i = 0; i < _inventory.GetCount(); i++){
-			CreateUIUnit(_inventory.Get(i));
+		List<Unit> items = _inventory.GetAll();
+		for(int i = 0; i < items.Count; i++){
+			CreateUIUnit(items[i]);
 		}
 		_inventory.OnObjectAdded += OnObjectAdded;
 		_inventory.OnObjectRemoved += OnObjectRemoved;
@@ -72,7 +73,8 @@ public class InventoryUIManager : MonoBehaviour{
 	public void InventoryInteract(Unit item){
 		Unit player = PlayerController.GetInstance().GetPlayer();
 		if(Input.GetKey(KeyCode.LeftShift)){
-			item.GetDroppable().TryDrop(_local, player);
+			player.GetTaggable().GetTag(_local, Tag.ID.Inventory).GetIRemoveUnitID().Remove(_local, player, item.GetRegisterable().GetID());
+			//item.GetDroppable().TryDrop(_local, player);
 			return;
 		}
 		item.GetUseable().TryUse(_local, player);

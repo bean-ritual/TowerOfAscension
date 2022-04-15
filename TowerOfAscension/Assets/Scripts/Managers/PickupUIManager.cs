@@ -58,20 +58,22 @@ public class PickupUIManager : MonoBehaviour{
 		_tile.GetHasUnits().OnUnitRemoved += OnUnitRemoved;
 	}
 	public void CreateUIUnit(Unit unit){
-		if(unit is Unit.IPickupable && !unit.IsNull()){
-			GameObject go = Instantiate(_prefabUIItem, _content);
-			UIUnit uiUnit = go.GetComponent<UIUnit>();
-			uiUnit.Setup(unit, PickupInteract);
-			_uiUnits.Add(unit, uiUnit);
-			CheckExistance();
+		if(unit.GetTaggable().GetTag(_local, Tag.ID.Pickup).IsNull()){
+			return;
 		}
+		GameObject go = Instantiate(_prefabUIItem, _content);
+		UIUnit uiUnit = go.GetComponent<UIUnit>();
+		uiUnit.Setup(unit, PickupInteract);
+		_uiUnits.Add(unit, uiUnit);
+		CheckExistance();
 	}
 	public void RemoveUIUnit(Unit unit){
-		if(_uiUnits.TryGetValue(unit, out UIUnit uiUnit)){
-			_uiUnits.Remove(unit);
-			uiUnit.UnitDestroy();
-			CheckExistance();
+		if(!_uiUnits.TryGetValue(unit, out UIUnit uiUnit)){
+			return;
 		}
+		_uiUnits.Remove(unit);
+		uiUnit.UnitDestroy();
+		CheckExistance();
 	}
 	public void CheckExistance(){
 		_uiWindow.SetActive(_uiUnits.Count > 0);
@@ -81,7 +83,8 @@ public class PickupUIManager : MonoBehaviour{
 		_tile.GetHasUnits().OnUnitRemoved -= OnUnitRemoved;
 	}
 	public void PickupInteract(Unit item){
-		item.GetPickupable().TryPickup(_local, PlayerController.GetInstance().GetPlayer());
+		item.GetTaggable().GetTag(_local, Tag.ID.Pickup).GetIInputUnit().Input(_local, item, PlayerController.GetInstance().GetPlayer());
+		//item.GetPickupable().TryPickup(_local, PlayerController.GetInstance().GetPlayer());
 	}
 	private void OnUnitAdded(object sender, Register<Unit>.OnObjectChangedEventArgs e){
 		CreateUIUnit(e.value);

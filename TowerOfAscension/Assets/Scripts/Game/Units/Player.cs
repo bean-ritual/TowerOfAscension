@@ -38,10 +38,10 @@ public class Player :
 	public void RemovePlayer(Game game){
 		Unit.Default_RemovePlayer(game);
 	}
-	public void AddToRegister(Register<Unit> register){
+	public void Add(Register<Unit> register){
 		register.Add(this, ref _id);
 	}
-	public void RemoveFromRegister(Register<Unit> register){
+	public void Remove(Register<Unit> register){
 		register.Remove(_id);
 	}
 	//

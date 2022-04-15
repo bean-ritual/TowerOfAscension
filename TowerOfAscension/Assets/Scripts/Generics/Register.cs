@@ -3,17 +3,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 [Serializable]
-public abstract class Register<TStoreObject> : Register<TStoreObject>.RegisterEvents{
+public abstract class Register<TStoreObject> : 
+	Register<TStoreObject>.IRegisterEvents
+	{
 	public interface IRegisterable{
-		void AddToRegister(Register<TStoreObject> register);
-		void RemoveFromRegister(Register<TStoreObject> register);
+		void Add(Register<TStoreObject> register);
+		void Remove(Register<TStoreObject> register);
 		Register<TStoreObject>.ID GetID();
 	}
-	public interface RegisterEvents{
+	public interface IRegisterEvents{
 		event EventHandler<OnObjectChangedEventArgs> OnObjectAdded;
 		event EventHandler<OnObjectChangedEventArgs> OnObjectRemoved;
-		//event EventHandler<OnObjectSwappedEventArgs> OnObjectSwapped;
-		//event EventHandler<EventArgs> OnRegisterSort;
+		List<TStoreObject> GetAll();
 	}
 	[Serializable]
 	public class ID{
@@ -182,11 +183,11 @@ public abstract class Register<TStoreObject> : Register<TStoreObject>.RegisterEv
 	public virtual int GetCount(){
 		return _ids.Count;
 	}
-	public RegisterEvents GetEvents(){
-		return this as RegisterEvents;
+	public virtual IRegisterEvents GetEvents(){
+		return this;
 	}
 	private ID CreateID(){
 		const int COUNTER = 1;
 		return new ID(_idCounter += COUNTER);
-	}	
+	}
 }

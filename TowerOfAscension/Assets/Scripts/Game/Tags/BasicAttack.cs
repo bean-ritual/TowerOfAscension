@@ -15,6 +15,8 @@ public class BasicAttack :
 	public override void Disassemble(){}
 	public void Input(Game game, Unit self, Direction direction){
 		Attack.Create(game, direction, self, self);
+		self.GetVisualController().GetVisualController(game).InvokeAttackAnimation(direction);
+		self.GetControllable().GetAI(game).GetTurnControl().EndTurn(game, self);
 	}
 	public override Tag.IInput<Direction> GetIInputDirection(){
 		return this;

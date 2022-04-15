@@ -12,6 +12,12 @@ public abstract class Direction{
 		public override Tile GetTileFromUnit(Game game, Unit unit){
 			return Tile.GetNullTile();
 		}
+		public override Vector3 GetWorldDirection(Game game){
+			return Vector3.zero;
+		}
+		public override bool IsNull(){
+			return true;
+		}
 	}
 	[Serializable]
 	public class North : Direction{
@@ -22,6 +28,9 @@ public abstract class Direction{
 		}
 		public override Tile GetTileFromUnit(Game game, Unit unit){
 			return unit.GetTileable().GetTileFrom(game, _X, _Y);
+		}
+		public override Vector3 GetWorldDirection(Game game){
+			return game.GetLevel().GetWorldPosition(_X, _Y);
 		}
 	}
 	[Serializable]
@@ -34,6 +43,9 @@ public abstract class Direction{
 		public override Tile GetTileFromUnit(Game game, Unit unit){
 			return unit.GetTileable().GetTileFrom(game, _X, _Y);
 		}
+		public override Vector3 GetWorldDirection(Game game){
+			return game.GetLevel().GetWorldPosition(_X, _Y);
+		}
 	}
 	[Serializable]
 	public class East : Direction{
@@ -44,6 +56,9 @@ public abstract class Direction{
 		}
 		public override Tile GetTileFromUnit(Game game, Unit unit){
 			return unit.GetTileable().GetTileFrom(game, _X, _Y);
+		}
+		public override Vector3 GetWorldDirection(Game game){
+			return game.GetLevel().GetWorldPosition(_X, _Y);
 		}
 	}
 	[Serializable]
@@ -56,6 +71,9 @@ public abstract class Direction{
 		public override Tile GetTileFromUnit(Game game, Unit unit){
 			return unit.GetTileable().GetTileFrom(game, _X, _Y);
 		}
+		public override Vector3 GetWorldDirection(Game game){
+			return game.GetLevel().GetWorldPosition(_X, _Y);
+		}
 	}
 	[Serializable]
 	public class NorthEast : Direction{
@@ -66,6 +84,9 @@ public abstract class Direction{
 		}
 		public override Tile GetTileFromUnit(Game game, Unit unit){
 			return unit.GetTileable().GetTileFrom(game, _X, _Y);
+		}
+		public override Vector3 GetWorldDirection(Game game){
+			return game.GetLevel().GetWorldPosition(_X, _Y);
 		}
 	}
 	[Serializable]
@@ -78,6 +99,9 @@ public abstract class Direction{
 		public override Tile GetTileFromUnit(Game game, Unit unit){
 			return unit.GetTileable().GetTileFrom(game, _X, _Y);
 		}
+		public override Vector3 GetWorldDirection(Game game){
+			return game.GetLevel().GetWorldPosition(_X, _Y);
+		}
 	}
 	[Serializable]
 	public class SouthEast : Direction{
@@ -89,6 +113,9 @@ public abstract class Direction{
 		public override Tile GetTileFromUnit(Game game, Unit unit){
 			return unit.GetTileable().GetTileFrom(game, _X, _Y);
 		}
+		public override Vector3 GetWorldDirection(Game game){
+			return game.GetLevel().GetWorldPosition(_X, _Y);
+		}
 	}
 	[Serializable]
 	public class SouthWest : Direction{
@@ -99,6 +126,9 @@ public abstract class Direction{
 		}
 		public override Tile GetTileFromUnit(Game game, Unit unit){
 			return unit.GetTileable().GetTileFrom(game, _X, _Y);
+		}
+		public override Vector3 GetWorldDirection(Game game){
+			return game.GetLevel().GetWorldPosition(_X, _Y);
 		}
 	}
 	[field:NonSerialized]private static readonly NullDirection _NULL_DIRECTION = new NullDirection();
@@ -113,6 +143,10 @@ public abstract class Direction{
 	//
 	public abstract Tile GetTileFromTile(Game game, Tile tile);
 	public abstract Tile GetTileFromUnit(Game game, Unit unit);
+	public abstract Vector3 GetWorldDirection(Game game);
+	public virtual bool IsNull(){
+		return false;
+	}
 	//
 	public static Direction IntToDirection(int x, int y){
 		if(y > 0){

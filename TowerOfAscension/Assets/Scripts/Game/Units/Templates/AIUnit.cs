@@ -37,7 +37,7 @@ public abstract class AIUnit :
 	}
 	public virtual void DoAttack(Game game, Unit skills, Unit target){
 		//target.GetHasHealth().GetHealth(game).Damage(game, target, 1);
-		_controller.InvokeAttackAnimation((GetPositionable().GetPosition(game) + target.GetPositionable().GetPosition(game)) / 2);
+		//_controller.InvokeAttackAnimation((GetPositionable().GetPosition(game) + target.GetPositionable().GetPosition(game)) / 2);
 	}
 	public virtual void CheckAttack(Game game, Unit skills, Unit attack){
 		attack.GetAttacker().DoAttack(game, skills, this);
