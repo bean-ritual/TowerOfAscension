@@ -11,9 +11,13 @@ public abstract class Tag{
 		Health,
 		Armour,
 		Move,
+		Weapon,
+		Chestplate,
+		Boots,
 		Inventory,
 		Pickup,
 		Drop,
+		Equippable,
 		Light,
 		Collision,
 		Loot,
@@ -29,12 +33,6 @@ public abstract class Tag{
 	public enum Collider{
 		Null,
 		Basic,
-	};
-	public enum EquipSlot{
-		Null,
-		Weapon,
-		Chestplate,
-		Boots,
 	};
 	public interface IProcess{
 		void Process(Game game, Unit self);
@@ -81,6 +79,9 @@ public abstract class Tag{
 	public interface IGetIntValue2{
 		int GetIntValue2(Game game, Unit self);
 	}
+	public interface IGetUnit{
+		Unit GetUnit(Game game, Unit self);
+	}
 	public interface IGetCollider{
 		Collider GetCollider(Game game, Unit self);
 	}
@@ -101,6 +102,9 @@ public abstract class Tag{
 	}
 	public interface IRemove<TValue>{
 		void Remove(Game game, Unit self, TValue value);
+	}
+	public interface IRemove<TValue1, TValue2>{
+		void Remove(Game game, Unit self, TValue1 value1, TValue2 value2);
 	}
 	public interface IReduce<TValue>{
 		TValue Reduce(Game game, Unit self, TValue value);
@@ -123,12 +127,15 @@ public abstract class Tag{
 		Tag.IReduce<int>,
 		Tag.IGetIntValue1,
 		Tag.IGetIntValue2,
+		Tag.IGetUnit,
 		Tag.IGetCollider,
 		Tag.IGetRegisterEvents,
 		Tag.IInput<Direction>,
 		Tag.IInput<Unit>,
 		Tag.IInput<Unit, Unit>,
 		Tag.IAdd<Unit>,
+		Tag.IRemove<Unit>,
+		Tag.IRemove<Unit, Unit>,
 		Tag.IRemove<Register<Unit>.ID>
 		{
 		public void Process(Game game, Unit self){}
@@ -157,6 +164,9 @@ public abstract class Tag{
 		public int GetIntValue2(Game game, Unit self){
 			return 0;
 		}
+		public Unit GetUnit(Game game, Unit self){
+			return Unit.GetNullUnit();
+		}
 		public Tag.Collider GetCollider(Game game, Unit self){
 			return Tag.Collider.Null;
 		}
@@ -167,6 +177,8 @@ public abstract class Tag{
 		public void Input(Game game, Unit self, Unit unit){}
 		public void Input(Game game, Unit self, Unit unit1, Unit unit2){}
 		public void Add(Game game, Unit self, Unit unit){}
+		public void Remove(Game game, Unit self, Unit unit){}
+		public void Remove(Game game, Unit self, Unit unit1, Unit unit2){}
 		public void Remove(Game game, Unit self, Register<Unit>.ID unit){}
 		//
 		public override Tag.ID GetTagID(){
@@ -261,6 +273,9 @@ public abstract class Tag{
 	public virtual Tag.IGetIntValue2 GetIGetIntValue2(){
 		return _NULL_TAG;
 	}
+	public virtual Tag.IGetUnit GetIGetUnit(){
+		return _NULL_TAG;
+	}
 	public virtual Tag.IGetCollider GetIGetCollider(){
 		return _NULL_TAG;
 	}
@@ -277,6 +292,12 @@ public abstract class Tag{
 		return _NULL_TAG;
 	}
 	public virtual Tag.IAdd<Unit> GetIAddUnit(){
+		return _NULL_TAG;
+	}
+	public virtual Tag.IRemove<Unit> GetIRemoveUnit(){
+		return _NULL_TAG;
+	}
+	public virtual Tag.IRemove<Unit, Unit> GetIRemove2Units(){
 		return _NULL_TAG;
 	}
 	public virtual Tag.IRemove<Register<Unit>.ID> GetIRemoveUnitID(){

@@ -19,6 +19,7 @@ public class Item :
 		_controller.SetSprite(SpriteSheet.SpriteID.Swords, UnityEngine.Random.Range(0, 5));
 		_controller.SetSortingOrder(20);
 		AddTag(game, Pickup.Create());
+		AddTag(game, Equippable.Create(Tag.ID.Weapon));
 	}
 	public void TryPickup(Game game, Unit unit){
 		Unit.Default_TryPickup(this, game, unit);

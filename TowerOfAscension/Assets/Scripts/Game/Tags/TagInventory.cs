@@ -27,10 +27,7 @@ public class TagInventory :
 		item.GetRegisterable().Add(_inventory);
 	}
 	public void Remove(Game game, Unit self, Register<Unit>.ID itemID){
-		Unit item = _inventory.Get(itemID);
-		item.GetRegisterable().Remove(_inventory);
-		self.GetPositionable().GetPosition(game, out int x, out int y);
-		item.GetSpawnable().Spawn(game, x, y);
+		_inventory.Get(itemID).GetRegisterable().Remove(_inventory);
 	}
 	public Register<Unit>.IRegisterEvents GetRegisterEvents(Game game, Unit self){
 		return _inventory;

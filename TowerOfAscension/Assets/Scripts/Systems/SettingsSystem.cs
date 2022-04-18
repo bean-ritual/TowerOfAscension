@@ -14,8 +14,8 @@ public static class SettingsSystem{
 			this.inventory = new UIWindowManager.UISizeData(
 				false,
 				new Vector2(0, (Screen.height / 2)),
-				new Vector2(250, 215),
-				new Vector2(250, 215),
+				new Vector2(250, 240),
+				new Vector2(250, 240),
 				new Vector2(1000, 1000)
 			);
 			this.minimap = new UIWindowManager.UISizeData(
@@ -28,8 +28,8 @@ public static class SettingsSystem{
 			this.ground = new UIWindowManager.UISizeData(
 				false,
 				new Vector2((Screen.width / 1.5f), (Screen.height / 1.5f)), 
-				new Vector2(250, 215),
-				new Vector2(250, 215),
+				new Vector2(250, 240),
+				new Vector2(250, 240),
 				new Vector2(1000, 1000)
 			);
 		}

@@ -83,7 +83,7 @@ public class PickupUIManager : MonoBehaviour{
 		_tile.GetHasUnits().OnUnitRemoved -= OnUnitRemoved;
 	}
 	public void PickupInteract(Unit item){
-		item.GetTaggable().GetTag(_local, Tag.ID.Pickup).GetIInputUnit().Input(_local, item, PlayerController.GetInstance().GetPlayer());
+		item.GetTaggable().GetTag(_local, Tag.ID.Pickup).GetIAddUnit().Add(_local, item, PlayerController.GetInstance().GetPlayer());
 		//item.GetPickupable().TryPickup(_local, PlayerController.GetInstance().GetPlayer());
 	}
 	private void OnUnitAdded(object sender, Register<Unit>.OnObjectChangedEventArgs e){

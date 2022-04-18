@@ -27,6 +27,7 @@ public class Hero :
 		AddTag(game, BasicAttack.Create());
 		AddTag(game, Value.Create(Tag.ID.Damage_Physical, 1));
 		AddTag(game, TagInventory.Create());
+		AddTag(game, EquipSlot.Create(Tag.ID.Weapon));
 	}
 	public override void Spawn(Game game, int x, int y){
 		Unit proxy = new Player();

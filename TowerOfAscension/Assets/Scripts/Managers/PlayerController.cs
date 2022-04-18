@@ -75,8 +75,7 @@ public class PlayerController : MonoBehaviour{
 			true
 		);
 		HUDUIManager.GetInstance().SetUnit(_previous);
-		//InventoryUIManager.GetInstance().SetInventory(_previous.GetHasInventory().GetInventory(_local));
-		InventoryUIManager.GetInstance().SetInventory(_previous.GetTaggable().GetTag(_local, Tag.ID.Inventory).GetIGetRegisterEvents().GetRegisterEvents(_local, _previous));
+		InventoryUIManager.GetInstance().SetUnit(_previous);
 		MinimapUIManager.GetInstance().SetUnit(_previous);
 	}
 	public void ClearPlayer(){

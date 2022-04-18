@@ -25,6 +25,7 @@ public class UIUnit :
 		UnsubcribeFromEvents();
 		_unit = unit;
 		_local = DungeonMaster.GetInstance().GetLocalGame();
+		gameObject.SetActive(!_unit.IsNull());
 		_controller = unit.GetVisualController().GetVisualController(_local);
 		_controller.OnSpriteUpdate += OnSpriteUpdate;
 		_controller.OnItemBorderUpdate += OnItemBorderUpdate;

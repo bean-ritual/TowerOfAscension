@@ -35,6 +35,9 @@ public class WorldUnitManager : MonoBehaviour{
 		_worldUnits.Add(unit, worldUnit);
 	}
 	private void RemoveWorldUnit(Unit unit){
+		if(unit == null){
+			return;
+		}
 		if(!_worldUnits.TryGetValue(unit, out WorldUnit worldUnit)){
 			return;
 		}
