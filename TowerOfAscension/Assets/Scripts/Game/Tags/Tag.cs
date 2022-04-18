@@ -21,6 +21,9 @@ public abstract class Tag{
 		Light,
 		Collision,
 		Loot,
+		Discoverer,
+		Interactor,
+		Hostility,
 		AI,
 		Attackable,
 		Basic_Attack,
@@ -132,6 +135,7 @@ public abstract class Tag{
 		Tag.IGetRegisterEvents,
 		Tag.IInput<Direction>,
 		Tag.IInput<Unit>,
+		Tag.IInput<Tile>,
 		Tag.IInput<Unit, Unit>,
 		Tag.IAdd<Unit>,
 		Tag.IRemove<Unit>,
@@ -175,6 +179,7 @@ public abstract class Tag{
 		}
 		public void Input(Game game, Unit self, Direction direction){}
 		public void Input(Game game, Unit self, Unit unit){}
+		public void Input(Game game, Unit self, Tile tile){}
 		public void Input(Game game, Unit self, Unit unit1, Unit unit2){}
 		public void Add(Game game, Unit self, Unit unit){}
 		public void Remove(Game game, Unit self, Unit unit){}
@@ -286,6 +291,9 @@ public abstract class Tag{
 		return _NULL_TAG;
 	}
 	public virtual Tag.IInput<Unit> GetIInputUnit(){
+		return _NULL_TAG;
+	}
+	public virtual Tag.IInput<Tile> GetIInputTile(){
 		return _NULL_TAG;
 	}
 	public virtual Tag.IInput<Unit, Unit> GetIInput2Units(){

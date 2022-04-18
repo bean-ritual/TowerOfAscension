@@ -68,7 +68,7 @@ public class Level : GridMap<Tile>{
 		return _units.Get(_index).GetProcessable().Process(game);
 	}
 	public virtual void LightUpdate(Game game, Unit unit){
-		int lightRange = unit.GetLightSource().GetLightRange(game);
+		int lightRange = unit.GetTaggable().GetTag(game, Tag.ID.Light).GetIGetIntValue1().GetIntValue1(game, unit);
 		if(lightRange <= 0){
 			return;
 		}
@@ -80,10 +80,11 @@ public class Level : GridMap<Tile>{
 		unit.GetPositionable().GetPosition(game, out int sourceX, out int sourceY);
 		Tile origin = Get(sourceX, sourceY);
 		origin.GetLightable().SetLight(lightRange);
-		unit.GetDiscoverer().Discover(game, origin);
+		Tag discover = unit.GetTaggable().GetTag(game, Tag.ID.Discoverer);
+		discover.GetIInputTile().Input(game, unit, origin);
 		List<Tile> tiles = CalculateFov(sourceX, sourceY, lightRange, (int range, Tile tile) => {
 			tile.GetLightable().SetLight(lightRange - (range - 1));
-			unit.GetDiscoverer().Discover(game, tile);
+			discover.GetIInputTile().Input(game, unit, tile);
 			return tile.GetLightControl().CheckTransparency(game);
 		});
 		OnLightUpdate?.Invoke(this, EventArgs.Empty);

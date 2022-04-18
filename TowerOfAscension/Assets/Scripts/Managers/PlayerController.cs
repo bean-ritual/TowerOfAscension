@@ -40,11 +40,10 @@ public class PlayerController : MonoBehaviour{
 		if(Input.GetMouseButtonDown(0)){
 			if(Input.GetKey(KeyCode.A)){
 				_player.GetTaggable().GetTag(_local, Tag.ID.Basic_Attack).GetIInputDirection().Input(_local, _player, _direction);
-				//_player.GetAttacker().TryAttack(_local, _direction);
 				return;
 			}
 			if(Input.GetKey(KeyCode.LeftShift)){
-				_player.GetInteractor().Interact(_local, _direction);
+				_player.GetTaggable().GetTag(_local, Tag.ID.Interactor).GetIInputDirection().Input(_local, _player, _direction);
 				return;
 			}
 			_player.GetMoveable().Move(_local, _direction);

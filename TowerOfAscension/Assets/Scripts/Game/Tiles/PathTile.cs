@@ -129,7 +129,7 @@ public class PathTile :
 	public bool CheckHostility(Game game, Unit unit){
 		List<Unit> units = game.GetLevel().GetUnits().GetMultiple(_ids);
 		for(int i = 0; i < units.Count; i++){
-			if(units[i].GetHostileTarget().CheckHostility(game, unit)){
+			if(units[i].GetTaggable().GetTag(game, Tag.ID.Hostility).GetICondition().Check(game, units[i])){
 				return true;
 			}
 		}

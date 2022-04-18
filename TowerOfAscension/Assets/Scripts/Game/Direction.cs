@@ -217,4 +217,20 @@ public abstract class Direction{
 	public static Direction GetSouthWest(){
 		return _SOUTH_WEST;
 	}
+	public static Direction GetIntDirection(int i){
+		switch(i){
+			default: return _NORTH;
+			case 0: return _NORTH;
+			case 1: return _SOUTH;
+			case 2: return _WEST;
+			case 3: return _EAST;
+			case 4: return _NORTH_EAST;
+			case 5: return _NORTH_WEST;
+			case 6: return _SOUTH_EAST;
+			case 7: return _SOUTH_WEST;
+		}
+	}
+	public static Direction GetRandomDirection(){
+		return GetIntDirection(UnityEngine.Random.Range(0, 8));
+	}
 }

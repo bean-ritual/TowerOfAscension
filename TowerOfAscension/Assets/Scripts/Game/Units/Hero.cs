@@ -19,7 +19,6 @@ public class Hero :
 		_controller = new VisualController();
 		_controller.SetSpriteID(SpriteSheet.SpriteID.Hero);
 		_controller.SetSortingOrder(25);
-		//_inventory = new Equipment();
 		AddTag(game, Alive.Create());
 		AddTag(game, Health.Create(95));
 		AddTag(game, Grave.Create());
@@ -28,6 +27,10 @@ public class Hero :
 		AddTag(game, Value.Create(Tag.ID.Damage_Physical, 1));
 		AddTag(game, TagInventory.Create());
 		AddTag(game, EquipSlot.Create(Tag.ID.Weapon));
+		AddTag(game, Value.Create(Tag.ID.Light, 3));
+		AddTag(game, Discoverer.Create());
+		AddTag(game, Interactor.Create());
+		AddTag(game, Hostility.Create());
 	}
 	public override void Spawn(Game game, int x, int y){
 		Unit proxy = new Player();
