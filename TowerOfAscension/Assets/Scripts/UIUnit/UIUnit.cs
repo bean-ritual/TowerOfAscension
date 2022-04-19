@@ -55,7 +55,7 @@ public class UIUnit :
 		Destroy(gameObject);
 	}
 	public void OnPointerEnter(PointerEventData eventData){
-		ToolTipManager.GetInstance().ShowToolTip(_unit.GetItemToolTip().GetToolTip(_local));
+		ToolTipManager.GetInstance().ShowToolTip("bing");
 	}
 	public void OnPointerExit(PointerEventData eventData){
 		ToolTipManager.GetInstance().HideToolTip();

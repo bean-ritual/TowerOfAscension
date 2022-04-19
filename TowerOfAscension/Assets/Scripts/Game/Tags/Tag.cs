@@ -19,11 +19,15 @@ public abstract class Tag{
 		Drop,
 		Equippable,
 		Light,
+		Opacity,
 		Collision,
 		Loot,
 		Discoverer,
 		Interactor,
+		Interactable,
 		Hostility,
+		Tripwire,
+		Exitable,
 		AI,
 		Attackable,
 		Basic_Attack,
@@ -38,7 +42,7 @@ public abstract class Tag{
 		Basic,
 	};
 	public interface IProcess{
-		void Process(Game game, Unit self);
+		bool Process(Game game, Unit self);
 	}
 	public interface ICondition{
 		bool Check(Game game, Unit self);
@@ -91,6 +95,9 @@ public abstract class Tag{
 	public interface IGetRegisterEvents{
 		Register<Unit>.IRegisterEvents GetRegisterEvents(Game game, Unit self);
 	}
+	public interface ITrigger{
+		void Trigger(Game game, Unit self);
+	}
 	public interface ITrigger<TValue>{
 		void Trigger(Game game, Unit self, TValue value);
 	}
@@ -115,6 +122,7 @@ public abstract class Tag{
 	public class NullTag : 
 		Tag,
 		Tag.IProcess,
+		Tag.ITrigger,
 		Tag.ICondition,
 		Tag.ICondition<Tag.Collider>,
 		Tag.IClear,
@@ -124,7 +132,9 @@ public abstract class Tag{
 		Tag.IDamageValue1,
 		Tag.IDamageValue1<int>,
 		Tag.IDamageValue2<int>,
+		Tag.ISetValue1<Tag.Collider>,
 		Tag.ISetValue1<int>,
+		Tag.ISetValue1<bool>,
 		Tag.ISetValue2<int>,
 		Tag.ISetValues<int, int>,
 		Tag.IReduce<int>,
@@ -142,7 +152,10 @@ public abstract class Tag{
 		Tag.IRemove<Unit, Unit>,
 		Tag.IRemove<Register<Unit>.ID>
 		{
-		public void Process(Game game, Unit self){}
+		public bool Process(Game game, Unit self){
+			return game.GetLevel().NextTurn();
+		}
+		public void Trigger(Game game, Unit self){}
 		public bool Check(Game game, Unit self){
 			return false;
 		}
@@ -156,7 +169,9 @@ public abstract class Tag{
 		public void DamageValue1(Game game, Unit self){}
 		public void DamageValue1(Game game, Unit self, int value){}
 		public void DamageValue2(Game game, Unit self, int value){}
+		public void SetValue1(Game game, Unit self, Tag.Collider value){}
 		public void SetValue1(Game game, Unit self, int value){}
+		public void SetValue1(Game game, Unit self, bool value){}
 		public void SetValue2(Game game, Unit self, int value){}
 		public void SetValues(Game game, Unit self, int value1, int value2){}
 		public int Reduce(Game game, Unit self, int value){
@@ -203,7 +218,7 @@ public abstract class Tag{
 		protected override void TagUpdateEvent(){}
 	}
 	private static readonly NullTag _NULL_TAG = new NullTag();
-	public event EventHandler<EventArgs> OnTagUpdate;
+	[field:NonSerialized]public event EventHandler<EventArgs> OnTagUpdate;
 	public virtual bool IsNull(){
 		return false;
 	}
@@ -233,6 +248,9 @@ public abstract class Tag{
 	public virtual Tag.IProcess GetIProcess(){
 		return _NULL_TAG;
 	}
+	public virtual Tag.ITrigger GetITrigger(){
+		return _NULL_TAG;
+	}
 	public virtual Tag.ICondition GetICondition(){
 		return _NULL_TAG;
 	}
@@ -260,7 +278,13 @@ public abstract class Tag{
 	public virtual Tag.IDamageValue2<int> GetIDamageValue2Int(){
 		return _NULL_TAG;
 	}
+	public virtual Tag.ISetValue1<Tag.Collider> GetISetValue1Collider(){
+		return _NULL_TAG;
+	}
 	public virtual Tag.ISetValue1<int> GetISetValue1Int(){
+		return _NULL_TAG;
+	}
+	public virtual Tag.ISetValue1<bool> GetISetValue1Bool(){
 		return _NULL_TAG;
 	}
 	public virtual Tag.ISetValue2<int> GetISetValue2Int(){

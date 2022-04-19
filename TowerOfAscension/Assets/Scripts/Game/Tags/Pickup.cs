@@ -16,7 +16,7 @@ public class Pickup :
 	public override void Disassemble(){}
 	public void Add(Game game, Unit self, Unit holder){
 		holder.GetTaggable().GetTag(game, Tag.ID.Inventory).GetIAddUnit().Add(game, holder, self);
-		holder.GetControllable().GetAI(game).GetTurnControl().EndTurn(game, holder);
+		holder.GetTaggable().GetTag(game, Tag.ID.AI).GetIClear().Clear(game, holder);
 	}
 	public void Remove(Game game, Unit self, Unit holder){
 		holder.GetTaggable().GetTag(game, Tag.ID.Inventory).GetIRemoveUnitID().Remove(game, holder, self.GetRegisterable().GetID());

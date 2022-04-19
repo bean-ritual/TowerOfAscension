@@ -20,8 +20,9 @@ public class Move :
 		Tile tile = direction.GetTileFromUnit(game, self);
 		if(tile.GetWalkable().CanWalk(game, self)){
 			tile.GetXY(out int x, out int y);
-			self.GetPositionable().SetPosition(game, x, y);
-			self.GetControllable().GetAI(game).GetTurnControl().EndTurn(game, self);
+			self.GetPositionable().SetPosition(game, x, y, 1);
+			self.GetTaggable().GetTag(game, Tag.ID.AI).GetIClear().Clear(game, self);
+			tile.GetWalkable().Walk(game, self);
 		}
 	}
 	public override IInput<Direction> GetIInputDirection(){

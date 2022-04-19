@@ -14,8 +14,8 @@ public class PathTile :
 	Tile.ILightable,
 	Level.ILightControl,
 	Tile.IDiscoverable,
-	Unit.IInteractable,
-	Unit.IHostileTarget
+	Tile.IInteractable,
+	Tile.IHostileTarget
 	{
 	[field:NonSerialized]public event EventHandler<Register<Unit>.OnObjectChangedEventArgs> OnUnitAdded;
 	[field:NonSerialized]public event EventHandler<Register<Unit>.OnObjectChangedEventArgs> OnUnitRemoved;
@@ -72,29 +72,22 @@ public class PathTile :
 		return game.GetLevel().GetUnits().GetMultiple(_ids);
 	}
 	public void Walk(Game game, Unit unit){
-		if(CanWalk(game, unit)){
-			unit.GetMoveable().OnMove(game, this);
-			List<Unit> units = game.GetLevel().GetUnits().GetMultiple(_ids);
-			for(int i = 0; i < units.Count; i++){
-				units[i].GetTripwire().Trip(game, unit);
-			}
+		List<Unit> units = game.GetLevel().GetUnits().GetMultiple(_ids);
+		for(int i = 0; i < units.Count; i++){
+			units[i].GetTaggable().GetTag(game, Tag.ID.Tripwire).GetIInputUnit().Input(game, units[i], unit);
 		}
 	}
 	public bool CanWalk(Game game, Unit unit){
 		List<Unit> units = game.GetLevel().GetUnits().GetMultiple(_ids);
+		Tag.Collider collider = unit.GetTaggable().GetTag(game, Tag.ID.Collision).GetIGetCollider().GetCollider(game, unit); 
 		for(int i = 0; i < units.Count; i++){
-			if(units[i].GetCollideable().CheckCollision(game, unit)){
+			if(units[i].GetTaggable().GetTag(game, Tag.ID.Collision).GetIConditionCollider().Check(game, units[i], collider)){
 				return false;
 			}
 		}
 		return true;
 	}
-	public void Attack(Game game, Unit skills, Unit attack){
-		List<Unit> units = game.GetLevel().GetUnits().GetMultiple(_ids);
-		for(int i = 0; i < units.Count; i++){
-			units[i].GetAttackable().CheckAttack(game, skills, attack);
-		}
-	}
+	public void Attack(Game game, Unit skills, Unit attack){}
 	public void Print(Game game, Unit master, BluePrint.Print print, Tile tile, int x, int y){}
 	public bool CanPrint(Game game, Unit master, int x, int y){
 		return false;
@@ -111,7 +104,7 @@ public class PathTile :
 	public bool CheckTransparency(Game game){
 		List<Unit> units = game.GetLevel().GetUnits().GetMultiple(_ids);
 		for(int i = 0; i < units.Count; i++){
-			if(!units[i].GetLightControl().CheckTransparency(game)){
+			if(units[i].GetTaggable().GetTag(game, Tag.ID.Opacity).GetICondition().Check(game, units[i])){
 				return false;
 			}
 		}
@@ -123,7 +116,7 @@ public class PathTile :
 	public void Interact(Game game, Unit unit){
 		List<Unit> units = game.GetLevel().GetUnits().GetMultiple(_ids);
 		for(int i = 0; i < units.Count; i++){
-			units[i].GetInteractable().Interact(game, unit);
+			units[i].GetTaggable().GetTag(game, Tag.ID.Interactable).GetIInputUnit().Input(game, units[i], unit);
 		}
 	}
 	public bool CheckHostility(Game game, Unit unit){
@@ -165,10 +158,10 @@ public class PathTile :
 	public override Tile.IDiscoverable GetDiscoverable(){
 		return this;
 	}
-	public override Unit.IInteractable GetInteractable(){
+	public override Tile.IInteractable GetInteractable(){
 		return this;
 	}
-	public override Unit.IHostileTarget GetHostileTarget(){
+	public override IHostileTarget GetHostileTarget(){
 		return this;
 	}
 }

@@ -3,14 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 [Serializable]
-public abstract class LevelUnit : 
+public class LevelUnit : 
 	Unit,
 	VisualController.IVisualController,
 	Unit.ISpawnable,
 	Unit.ITileable,
-	Unit.IProcessable,
-	Unit.ITaggable,
-	Unit.ICollideable
+	Unit.ITaggable
 	{
 	protected VisualController _controller = VisualController.GetNullVisualController();
 	protected int _x = Unit.NullUnit.GetNullX();
@@ -20,7 +18,8 @@ public abstract class LevelUnit :
 	public LevelUnit(){
 		_tags = new Dictionary<Tag.ID, Tag>();
 	}
-	public LevelUnit(Game game, Tag[] array){
+	public LevelUnit(Game game, VisualController controller, Tag[] array){
+		_controller = controller;
 		_tags = new Dictionary<Tag.ID, Tag>(array.Length);
 		for(int i = 0; i < array.Length; i++){
 			AddTag(game, array[i]);
@@ -38,8 +37,8 @@ public abstract class LevelUnit :
 	public virtual void Despawn(Game game){
 		Unit.Default_Despawn(this, game);
 	}
-	public void SetPosition(Game game, int x, int y){
-		Unit.Default_SetPosition(this, game, x, y, ref _x, ref _y);
+	public void SetPosition(Game game, int x, int y, int moveSpeed){
+		Unit.Default_SetPosition(this, game, x, y, ref _x, ref _y, moveSpeed);
 	}
 	public void GetPosition(Game game, out int x, out int y){
 		x = _x;
@@ -66,9 +65,6 @@ public abstract class LevelUnit :
 	public Register<Unit>.ID GetID(){
 		return _id;
 	}
-	public virtual bool Process(Game game){
-		return game.GetLevel().NextTurn();
-	}
 	public void AddTag(Game game, Tag tag){
 		tag.Add(_tags);
 	}
@@ -80,9 +76,6 @@ public abstract class LevelUnit :
 			tag = Tag.GetNullTag();
 		}
 		return tag;
-	}
-	public virtual bool CheckCollision(Game game, Unit check){
-		return true;
 	}
 	public override VisualController.IVisualController GetVisualController(){
 		return this;
@@ -99,13 +92,7 @@ public abstract class LevelUnit :
 	public override Register<Unit>.IRegisterable GetRegisterable(){
 		return this;
 	}
-	public override IProcessable GetProcessable(){
-		return this;
-	}
 	public override Unit.ITaggable GetTaggable(){
-		return this;
-	}
-	public override Unit.ICollideable GetCollideable(){
 		return this;
 	}
 }

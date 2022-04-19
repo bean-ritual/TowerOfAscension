@@ -15,7 +15,7 @@ public class PlayerController : MonoBehaviour{
 	[SerializeField]private CameraManager _camera;
 	private void OnDestroy(){
 		_local.GetLevel().OnNextTurn -= OnNextTurn;
-		PlayerControl.OnPlayerControl -= OnPlayerControl;
+		TagControl.OnPlayerControl -= OnPlayerControl;
 	}
 	private void Awake(){
 		if(_INSTANCE != null){
@@ -27,7 +27,7 @@ public class PlayerController : MonoBehaviour{
 	private void Start(){
 		_local = DungeonMaster.GetInstance().GetLocalGame();
 		_local.GetLevel().OnNextTurn += OnNextTurn;
-		PlayerControl.OnPlayerControl += OnPlayerControl;
+		TagControl.OnPlayerControl += OnPlayerControl;
 	}
 	private void Update(){
 		if(EventSystem.current.IsPointerOverGameObject()){
@@ -46,11 +46,11 @@ public class PlayerController : MonoBehaviour{
 				_player.GetTaggable().GetTag(_local, Tag.ID.Interactor).GetIInputDirection().Input(_local, _player, _direction);
 				return;
 			}
-			_player.GetMoveable().Move(_local, _direction);
+			_player.GetTaggable().GetTag(_local, Tag.ID.Move).GetIInputDirection().Input(_local, _player, _direction);
 			return;
 		}
 		if(Input.GetKeyDown(KeyCode.Space)){
-			_player.GetControllable().GetAI(_local).GetTurnControl().EndTurn(_local, _player);
+			_player.GetTaggable().GetTag(_local, Tag.ID.AI).GetIClear().Clear(_local, _player);
 			return;
 		}
 	}
@@ -83,7 +83,7 @@ public class PlayerController : MonoBehaviour{
 	public Unit GetPlayer(){
 		return _player;
 	}
-	private void OnPlayerControl(object sender, PlayerControl.OnPlayerControlEventArgs e){
+	private void OnPlayerControl(object sender, TagControl.OnPlayerControlEventArgs e){
 		if(!DungeonMaster.GetInstance().IsBusy()){
 			SetPlayer(e.player);
 		}

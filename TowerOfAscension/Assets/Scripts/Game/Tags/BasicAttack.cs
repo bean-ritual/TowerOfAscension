@@ -16,7 +16,7 @@ public class BasicAttack :
 	public void Input(Game game, Unit self, Direction direction){
 		Attack.Create(game, direction, self, self);
 		self.GetVisualController().GetVisualController(game).InvokeAttackAnimation(direction);
-		self.GetControllable().GetAI(game).GetTurnControl().EndTurn(game, self);
+		self.GetTaggable().GetTag(game, Tag.ID.AI).GetIClear().Clear(game, self);
 	}
 	public override Tag.IInput<Direction> GetIInputDirection(){
 		return this;

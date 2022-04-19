@@ -6,7 +6,7 @@ using UnityEngine;
 [Serializable]
 public class Grave : 
 	Tag,
-	Tag.IProcess
+	Tag.ITrigger
 	{
 	private const Tag.ID _TAG_ID = Tag.ID.Loot;
     public override Tag.ID GetTagID(){
@@ -15,12 +15,12 @@ public class Grave :
 	public override void Disassemble(){
 		//
 	}
-	public void Process(Game game, Unit self){
+	public void Trigger(Game game, Unit self){
 		self.GetPositionable().GetPosition(game, out int x, out int y);
 		HeroGrave grave = new HeroGrave();
 		grave.Spawn(game, x, y);
 	}
-	public override Tag.IProcess GetIProcess(){
+	public override Tag.ITrigger GetITrigger(){
 		return this;
 	}
 	public static Tag Create(){

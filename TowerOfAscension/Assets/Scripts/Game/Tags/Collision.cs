@@ -6,6 +6,8 @@ using UnityEngine;
 [Serializable]
 public class Collision : 
 	Tag,
+	Tag.ISetValue1<Tag.Collider>,
+	Tag.IGetCollider,
 	Tag.ICondition<Tag.Collider>
 	{
 	private static Queue<Collision> _POOL = new Queue<Collision>();
@@ -13,6 +15,12 @@ public class Collision :
 	private Tag.Collider _value = Tag.Collider.Null;
 	public void Setup(Tag.Collider value){
 		_value = value;
+	}
+	public void SetValue1(Game game, Unit self, Tag.Collider value){
+		_value = value;
+	}
+	public Tag.Collider GetCollider(Game game, Unit self){
+		return _value;
 	}
 	public bool Check(Game game, Unit self, Tag.Collider collider){
 		if(collider == Tag.Collider.Null){
@@ -28,6 +36,15 @@ public class Collision :
 	}
 	public override void Disassemble(){
 		_POOL.Enqueue(this);
+	}
+	public override Tag.ISetValue1<Tag.Collider> GetISetValue1Collider(){
+		return this;
+	}
+	public override Tag.IGetCollider GetIGetCollider(){
+		return this;
+	}
+	public override Tag.ICondition<Tag.Collider> GetIConditionCollider(){
+		return this;
 	}
 	public static Tag Create(Tag.Collider value){
 		Collision tag;

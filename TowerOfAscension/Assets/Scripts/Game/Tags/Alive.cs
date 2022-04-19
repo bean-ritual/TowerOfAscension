@@ -26,7 +26,7 @@ public class Alive :
 	}
 	public void DamageValue1(Game game, Unit self){
 		_value = false;
-		self.GetTaggable().GetTag(game, Tag.ID.Loot).GetIProcess().Process(game, self);
+		self.GetTaggable().GetTag(game, Tag.ID.Loot).GetITrigger().Trigger(game, self);
 		self.GetSpawnable().Despawn(game);
 	}
 	public override Tag.ICondition GetICondition(){

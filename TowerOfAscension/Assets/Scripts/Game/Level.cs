@@ -65,7 +65,7 @@ public class Level : GridMap<Tile>{
 	}
 	//
 	public virtual bool Process(Game game){
-		return _units.Get(_index).GetProcessable().Process(game);
+		return _units.Get(_index).Process(game);
 	}
 	public virtual void LightUpdate(Game game, Unit unit){
 		int lightRange = unit.GetTaggable().GetTag(game, Tag.ID.Light).GetIGetIntValue1().GetIntValue1(game, unit);

@@ -1,11 +1,13 @@
 using System;
+using System.Text;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 [Serializable]
-public class PlayerControl : 
-	AI,
-	AI.ITurnControl
+public class TagControl : 
+	Tag,
+	Tag.IProcess,
+	Tag.IClear
 	{
 	[field:NonSerialized]public static event EventHandler<OnPlayerControlEventArgs> OnPlayerControl;
 	public class OnPlayerControlEventArgs : EventArgs{
@@ -14,40 +16,52 @@ public class PlayerControl :
 			this.player = player;
 		}
 	}
+	private static Tag.ID _TAG_ID = Tag.ID.AI;
 	public enum ControlState{
 		Null,
 		Locked,
 		Input,
 	};
-	private ControlState _state;
-	public PlayerControl(){
+	private ControlState _state = ControlState.Null;
+	public void Setup(){
 		_state = ControlState.Locked;
 	}
-	public override bool Process(Game game, Unit self){
+	public override Tag.ID GetTagID(){
+		return _TAG_ID;
+	}
+	public override void Disassemble(){
+		//
+	}
+	public bool Process(Game game, Unit self){
 		OnPlayerControl?.Invoke(this, new OnPlayerControlEventArgs(self));
 		switch(_state){
 			default: return game.GetLevel().NextTurn();
 			case ControlState.Null: return game.GetLevel().NextTurn();
 			case ControlState.Locked:{
-				StartTurn(game, self);
+				if(_state != ControlState.Input){
+					_state = ControlState.Input;
+				}
 				return true;
 			}
 			case ControlState.Input: return false;
 		}
 	}
-	public virtual void StartTurn(Game game, Unit self){
-		if(_state != ControlState.Input){
-			_state = ControlState.Input;
-		}
-	}
-	public virtual void EndTurn(Game game, Unit self){
+	public void Clear(Game game, Unit self){
 		if(_state == ControlState.Input){
 			_state = ControlState.Locked;
 			game.GetLevel().LightUpdate(game, self);
 			game.GetLevel().NextTurn();
 		}
 	}
-	public override ITurnControl GetTurnControl(){
+	public override Tag.IProcess GetIProcess(){
 		return this;
+	}
+	public override Tag.IClear GetIClear(){
+		return this;
+	}
+	public static Tag Create(){
+		TagControl tag = new TagControl();
+		tag.Setup();
+		return tag;
 	}
 }

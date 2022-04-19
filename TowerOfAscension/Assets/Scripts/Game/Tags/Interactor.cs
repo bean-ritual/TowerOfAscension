@@ -17,7 +17,7 @@ public class Interactor :
 	}
 	public void Input(Game game, Unit self, Direction direction){
 		direction.GetTileFromUnit(game, self).GetInteractable().Interact(game, self);
-		self.GetControllable().GetAI(game).GetTurnControl().EndTurn(game, self);
+		self.GetTaggable().GetTag(game, Tag.ID.AI).GetIClear().Clear(game, self);
 	}
 	public override Tag.IInput<Direction> GetIInputDirection(){
 		return this;

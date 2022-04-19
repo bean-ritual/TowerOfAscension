@@ -7,7 +7,6 @@ public class ClassicGen :
 	Unit,
 	VisualController.IVisualController,
 	Unit.ISpawnable,
-	Unit.IProcessable,
 	Unit.IClassicGen
 	{
 	public static class CLASSICGEN_DATA{
@@ -152,8 +151,7 @@ public class ClassicGen :
 			}
 			if(game.GetLevel().GetCardinals(_x, _y, (Tile tile) => {return tile.GetConnectable().CanConnect(game, master, _x, _y);}).Count == 2){
 				game.GetLevel().Set(_x, _y, new PathTile(_x, _y));
-				Unit door = Door.DOOR_DATA.GetLevelledDoor(0);
-				door.GetSpawnable().Spawn(game, _x, _y);
+				Unit.UNIT_DATA.GetLevelledDoor(game, 0).GetSpawnable().Spawn(game, _x, _y);
 			}
 		}
 		public override void AddToMaster(Game game, Unit master){
@@ -167,8 +165,7 @@ public class ClassicGen :
 		{
 		public ExitSpawner(int x, int y) : base(x, y){}
 		public override void Spawn(Game game, Unit master){
-			Unit stairs = new Stairs();
-			stairs.GetSpawnable().Spawn(game, _x, _y);
+			Unit.UNIT_DATA.GetStairs(game).GetSpawnable().Spawn(game, _x, _y);
 			master.GetClassicGen().GetFinalize().AddBuild();
 		}
 		public virtual void PositionMaster(Game game, Unit master){
@@ -246,7 +243,7 @@ public class ClassicGen :
 	public class MonsterSpawner : Spawner{
 		public MonsterSpawner(int x, int y) : base(x, y){}
 		public override void Spawn(Game game, Unit master){
-			Monster.MONSTER_DATA.GetLevelledMonster(game, 0).GetSpawnable().Spawn(game, _x, _y);
+			Unit.UNIT_DATA.GetLevelledMonster(game, 0).GetSpawnable().Spawn(game, _x, _y);
 		}
 		public override void AddToMaster(Game game, Unit master){
 			master.GetClassicGen().AddDetailSpawner(this);
@@ -256,7 +253,7 @@ public class ClassicGen :
 	public class LootSpawner : Spawner{
 		public LootSpawner(int x, int y) : base(x, y){}
 		public override void Spawn(Game game, Unit master){
-			Item.ITEM_DATA.GetLevelledItem(game, 0).GetSpawnable().Spawn(game, _x, _y);
+			Unit.UNIT_DATA.GetLevelledItem(game, 0).GetSpawnable().Spawn(game, _x, _y);
 		}
 		public override void AddToMaster(Game game, Unit master){
 			master.GetClassicGen().AddDetailSpawner(this);
@@ -273,7 +270,6 @@ public class ClassicGen :
 	};
 	private int _x = Unit.NullUnit.GetNullX();
 	private int _y = Unit.NullUnit.GetNullY();
-	private Unit _player = Unit.GetNullUnit();
 	private VisualController _controller = VisualController.GetNullVisualController();
 	private GenState _state = GenState.Null;
 	private List<Spawner> _structures;
@@ -282,11 +278,10 @@ public class ClassicGen :
 	private Register<Unit>.ID _id = Register<Unit>.ID.GetNullID();
 	private int _minBuild;
 	private int _build;
-	public ClassicGen(Unit player, int minBuild = 10, int maxExits = 1){
+	public ClassicGen(int minBuild = 10, int maxExits = 1){
 		_controller = new VisualController();
 		_controller.SetSprite(SpriteSheet.SpriteID.Stairs, 1);
 		_controller.SetSortingOrder(10);
-		_player = player;
 		_structures = new List<Spawner>();
 		_details = new Queue<Spawner>();
 		_finalize = new FinalSpawner(maxExits);
@@ -307,8 +302,8 @@ public class ClassicGen :
 	public void Despawn(Game game){
 		Unit.Default_Despawn(this, game);
 	}
-	public void SetPosition(Game game, int x, int y){
-		Unit.Default_SetPosition(this, game, x, y, ref _x, ref _y);
+	public void SetPosition(Game game, int x, int y, int moveSpeed = 0){
+		Unit.Default_SetPosition(this, game, x, y, ref _x, ref _y, moveSpeed);
 	}
 	public void GetPosition(Game game, out int x, out int y){
 		x = _x;
@@ -332,7 +327,7 @@ public class ClassicGen :
 	public Register<Unit>.ID GetID(){
 		return _id;
 	}
-	public bool Process(Game game){
+	public override bool Process(Game game){
 		switch(_state){
 			default: break;
 			case GenState.Null: break;
@@ -367,7 +362,7 @@ public class ClassicGen :
 	public virtual void OnFinalize(Game game){
 		_state = GenState.Complete;
 		NukeSpawn(game);
-		_player.GetSpawnable().Spawn(game, _x, _y);
+		game.GetPlayer().GetSpawnable().Spawn(game, _x, _y);
 	}
 	public virtual int GetContentualBluePrintIndex(){
 		if(_state == GenState.Details){
@@ -424,9 +419,6 @@ public class ClassicGen :
 		return this;
 	}
 	public override Register<Unit>.IRegisterable GetRegisterable(){
-		return this;
-	}
-	public override Unit.IProcessable GetProcessable(){
 		return this;
 	}
 	public override IClassicGen GetClassicGen(){

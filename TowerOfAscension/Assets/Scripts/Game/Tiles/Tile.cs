@@ -36,6 +36,12 @@ public abstract class Tile : GridMap<Tile>.Node{
 	public interface ITargetable{
 		List<Unit> GetTargets(Game game, Unit unit);
 	}
+	public interface IInteractable{
+		void Interact(Game game, Unit unit);
+	}
+	public interface IHostileTarget{
+		bool CheckHostility(Game game, Unit unit);
+	}
 	[Serializable]
 	public class NullTile : 
 		Tile,
@@ -50,8 +56,8 @@ public abstract class Tile : GridMap<Tile>.Node{
 		Tile.ILightable,
 		Level.ILightControl,
 		Tile.IDiscoverable,
-		Unit.IInteractable,
-		Unit.IHostileTarget
+		Tile.IInteractable,
+		Tile.IHostileTarget
 		{
 		[field:NonSerialized]public event EventHandler<Register<Unit>.OnObjectChangedEventArgs> OnUnitAdded;
 		[field:NonSerialized]public event EventHandler<Register<Unit>.OnObjectChangedEventArgs> OnUnitRemoved;
@@ -154,10 +160,10 @@ public abstract class Tile : GridMap<Tile>.Node{
 	public virtual IDiscoverable GetDiscoverable(){
 		return _NULL_TILE;
 	}
-	public virtual Unit.IInteractable GetInteractable(){
+	public virtual IInteractable GetInteractable(){
 		return _NULL_TILE;
 	}
-	public virtual Unit.IHostileTarget GetHostileTarget(){
+	public virtual IHostileTarget GetHostileTarget(){
 		return _NULL_TILE;
 	}
 	public static Tile GetNullTile(){
