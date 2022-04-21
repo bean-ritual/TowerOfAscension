@@ -13,7 +13,6 @@ public class UIUnit :
 	private static ButtonInteract _NULL_INTERACT = (Unit unit) => {};
 	private Game _local = Game.GetNullGame();
 	private Unit _unit = Unit.GetNullUnit();
-	private VisualController _controller = VisualController.GetNullVisualController();
 	private ButtonInteract Interact = _NULL_INTERACT;
 	[SerializeField]private Button _button;
 	[SerializeField]private Image _image;
@@ -26,9 +25,8 @@ public class UIUnit :
 		_unit = unit;
 		_local = DungeonMaster.GetInstance().GetLocalGame();
 		gameObject.SetActive(!_unit.IsNull());
-		_controller = unit.GetVisualController().GetVisualController(_local);
-		_controller.OnSpriteUpdate += OnSpriteUpdate;
-		_controller.OnItemBorderUpdate += OnItemBorderUpdate;
+		_unit.GetTaggable().GetTag(_local, Tag.ID.WorldUnit).OnTagUpdate += OnWorldUnitTagUpdate;
+		_unit.GetTaggable().GetTag(_local, Tag.ID.UIUnit).OnTagUpdate += OnUIUnitTagUpdate;
 		this.Interact = Interact;
 		_button.onClick.AddListener(OnClick);
 		Refresh();
@@ -38,17 +36,17 @@ public class UIUnit :
 		RefreshBorder();
 	}
 	public void RefreshSprite(){
-		_image.sprite = _controller.GetSprite();
+		_image.sprite = _unit.GetTaggable().GetTag(_local, Tag.ID.WorldUnit).GetIGetSprite().GetSprite(_local, _unit);
 	}
 	public void RefreshBorder(){
-		_border.SetActive(_controller.GetItemBorder());
+		_border.SetActive(_unit.GetTaggable().GetTag(_local, Tag.ID.UIUnit).GetICondition().Check(_local, _unit));
 	}
 	public void OnClick(){
 		Interact(_unit); 
 	}
 	public void UnsubcribeFromEvents(){
-		_controller.OnSpriteUpdate -= OnSpriteUpdate;
-		_controller.OnItemBorderUpdate -= OnItemBorderUpdate;
+		_unit.GetTaggable().GetTag(_local, Tag.ID.WorldUnit).OnTagUpdate -= OnWorldUnitTagUpdate;
+		_unit.GetTaggable().GetTag(_local, Tag.ID.UIUnit).OnTagUpdate -= OnUIUnitTagUpdate;
 	}
 	public void UnitDestroy(){
 		ToolTipManager.GetInstance().HideToolTip();
@@ -60,10 +58,10 @@ public class UIUnit :
 	public void OnPointerExit(PointerEventData eventData){
 		ToolTipManager.GetInstance().HideToolTip();
 	}
-	private void OnSpriteUpdate(object sender, EventArgs e){
+	private void OnWorldUnitTagUpdate(object sender, EventArgs e){
 		RefreshSprite();
 	}
-	private void OnItemBorderUpdate(object sender, EventArgs e){
+	private void OnUIUnitTagUpdate(object sender, EventArgs e){
 		RefreshBorder();
 	}
 	public static ButtonInteract GetNullInteract(){

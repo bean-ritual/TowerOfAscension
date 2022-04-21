@@ -14,6 +14,7 @@ public abstract class Unit{
 				controller,
 				new Tag[]{
 					TagStairs.Create(),
+					WorldVisual.Create(SpriteSheet.SpriteID.Stairs, 0, 10),
 				}
 			);
 		}
@@ -25,6 +26,7 @@ public abstract class Unit{
 				game,
 				controller,
 				new Tag[]{
+					WorldVisual.Create(SpriteSheet.SpriteID.Door, 0, 30),
 					LightControl.Create(),
 					Open.Create(),
 					Collision.Create(Tag.Collider.Basic),
@@ -42,6 +44,7 @@ public abstract class Unit{
 				game,
 				controller,
 				new Tag[]{
+					LightWorldVisual.Create(SpriteSheet.SpriteID.Rat, 0, 20),
 					TagAI.Create(),
 					Alive.Create(),
 					Health.Create(5),
@@ -54,7 +57,19 @@ public abstract class Unit{
 			);
 		}
 		public static Unit GetLevelledItem(Game game, int level){
-			return Unit.GetNullUnit();
+			VisualController controller = new VisualController();
+			controller.SetSprite(SpriteSheet.SpriteID.Swords, UnityEngine.Random.Range(0, 5));
+			controller.SetSortingOrder(10);
+			return new LevelUnit(
+				game,
+				controller,
+				new Tag[]{
+					LightWorldVisual.Create(SpriteSheet.SpriteID.Swords, UnityEngine.Random.Range(0, 5), 10),
+					Condition.Create(Tag.ID.UIUnit, false),
+					Pickup.Create(),
+					Equippable.Create(Tag.ID.Weapon),
+				}
+			);
 		}
 	}
 	public interface ITaggable{

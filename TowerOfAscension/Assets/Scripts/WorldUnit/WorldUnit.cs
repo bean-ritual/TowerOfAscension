@@ -21,6 +21,7 @@ public class WorldUnit :
 		UnsubscribeFromEvents();
 		_unit = unit;
 		_local = DungeonMaster.GetInstance().GetLocalGame();
+		_unit.GetTaggable().GetTag(_local, Tag.ID.WorldUnit).OnTagUpdate += OnWorldUnitTagUpdate;
 		_controller = unit.GetVisualController().GetVisualController(_local);
 		_controller.OnSpriteUpdate += OnSpriteUpdate;
 		_controller.OnSortingOrderUpdate += OnSortingOrderUpdate;
@@ -40,10 +41,10 @@ public class WorldUnit :
 		RefreshVisibility();
 	}
 	public void RefreshSprite(){
-		_renderer.sprite = _controller.GetSprite();
+		_renderer.sprite = _unit.GetTaggable().GetTag(_local, Tag.ID.WorldUnit).GetIGetSprite().GetSprite(_local, _unit);
 	}
 	public void RefreshSortingOrder(){
-		_renderer.sortingOrder = _controller.GetSortingOrder();
+		_renderer.sortingOrder = _unit.GetTaggable().GetTag(_local, Tag.ID.WorldUnit).GetIGetIntValue2().GetIntValue2(_local, _unit);
 	}
 	public void RefreshWorldPosition(){
 		RefreshVisibility();
@@ -54,7 +55,7 @@ public class WorldUnit :
 		}
 	}
 	public void RefreshVisibility(){
-		_offset.SetActive(_unit.GetVisualController().GetWorldVisibility(_local));
+		_offset.SetActive(_unit.GetTaggable().GetTag(_local, Tag.ID.WorldUnit).GetICondition().Check(_local, _unit));
 	}
 	public IEnumerator LerpToTarget(Vector3 target, float duration, Action OnAnimationComplete){
 		float time = 0f;
@@ -90,11 +91,16 @@ public class WorldUnit :
 		ToolTipManager.GetInstance().HideToolTip();
 	}
 	private void UnsubscribeFromEvents(){
+		_unit.GetTaggable().GetTag(_local, Tag.ID.WorldUnit).OnTagUpdate -= OnWorldUnitTagUpdate;
 		_controller.OnSpriteUpdate -= OnSpriteUpdate;
 		_controller.OnSortingOrderUpdate -= OnSortingOrderUpdate;
 		_controller.OnWorldPositionUpdate -= OnWorldPositionUpdate;
 		_controller.OnAttackAnimation -= OnAttackAnimation;
 		_local.GetLevel().OnLightUpdate -= OnLightUpdate;
+	}
+	private void OnWorldUnitTagUpdate(object sender, EventArgs e){
+		RefreshSprite();
+		RefreshSortingOrder();
 	}
 	private void OnSpriteUpdate(object sender, EventArgs e){
 		RefreshSprite();

@@ -8,7 +8,8 @@ public class Player :
 	VisualController.IVisualController,
 	Unit.ISpawnable,
 	Unit.IPlayable,
-	Unit.ITaggable
+	Unit.ITaggable,
+	Unit.ITileable
 	{
 	private Register<Unit>.ID _id = Register<Unit>.ID.GetNullID();
 	public Player(){}
@@ -60,7 +61,10 @@ public class Player :
 		return game.GetPlayer().GetPositionable().GetPosition(game);
 	}
 	public Tile GetTile(Game game){
-		return game.GetPlayer().GetPositionable().GetTile(game);
+		return game.GetPlayer().GetTileable().GetTile(game);
+	}
+	public Tile GetTileFrom(Game game, int x, int y){
+		return game.GetPlayer().GetTileable().GetTileFrom(game, x, y);
 	}
 	public Register<Unit>.ID GetID(){
 		return _id;
@@ -73,6 +77,9 @@ public class Player :
 		return this;
 	}
 	public override Unit.ITaggable GetTaggable(){
+		return this;
+	}
+	public override Unit.ITileable GetTileable(){
 		return this;
 	}
 	public override VisualController.IVisualController GetVisualController(){

@@ -11,6 +11,7 @@ public class Hero :
 		_controller = new VisualController();
 		_controller.SetSpriteID(SpriteSheet.SpriteID.Hero);
 		_controller.SetSortingOrder(25);
+		AddTag(game, LightWorldVisual.Create(SpriteSheet.SpriteID.Hero, 0, 25));
 		AddTag(game, TagControl.Create());
 		AddTag(game, Alive.Create());
 		AddTag(game, Health.Create(95));
@@ -27,6 +28,7 @@ public class Hero :
 		AddTag(game, TagControl.Create());
 		AddTag(game, Move.Create());
 		AddTag(game, Collision.Create(Tag.Collider.Basic));
+		AddTag(game, Exit.Create());
 	}
 	public override void Spawn(Game game, int x, int y){
 		Unit proxy = new Player();

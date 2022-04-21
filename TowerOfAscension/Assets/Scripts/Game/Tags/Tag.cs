@@ -8,6 +8,9 @@ public abstract class Tag{
 	public enum ID{
 		Null,
 		Alive,
+		WorldUnit,
+		WorldUnitUI,
+		UIUnit,
 		Health,
 		Armour,
 		Move,
@@ -27,7 +30,7 @@ public abstract class Tag{
 		Interactable,
 		Hostility,
 		Tripwire,
-		Exitable,
+		Exit,
 		AI,
 		Attackable,
 		Basic_Attack,
@@ -77,6 +80,9 @@ public abstract class Tag{
 	public interface ISetValue2<TValue>{
 		void SetValue2(Game game, Unit self, TValue value);
 	}
+	public interface ISetValue3<TValue>{
+		void SetValue3(Game game, Unit self, TValue value);
+	}
 	public interface ISetValues<TValue1, TValue2>{
 		void SetValues(Game game, Unit self, TValue1 value1, TValue2 value2);
 	}
@@ -86,11 +92,17 @@ public abstract class Tag{
 	public interface IGetIntValue2{
 		int GetIntValue2(Game game, Unit self);
 	}
+	public interface IGetIntValue3{
+		int GetIntValue3(Game game, Unit self);
+	}
 	public interface IGetUnit{
 		Unit GetUnit(Game game, Unit self);
 	}
 	public interface IGetCollider{
 		Collider GetCollider(Game game, Unit self);
+	}
+	public interface IGetSprite{
+		Sprite GetSprite(Game game, Unit self);
 	}
 	public interface IGetRegisterEvents{
 		Register<Unit>.IRegisterEvents GetRegisterEvents(Game game, Unit self);
@@ -133,15 +145,19 @@ public abstract class Tag{
 		Tag.IDamageValue1<int>,
 		Tag.IDamageValue2<int>,
 		Tag.ISetValue1<Tag.Collider>,
+		Tag.ISetValue1<SpriteSheet.SpriteID>,
 		Tag.ISetValue1<int>,
 		Tag.ISetValue1<bool>,
 		Tag.ISetValue2<int>,
+		Tag.ISetValue3<int>,
 		Tag.ISetValues<int, int>,
 		Tag.IReduce<int>,
 		Tag.IGetIntValue1,
 		Tag.IGetIntValue2,
+		Tag.IGetIntValue3,
 		Tag.IGetUnit,
 		Tag.IGetCollider,
+		Tag.IGetSprite,
 		Tag.IGetRegisterEvents,
 		Tag.IInput<Direction>,
 		Tag.IInput<Unit>,
@@ -170,9 +186,11 @@ public abstract class Tag{
 		public void DamageValue1(Game game, Unit self, int value){}
 		public void DamageValue2(Game game, Unit self, int value){}
 		public void SetValue1(Game game, Unit self, Tag.Collider value){}
+		public void SetValue1(Game game, Unit self, SpriteSheet.SpriteID value){}
 		public void SetValue1(Game game, Unit self, int value){}
 		public void SetValue1(Game game, Unit self, bool value){}
 		public void SetValue2(Game game, Unit self, int value){}
+		public void SetValue3(Game game, Unit self, int value){}
 		public void SetValues(Game game, Unit self, int value1, int value2){}
 		public int Reduce(Game game, Unit self, int value){
 			return value;
@@ -183,11 +201,17 @@ public abstract class Tag{
 		public int GetIntValue2(Game game, Unit self){
 			return 0;
 		}
+		public int GetIntValue3(Game game, Unit self){
+			return 0;
+		}
 		public Unit GetUnit(Game game, Unit self){
 			return Unit.GetNullUnit();
 		}
 		public Tag.Collider GetCollider(Game game, Unit self){
 			return Tag.Collider.Null;
+		}
+		public Sprite GetSprite(Game game, Unit self){
+			return SpriteSheet.NullSpriteSheet.GetNullSprite();
 		}
 		public Register<Unit>.IRegisterEvents GetRegisterEvents(Game game, Unit self){
 			return Inventory.GetNullInventory();
@@ -281,6 +305,9 @@ public abstract class Tag{
 	public virtual Tag.ISetValue1<Tag.Collider> GetISetValue1Collider(){
 		return _NULL_TAG;
 	}
+	public virtual Tag.ISetValue1<SpriteSheet.SpriteID> GetISetValue1SpriteID(){
+		return _NULL_TAG;
+	}
 	public virtual Tag.ISetValue1<int> GetISetValue1Int(){
 		return _NULL_TAG;
 	}
@@ -288,6 +315,9 @@ public abstract class Tag{
 		return _NULL_TAG;
 	}
 	public virtual Tag.ISetValue2<int> GetISetValue2Int(){
+		return _NULL_TAG;
+	}
+	public virtual Tag.ISetValue3<int> GetISetValue3Int(){
 		return _NULL_TAG;
 	}
 	public virtual Tag.ISetValues<int, int> GetISetValuesInt(){
@@ -302,10 +332,16 @@ public abstract class Tag{
 	public virtual Tag.IGetIntValue2 GetIGetIntValue2(){
 		return _NULL_TAG;
 	}
+	public virtual Tag.IGetIntValue3 GetIGetIntValue3(){
+		return _NULL_TAG;
+	}
 	public virtual Tag.IGetUnit GetIGetUnit(){
 		return _NULL_TAG;
 	}
 	public virtual Tag.IGetCollider GetIGetCollider(){
+		return _NULL_TAG;
+	}
+	public virtual Tag.IGetSprite GetIGetSprite(){
 		return _NULL_TAG;
 	}
 	public virtual Tag.IGetRegisterEvents GetIGetRegisterEvents(){

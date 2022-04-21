@@ -16,7 +16,7 @@ public class TagStairs :
 		//
 	}
 	public void Input(Game game, Unit self, Unit trip){
-		trip.GetTaggable().GetTag(game, Tag.ID.Exitable).GetITrigger().Trigger(game, trip);
+		trip.GetTaggable().GetTag(game, Tag.ID.Exit).GetITrigger().Trigger(game, trip);
 	}
 	public override Tag.IInput<Unit> GetIInputUnit(){
 		return this;

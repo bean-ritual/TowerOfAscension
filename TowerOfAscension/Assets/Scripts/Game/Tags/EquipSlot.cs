@@ -26,14 +26,14 @@ public class EquipSlot :
 		equip.GetSpawnable().Despawn(game);
 		self.GetTaggable().GetTag(game, Tag.ID.Inventory).GetIRemoveUnitID().Remove(game, self, equip.GetRegisterable().GetID());
 		_unit = equip;
-		_unit.GetVisualController().GetVisualController(game).SetItemBorder(true);
+		_unit.GetTaggable().GetTag(game, Tag.ID.UIUnit).GetISetValue1Bool().SetValue1(game, self, true);
 		TagUpdateEvent();
 	}
 	public void Remove(Game game, Unit self, Unit equip){
 		if(equip != _unit){
 			return;
 		}
-		_unit.GetVisualController().GetVisualController(game).SetItemBorder(false);
+		_unit.GetTaggable().GetTag(game, Tag.ID.UIUnit).GetISetValue1Bool().SetValue1(game, self, false);
 		_unit = Unit.GetNullUnit();
 		self.GetPositionable().GetPosition(game, out int x, out int y);
 		equip.GetSpawnable().Spawn(game, x, y);
