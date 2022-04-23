@@ -62,7 +62,7 @@ public class Game{
 		_floor = (_floor + 1);
 		_level = new Level(100, 100);
 		_level.GetMidPoint(out int x, out int y);
-		ClassicGen classic = new ClassicGen(10);
+		ClassicGen classic = new ClassicGen(this, 10);
 		classic.Spawn(this, x, y);
 		const int MAX_SANITY = 1000;
 		for(int sanity = 0; sanity < MAX_SANITY; sanity++){

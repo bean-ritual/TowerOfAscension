@@ -25,8 +25,8 @@ public class UIUnit :
 		_unit = unit;
 		_local = DungeonMaster.GetInstance().GetLocalGame();
 		gameObject.SetActive(!_unit.IsNull());
-		_unit.GetTaggable().GetTag(_local, Tag.ID.WorldUnit).OnTagUpdate += OnWorldUnitTagUpdate;
-		_unit.GetTaggable().GetTag(_local, Tag.ID.UIUnit).OnTagUpdate += OnUIUnitTagUpdate;
+		_unit.GetTag(_local, Tag.ID.WorldUnit).OnTagUpdate += OnWorldUnitTagUpdate;
+		_unit.GetTag(_local, Tag.ID.UIUnit).OnTagUpdate += OnUIUnitTagUpdate;
 		this.Interact = Interact;
 		_button.onClick.AddListener(OnClick);
 		Refresh();
@@ -36,17 +36,17 @@ public class UIUnit :
 		RefreshBorder();
 	}
 	public void RefreshSprite(){
-		_image.sprite = _unit.GetTaggable().GetTag(_local, Tag.ID.WorldUnit).GetIGetSprite().GetSprite(_local, _unit);
+		_image.sprite = _unit.GetTag(_local, Tag.ID.WorldUnit).GetIGetSprite().GetSprite(_local, _unit);
 	}
 	public void RefreshBorder(){
-		_border.SetActive(_unit.GetTaggable().GetTag(_local, Tag.ID.UIUnit).GetICondition().Check(_local, _unit));
+		_border.SetActive(_unit.GetTag(_local, Tag.ID.UIUnit).GetICondition().Check(_local, _unit));
 	}
 	public void OnClick(){
 		Interact(_unit); 
 	}
 	public void UnsubcribeFromEvents(){
-		_unit.GetTaggable().GetTag(_local, Tag.ID.WorldUnit).OnTagUpdate -= OnWorldUnitTagUpdate;
-		_unit.GetTaggable().GetTag(_local, Tag.ID.UIUnit).OnTagUpdate -= OnUIUnitTagUpdate;
+		_unit.GetTag(_local, Tag.ID.WorldUnit).OnTagUpdate -= OnWorldUnitTagUpdate;
+		_unit.GetTag(_local, Tag.ID.UIUnit).OnTagUpdate -= OnUIUnitTagUpdate;
 	}
 	public void UnitDestroy(){
 		ToolTipManager.GetInstance().HideToolTip();

@@ -16,9 +16,9 @@ public class Grave :
 		//
 	}
 	public void Trigger(Game game, Unit self){
-		self.GetPositionable().GetPosition(game, out int x, out int y);
-		HeroGrave grave = new HeroGrave();
-		grave.Spawn(game, x, y);
+		self.GetTag(game, Tag.ID.Position).GetIGetTile().GetTile(game, self).GetXY(out int x, out int y);
+		UnityEngine.Debug.Log(x + "" + y);
+		Unit.UNIT_DATA.GetGrave(game).Spawn(game, x, y);
 	}
 	public override Tag.ITrigger GetITrigger(){
 		return this;

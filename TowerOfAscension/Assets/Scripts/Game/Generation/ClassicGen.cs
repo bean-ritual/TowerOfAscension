@@ -5,8 +5,6 @@ using UnityEngine;
 [Serializable]
 public class ClassicGen : 
 	Unit,
-	VisualController.IVisualController,
-	Unit.ISpawnable,
 	Unit.IClassicGen
 	{
 	public static class CLASSICGEN_DATA{
@@ -151,7 +149,7 @@ public class ClassicGen :
 			}
 			if(game.GetLevel().GetCardinals(_x, _y, (Tile tile) => {return tile.GetConnectable().CanConnect(game, master, _x, _y);}).Count == 2){
 				game.GetLevel().Set(_x, _y, new PathTile(_x, _y));
-				Unit.UNIT_DATA.GetLevelledDoor(game, 0).GetSpawnable().Spawn(game, _x, _y);
+				Unit.UNIT_DATA.GetLevelledDoor(game, 0).Spawn(game, _x, _y);
 			}
 		}
 		public override void AddToMaster(Game game, Unit master){
@@ -165,11 +163,11 @@ public class ClassicGen :
 		{
 		public ExitSpawner(int x, int y) : base(x, y){}
 		public override void Spawn(Game game, Unit master){
-			Unit.UNIT_DATA.GetStairs(game).GetSpawnable().Spawn(game, _x, _y);
+			Unit.UNIT_DATA.GetStairs(game).Spawn(game, _x, _y);
 			master.GetClassicGen().GetFinalize().AddBuild();
 		}
 		public virtual void PositionMaster(Game game, Unit master){
-			master.GetPositionable().SetPosition(game, _x, _y);
+			master.GetTag(game, Tag.ID.Position).GetISetValuesInt().SetValues(game, master, _x, _y);
 			master.GetClassicGen().GetFinalize().RemoveExitSpawner(this);
 			master.GetClassicGen().GetFinalize().AddBuild();
 		}
@@ -201,7 +199,7 @@ public class ClassicGen :
 				return;
 			}
 			_exits[UnityEngine.Random.Range(0, _exits.Count)].GetExit().PositionMaster(game, master);
-			master.GetPositionable().GetPosition(game, out int x, out int y);
+			master.GetTag(game, Tag.ID.Position).GetIGetTile().GetTile(game, master).GetXY(out int x, out int y);
 			GetExitToSpawn(game, master, x, y).Spawn(game, master);
 			if(_build >= (_amount + 1)){
 				master.GetClassicGen().OnFinalize(game);
@@ -243,7 +241,7 @@ public class ClassicGen :
 	public class MonsterSpawner : Spawner{
 		public MonsterSpawner(int x, int y) : base(x, y){}
 		public override void Spawn(Game game, Unit master){
-			Unit.UNIT_DATA.GetLevelledMonster(game, 0).GetSpawnable().Spawn(game, _x, _y);
+			Unit.UNIT_DATA.GetLevelledMonster(game, 0).Spawn(game, _x, _y);
 		}
 		public override void AddToMaster(Game game, Unit master){
 			master.GetClassicGen().AddDetailSpawner(this);
@@ -253,7 +251,7 @@ public class ClassicGen :
 	public class LootSpawner : Spawner{
 		public LootSpawner(int x, int y) : base(x, y){}
 		public override void Spawn(Game game, Unit master){
-			Unit.UNIT_DATA.GetLevelledItem(game, 0).GetSpawnable().Spawn(game, _x, _y);
+			Unit.UNIT_DATA.GetLevelledItem(game, 0).Spawn(game, _x, _y);
 		}
 		public override void AddToMaster(Game game, Unit master){
 			master.GetClassicGen().AddDetailSpawner(this);
@@ -268,64 +266,27 @@ public class ClassicGen :
 		Finalize,
 		Complete,
 	};
-	private int _x = Unit.NullUnit.GetNullX();
-	private int _y = Unit.NullUnit.GetNullY();
-	private VisualController _controller = VisualController.GetNullVisualController();
 	private GenState _state = GenState.Null;
 	private List<Spawner> _structures;
 	private Queue<Spawner> _details;
 	private Spawner _finalize = Spawner.GetNullSpawner();
-	private Register<Unit>.ID _id = Register<Unit>.ID.GetNullID();
 	private int _minBuild;
 	private int _build;
-	public ClassicGen(int minBuild = 10, int maxExits = 1){
-		_controller = new VisualController();
-		_controller.SetSprite(SpriteSheet.SpriteID.Stairs, 1);
-		_controller.SetSortingOrder(10);
+	public ClassicGen(Game game, int minBuild = 10, int maxExits = 1) : base(game, 
+		new Tag[]{
+			WorldVisual.Create(SpriteSheet.SpriteID.Stairs, 1, 10),
+			WorldPosition.Create(),
+		}){
 		_structures = new List<Spawner>();
 		_details = new Queue<Spawner>();
 		_finalize = new FinalSpawner(maxExits);
 		_minBuild = minBuild;
 		_build = 0;
 	}
-	public VisualController GetVisualController(Game game){
-		return _controller;
-	}
-	public bool GetWorldVisibility(Game game){
-		return true;
-	}
-	public void Spawn(Game game, int x, int y){
-		Unit.Default_Spawn(this, game, x, y);
+	public override void Spawn(Game game, int x, int y){
+		base.Spawn(game, x, y);
 		_state = GenState.Structure;
-		_structures.Add(Spawner.SPAWNER_DATA.GetContentualBluePrintSpawner(_x, _y));
-	}
-	public void Despawn(Game game){
-		Unit.Default_Despawn(this, game);
-	}
-	public void SetPosition(Game game, int x, int y, int moveSpeed = 0){
-		Unit.Default_SetPosition(this, game, x, y, ref _x, ref _y, moveSpeed);
-	}
-	public void GetPosition(Game game, out int x, out int y){
-		x = _x;
-		y = _y;
-	}
-	public void RemovePosition(Game game){
-		Unit.Default_RemovePosition(this, game, _x, _y);
-	}
-	public Vector3 GetPosition(Game game){
-		return game.GetLevel().GetWorldPosition(_x, _y);
-	}
-	public Tile GetTile(Game game){
-		return game.GetLevel().Get(_x, _y);
-	}
-	public void Add(Register<Unit> register){
-		register.Add(this, ref _id);
-	}
-	public void Remove(Register<Unit> register){
-		register.Remove(_id);
-	}
-	public Register<Unit>.ID GetID(){
-		return _id;
+		_structures.Add(Spawner.SPAWNER_DATA.GetContentualBluePrintSpawner(x, y));
 	}
 	public override bool Process(Game game){
 		switch(_state){
@@ -362,7 +323,8 @@ public class ClassicGen :
 	public virtual void OnFinalize(Game game){
 		_state = GenState.Complete;
 		NukeSpawn(game);
-		game.GetPlayer().GetSpawnable().Spawn(game, _x, _y);
+		GetTag(game, Tag.ID.Position).GetIGetTile().GetTile(game, this).GetXY(out int x, out int y);
+		game.GetPlayer().Spawn(game, x, y);
 	}
 	public virtual int GetContentualBluePrintIndex(){
 		if(_state == GenState.Details){
@@ -409,18 +371,6 @@ public class ClassicGen :
 		return false;
 	}
 	//
-	public override VisualController.IVisualController GetVisualController(){
-		return this;
-	}
-	public override Unit.ISpawnable GetSpawnable(){
-		return this;
-	}
-	public override Unit.IPositionable GetPositionable(){
-		return this;
-	}
-	public override Register<Unit>.IRegisterable GetRegisterable(){
-		return this;
-	}
 	public override IClassicGen GetClassicGen(){
 		return this;
 	}

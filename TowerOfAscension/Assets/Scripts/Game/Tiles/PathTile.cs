@@ -74,14 +74,14 @@ public class PathTile :
 	public void Walk(Game game, Unit unit){
 		List<Unit> units = game.GetLevel().GetUnits().GetMultiple(_ids);
 		for(int i = 0; i < units.Count; i++){
-			units[i].GetTaggable().GetTag(game, Tag.ID.Tripwire).GetIInputUnit().Input(game, units[i], unit);
+			units[i].GetTag(game, Tag.ID.Tripwire).GetIInputUnit().Input(game, units[i], unit);
 		}
 	}
 	public bool CanWalk(Game game, Unit unit){
 		List<Unit> units = game.GetLevel().GetUnits().GetMultiple(_ids);
-		Tag.Collider collider = unit.GetTaggable().GetTag(game, Tag.ID.Collision).GetIGetCollider().GetCollider(game, unit); 
+		Tag.Collider collider = unit.GetTag(game, Tag.ID.Collision).GetIGetCollider().GetCollider(game, unit); 
 		for(int i = 0; i < units.Count; i++){
-			if(units[i].GetTaggable().GetTag(game, Tag.ID.Collision).GetIConditionCollider().Check(game, units[i], collider)){
+			if(units[i].GetTag(game, Tag.ID.Collision).GetIConditionCollider().Check(game, units[i], collider)){
 				return false;
 			}
 		}
@@ -104,7 +104,7 @@ public class PathTile :
 	public bool CheckTransparency(Game game){
 		List<Unit> units = game.GetLevel().GetUnits().GetMultiple(_ids);
 		for(int i = 0; i < units.Count; i++){
-			if(units[i].GetTaggable().GetTag(game, Tag.ID.Opacity).GetICondition().Check(game, units[i])){
+			if(units[i].GetTag(game, Tag.ID.Opacity).GetICondition().Check(game, units[i])){
 				return false;
 			}
 		}
@@ -116,13 +116,13 @@ public class PathTile :
 	public void Interact(Game game, Unit unit){
 		List<Unit> units = game.GetLevel().GetUnits().GetMultiple(_ids);
 		for(int i = 0; i < units.Count; i++){
-			units[i].GetTaggable().GetTag(game, Tag.ID.Interactable).GetIInputUnit().Input(game, units[i], unit);
+			units[i].GetTag(game, Tag.ID.Interactable).GetIInputUnit().Input(game, units[i], unit);
 		}
 	}
 	public bool CheckHostility(Game game, Unit unit){
 		List<Unit> units = game.GetLevel().GetUnits().GetMultiple(_ids);
 		for(int i = 0; i < units.Count; i++){
-			if(units[i].GetTaggable().GetTag(game, Tag.ID.Hostility).GetICondition().Check(game, units[i])){
+			if(units[i].GetTag(game, Tag.ID.Hostility).GetICondition().Check(game, units[i])){
 				return true;
 			}
 		}

@@ -23,11 +23,11 @@ public class TagInventory :
 		//
 	}
 	public void Add(Game game, Unit self, Unit item){
-		item.GetSpawnable().Despawn(game);
-		item.GetRegisterable().Add(_inventory);
+		item.Despawn(game);
+		item.Add(_inventory);
 	}
 	public void Remove(Game game, Unit self, Register<Unit>.ID itemID){
-		_inventory.Get(itemID).GetRegisterable().Remove(_inventory);
+		_inventory.Get(itemID).Remove(_inventory);
 	}
 	public Register<Unit>.IRegisterEvents GetRegisterEvents(Game game, Unit self){
 		return _inventory;

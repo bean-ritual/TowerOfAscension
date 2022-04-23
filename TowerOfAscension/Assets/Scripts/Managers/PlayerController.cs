@@ -35,39 +35,42 @@ public class PlayerController : MonoBehaviour{
 		}
 		//
 		_direction = MouseDirectionHandling();
-		TileTargetManager.GetInstance().SetTile(_direction.GetTileFromUnit(_local, _player));
+		TileTargetManager.GetInstance().SetTile(_direction.GetTile(_local, _player.GetTag(_local, Tag.ID.Position).GetIGetTile().GetTile(_local, _player)));
 		//
 		if(Input.GetMouseButtonDown(0)){
 			if(Input.GetKey(KeyCode.A)){
-				_player.GetTaggable().GetTag(_local, Tag.ID.Basic_Attack).GetIInputDirection().Input(_local, _player, _direction);
+				_player.GetTag(_local, Tag.ID.Basic_Attack).GetIInputDirection().Input(_local, _player, _direction);
 				return;
 			}
 			if(Input.GetKey(KeyCode.LeftShift)){
-				_player.GetTaggable().GetTag(_local, Tag.ID.Interactor).GetIInputDirection().Input(_local, _player, _direction);
+				_player.GetTag(_local, Tag.ID.Interactor).GetIInputDirection().Input(_local, _player, _direction);
 				return;
 			}
-			_player.GetTaggable().GetTag(_local, Tag.ID.Move).GetIInputDirection().Input(_local, _player, _direction);
+			_player.GetTag(_local, Tag.ID.Move).GetIInputDirection().Input(_local, _player, _direction);
 			return;
 		}
 		if(Input.GetKeyDown(KeyCode.Space)){
-			_player.GetTaggable().GetTag(_local, Tag.ID.AI).GetIClear().Clear(_local, _player);
+			_player.GetTag(_local, Tag.ID.AI).GetIClear().Clear(_local, _player);
 			return;
 		}
 	}
 	private Direction MouseDirectionHandling(){
-		Vector3 finalPosition = WorldSpaceUtils.MouseToWorldSpace(_camera.GetCamera()) - _player.GetPositionable().GetPosition(_local) - _local.GetLevel().GetVector3CellOffset();
+		Vector3 finalPosition = WorldSpaceUtils.MouseToWorldSpace(
+			_camera.GetCamera()) - 
+			_player.GetTag(_local, Tag.ID.Position).GetIGetVector().GetVector(_local, _player) - 
+			_local.GetLevel().GetVector3CellOffset();
 		Vector3Int intgerPosition = Vector3Int.RoundToInt(finalPosition);
 		return Direction.IntToDirection(intgerPosition.x, intgerPosition.y);
 	}
 	public void SetPlayer(Unit player){
 		_player = player;
-		PickupUIManager.GetInstance().SetTile(_player.GetPositionable().GetTile(_local));
+		PickupUIManager.GetInstance().SetTile(_player.GetTag(_local, Tag.ID.Position).GetIGetTile().GetTile(_local, _player));
 		if(_previous == _player){
 			return;
 		}
 		_previous = _player;
 		_camera.Setup(
-			() => _previous.GetPositionable().GetPosition(_local), 
+			() => _previous.GetTag(_local, Tag.ID.Position).GetIGetVector().GetVector(_local, _previous), 
 			() => _CAMERA_ZOOM, 
 			_CAMERA_OFFSET, 
 			_CAMERA_SPEED, 

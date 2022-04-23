@@ -14,9 +14,18 @@ public class BasicAttack :
 	}
 	public override void Disassemble(){}
 	public void Input(Game game, Unit self, Direction direction){
-		Attack.Create(game, direction, self, self);
-		self.GetVisualController().GetVisualController(game).InvokeAttackAnimation(direction);
-		self.GetTaggable().GetTag(game, Tag.ID.AI).GetIClear().Clear(game, self);
+		/*
+		Tag weapon = self.GetTag(game, Tag.ID.Weapon).GetIGetUnit().GetUnit(game, self).GetTag(game, Tag.ID.Active);
+		if(!weapon.IsNull()){
+			
+		}else{
+			Attack.Create(game, direction, self, self);
+		}
+		attacker.GetTag(game, Tag.ID.AI).GetIClear().Clear(game, attacker);
+		Attack.Create(game, direction, attacker, self);
+		//self.GetVisualController().GetVisualController(game).InvokeAttackAnimation(direction);
+		attacker.GetTag(game, Tag.ID.AI).GetIClear().Clear(game, attacker);
+		*/
 	}
 	public override Tag.IInput<Direction> GetIInputDirection(){
 		return this;

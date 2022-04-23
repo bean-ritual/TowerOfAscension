@@ -22,13 +22,13 @@ public class Open :
 	public void Input(Game game, Unit self, Unit actor){
 		_locked ^= true;
 		if(!_locked){
-			self.GetTaggable().GetTag(game, Tag.ID.WorldUnit).GetISetValue1Int().SetValue1(game, self, 1);
-			self.GetTaggable().GetTag(game, Tag.ID.Collision).GetISetValue1Collider().SetValue1(game, self, Tag.Collider.Null);
+			self.GetTag(game, Tag.ID.WorldUnit).GetISetValue1Int().SetValue1(game, self, 1);
+			self.GetTag(game, Tag.ID.Collision).GetISetValue1Collider().SetValue1(game, self, Tag.Collider.Null);
 		}else{
-			self.GetTaggable().GetTag(game, Tag.ID.WorldUnit).GetISetValue1Int().SetValue1(game, self, 0);
-			self.GetTaggable().GetTag(game, Tag.ID.Collision).GetISetValue1Collider().SetValue1(game, self, Tag.Collider.Basic);
+			self.GetTag(game, Tag.ID.WorldUnit).GetISetValue1Int().SetValue1(game, self, 0);
+			self.GetTag(game, Tag.ID.Collision).GetISetValue1Collider().SetValue1(game, self, Tag.Collider.Basic);
 		}
-		self.GetTaggable().GetTag(game, Tag.ID.Opacity).GetISetValue1Bool().SetValue1(game, self, _locked);
+		self.GetTag(game, Tag.ID.Opacity).GetISetValue1Bool().SetValue1(game, self, _locked);
 	}
 	public override Tag.IInput<Unit> GetIInputUnit(){
 		return this;

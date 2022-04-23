@@ -68,7 +68,7 @@ public class Level : GridMap<Tile>{
 		return _units.Get(_index).Process(game);
 	}
 	public virtual void LightUpdate(Game game, Unit unit){
-		int lightRange = unit.GetTaggable().GetTag(game, Tag.ID.Light).GetIGetIntValue1().GetIntValue1(game, unit);
+		int lightRange = unit.GetTag(game, Tag.ID.Light).GetIGetIntValue1().GetIntValue1(game, unit);
 		if(lightRange <= 0){
 			return;
 		}
@@ -77,10 +77,10 @@ public class Level : GridMap<Tile>{
 				Get(x, y).GetLightable().SetLight(0);
 			}
 		}
-		unit.GetPositionable().GetPosition(game, out int sourceX, out int sourceY);
-		Tile origin = Get(sourceX, sourceY);
+		Tile origin = unit.GetTag(game, Tag.ID.Position).GetIGetTile().GetTile(game, unit);
+		origin.GetXY(out int sourceX, out int sourceY);
 		origin.GetLightable().SetLight(lightRange);
-		Tag discover = unit.GetTaggable().GetTag(game, Tag.ID.Discoverer);
+		Tag discover = unit.GetTag(game, Tag.ID.Discoverer);
 		discover.GetIInputTile().Input(game, unit, origin);
 		List<Tile> tiles = CalculateFov(sourceX, sourceY, lightRange, (int range, Tile tile) => {
 			tile.GetLightable().SetLight(lightRange - (range - 1));
@@ -108,6 +108,6 @@ public class Level : GridMap<Tile>{
 		return _NULL_LEVEL;
 	}
 	private static Tile CreateTile(int x, int y){
-		return Tile.GetNullTile();
+		return new Tile.NullTile(x, y);
 	}
 }

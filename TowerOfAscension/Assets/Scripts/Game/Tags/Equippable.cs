@@ -18,10 +18,10 @@ public class Equippable :
 		return _TAG_ID;
 	}
 	public void Add(Game game, Unit self, Unit holder){
-		holder.GetTaggable().GetTag(game, _slot).GetIAddUnit().Add(game, holder, self);
+		holder.GetTag(game, _slot).GetIAddUnit().Add(game, holder, self);
 	}
 	public void Remove(Game game, Unit self, Unit holder){
-		holder.GetTaggable().GetTag(game, _slot).GetIRemoveUnit().Remove(game, holder, self);
+		holder.GetTag(game, _slot).GetIRemoveUnit().Remove(game, holder, self);
 	}
 	public override void Disassemble(){
 		

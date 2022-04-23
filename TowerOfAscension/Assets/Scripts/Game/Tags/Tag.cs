@@ -8,6 +8,7 @@ public abstract class Tag{
 	public enum ID{
 		Null,
 		Alive,
+		Position,
 		WorldUnit,
 		WorldUnitUI,
 		UIUnit,
@@ -33,6 +34,7 @@ public abstract class Tag{
 		Exit,
 		AI,
 		Attackable,
+		Active,
 		Basic_Attack,
 		Damage_Physical,
 		Damage_Magic,
@@ -44,6 +46,29 @@ public abstract class Tag{
 		Null,
 		Basic,
 	};
+	public class ValueEventArgs<TValue> : EventArgs{
+		public TValue value;
+		public ValueEventArgs(TValue value){
+			this.value = value;
+		}
+	}
+	public class ValuesEventArgs<TValue1, TValue2> : EventArgs{
+		public TValue1 value1;
+		public TValue2 value2;
+		public ValuesEventArgs(TValue1 value1, TValue2 value2){
+			this.value1 = value1;
+			this.value2 = value2;
+		}
+	}
+	public interface IStringValueEvent{
+		event EventHandler<ValueEventArgs<string>> OnStringValueEvent;
+	}
+	public interface IDirectionValueEvent{
+		event EventHandler<ValueEventArgs<Direction>> OnDirectionValueEvent;
+	}
+	public interface IWorldAnimationEvent{
+		event EventHandler<ValuesEventArgs<Vector3, int>> OnWorldAnimationEvent;
+	}
 	public interface IProcess{
 		bool Process(Game game, Unit self);
 	}
@@ -98,11 +123,17 @@ public abstract class Tag{
 	public interface IGetUnit{
 		Unit GetUnit(Game game, Unit self);
 	}
+	public interface IGetTile{
+		Tile GetTile(Game game, Unit self);
+	}
 	public interface IGetCollider{
 		Collider GetCollider(Game game, Unit self);
 	}
 	public interface IGetSprite{
 		Sprite GetSprite(Game game, Unit self);
+	}
+	public interface IGetVector{
+		Vector3 GetVector(Game game, Unit self);
 	}
 	public interface IGetRegisterEvents{
 		Register<Unit>.IRegisterEvents GetRegisterEvents(Game game, Unit self);
@@ -133,6 +164,9 @@ public abstract class Tag{
 	}
 	public class NullTag : 
 		Tag,
+		Tag.IStringValueEvent,
+		Tag.IDirectionValueEvent,
+		Tag.IWorldAnimationEvent,
 		Tag.IProcess,
 		Tag.ITrigger,
 		Tag.ICondition,
@@ -156,18 +190,30 @@ public abstract class Tag{
 		Tag.IGetIntValue2,
 		Tag.IGetIntValue3,
 		Tag.IGetUnit,
+		Tag.IGetTile,
 		Tag.IGetCollider,
 		Tag.IGetSprite,
+		Tag.IGetVector,
 		Tag.IGetRegisterEvents,
 		Tag.IInput<Direction>,
 		Tag.IInput<Unit>,
 		Tag.IInput<Tile>,
 		Tag.IInput<Unit, Unit>,
+		Tag.IInput<Unit, Direction>,
 		Tag.IAdd<Unit>,
 		Tag.IRemove<Unit>,
 		Tag.IRemove<Unit, Unit>,
 		Tag.IRemove<Register<Unit>.ID>
 		{
+		[field:NonSerialized]public	event EventHandler<ValueEventArgs<string>> OnStringValueEvent;
+		[field:NonSerialized]public	event EventHandler<ValueEventArgs<Direction>> OnDirectionValueEvent;
+		[field:NonSerialized]public event EventHandler<ValuesEventArgs<Vector3, int>> OnWorldAnimationEvent;
+		private void ShutupUnityEventWarning(){
+			OnStringValueEvent?.Invoke(this, new ValueEventArgs<string>(""));
+			OnDirectionValueEvent?.Invoke(this, new ValueEventArgs<Direction>(Direction.GetNullDirection()));
+			OnWorldAnimationEvent?.Invoke(this, new ValuesEventArgs<Vector3, int>(Vector3.zero, 0));
+		}
+		//
 		public bool Process(Game game, Unit self){
 			return game.GetLevel().NextTurn();
 		}
@@ -207,11 +253,17 @@ public abstract class Tag{
 		public Unit GetUnit(Game game, Unit self){
 			return Unit.GetNullUnit();
 		}
+		public Tile GetTile(Game game, Unit self){
+			return Tile.GetNullTile();
+		}
 		public Tag.Collider GetCollider(Game game, Unit self){
 			return Tag.Collider.Null;
 		}
 		public Sprite GetSprite(Game game, Unit self){
 			return SpriteSheet.NullSpriteSheet.GetNullSprite();
+		}
+		public Vector3 GetVector(Game game, Unit self){
+			return Vector3.zero;
 		}
 		public Register<Unit>.IRegisterEvents GetRegisterEvents(Game game, Unit self){
 			return Inventory.GetNullInventory();
@@ -220,6 +272,7 @@ public abstract class Tag{
 		public void Input(Game game, Unit self, Unit unit){}
 		public void Input(Game game, Unit self, Tile tile){}
 		public void Input(Game game, Unit self, Unit unit1, Unit unit2){}
+		public void Input(Game game, Unit self, Unit unit, Direction direction){}
 		public void Add(Game game, Unit self, Unit unit){}
 		public void Remove(Game game, Unit self, Unit unit){}
 		public void Remove(Game game, Unit self, Unit unit1, Unit unit2){}
@@ -268,6 +321,15 @@ public abstract class Tag{
 	public virtual void BuildString(StringBuilder builder){}
 	protected virtual void TagUpdateEvent(){
 		OnTagUpdate?.Invoke(this, EventArgs.Empty);
+	}
+	public virtual Tag.IStringValueEvent GetIStringValueEvent(){
+		return _NULL_TAG;
+	}
+	public virtual Tag.IDirectionValueEvent GetIDirectionValueEvent(){
+		return _NULL_TAG;
+	}
+	public virtual Tag.IWorldAnimationEvent GetIWorldAnimationEvent(){
+		return _NULL_TAG;
 	}
 	public virtual Tag.IProcess GetIProcess(){
 		return _NULL_TAG;
@@ -338,10 +400,16 @@ public abstract class Tag{
 	public virtual Tag.IGetUnit GetIGetUnit(){
 		return _NULL_TAG;
 	}
+	public virtual Tag.IGetTile GetIGetTile(){
+		return _NULL_TAG;
+	}
 	public virtual Tag.IGetCollider GetIGetCollider(){
 		return _NULL_TAG;
 	}
 	public virtual Tag.IGetSprite GetIGetSprite(){
+		return _NULL_TAG;
+	}
+	public virtual Tag.IGetVector GetIGetVector(){
 		return _NULL_TAG;
 	}
 	public virtual Tag.IGetRegisterEvents GetIGetRegisterEvents(){
@@ -357,6 +425,9 @@ public abstract class Tag{
 		return _NULL_TAG;
 	}
 	public virtual Tag.IInput<Unit, Unit> GetIInput2Units(){
+		return _NULL_TAG;
+	}
+	public virtual Tag.IInput<Unit, Direction> GetIInputUnitDirection(){
 		return _NULL_TAG;
 	}
 	public virtual Tag.IAdd<Unit> GetIAddUnit(){

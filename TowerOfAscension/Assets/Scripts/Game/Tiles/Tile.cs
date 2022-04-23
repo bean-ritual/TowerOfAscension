@@ -47,7 +47,6 @@ public abstract class Tile : GridMap<Tile>.Node{
 		Tile,
 		LevelMeshManager.ITileMeshData,
 		LightMeshManager.ILightMeshData,
-		Unit.ITileable,
 		Tile.IHasUnits,
 		Tile.IPrintable,
 		Tile.IConnectable,
@@ -61,14 +60,16 @@ public abstract class Tile : GridMap<Tile>.Node{
 		{
 		[field:NonSerialized]public event EventHandler<Register<Unit>.OnObjectChangedEventArgs> OnUnitAdded;
 		[field:NonSerialized]public event EventHandler<Register<Unit>.OnObjectChangedEventArgs> OnUnitRemoved;
-		private const int _NULL_X = -1;
-		private const int _NULL_Y = -1;
+		private const int _NULL_XY = -100;
 		private const int _NULL_INDEX = -1;
 		private const int _NULL_FACTOR = 0;
-		public NullTile(){}
-		public override void GetXY(out int x, out int y){
-			x = _NULL_X;
-			y = _NULL_Y;
+		public NullTile(){
+			_x = _NULL_XY;
+			_y = _NULL_XY;
+		}
+		public NullTile(int x, int y){
+			_x = x;
+			_y = y;
 		}
 		public int GetAtlasIndex(){
 			return _NULL_INDEX;
@@ -82,10 +83,7 @@ public abstract class Tile : GridMap<Tile>.Node{
 		public int GetLightUVFactor(){
 			return _NULL_FACTOR;
 		}
-		public Tile GetTile(Game game){
-			return Tile.GetNullTile();
-		}
-		public Tile GetTileFrom(Game game, int x, int y){
+		public override Tile GetTileFrom(Game game, int x, int y){
 			return Tile.GetNullTile();
 		}
 		public void AddUnit(Game game, Register<Unit>.ID id){}
@@ -127,13 +125,13 @@ public abstract class Tile : GridMap<Tile>.Node{
 	[field:NonSerialized]private static readonly NullTile _NULL_TILE = new NullTile();
 	public Tile(int x, int y) : base(x, y){}
 	public Tile(){}
+	public virtual Tile GetTileFrom(Game game, int x, int y){
+		return game.GetLevel().Get((_x + x), (_y + y));
+	}
 	public virtual LevelMeshManager.ITileMeshData GetTileMeshData(){
 		return _NULL_TILE;
 	}
 	public virtual LightMeshManager.ILightMeshData GetLightMeshData(){
-		return _NULL_TILE;
-	}
-	public virtual Unit.ITileable GetTileable(){
 		return _NULL_TILE;
 	}
 	public virtual IHasUnits GetHasUnits(){

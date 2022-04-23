@@ -58,34 +58,40 @@ public class InventoryUIManager :
 			SettingsSystem.GetConfig().inventory
 		);
 		PlayerMenusManager.GetInstance().AddMenu(_uiWindow);
-		GameObject go2 =  Instantiate(_prefabUIInventory, _uiWindow.GetContent().transform);
+		GameObject go2 = Instantiate(_prefabUIInventory, _uiWindow.GetContent().transform);
 		_content = go2.GetComponent<ContentManager>().GetContent();
 	}
 	public void SetUnit(Unit unit){
 		UnsubcribeFromEvents();
 		Clear();
 		_unit = unit;
-		_inventory = unit.GetTaggable().GetTag(_local, Tag.ID.Inventory).GetIGetRegisterEvents().GetRegisterEvents(_local, unit);
+		RefreshTags();
+		_inventory = unit.GetTag(_local, Tag.ID.Inventory).GetIGetRegisterEvents().GetRegisterEvents(_local, unit);
 		List<Unit> items = _inventory.GetAll();
 		for(int i = 0; i < items.Count; i++){
 			CreateUIUnit(items[i]);
 		}
 		_inventory.OnObjectAdded += OnObjectAdded;
 		_inventory.OnObjectRemoved += OnObjectRemoved;
-		_unit.GetTaggable().GetTag(_local, Tag.ID.Weapon).OnTagUpdate += OnWeaponTagUpdate;
+		_unit.GetTag(_local, Tag.ID.Weapon).OnTagUpdate += OnWeaponTagUpdate;
 	}
 	public void SetupTags(){
 		_tagUnits = new Dictionary<Tag.ID, UIUnit>();
 		for(int i = 0; i < _EQUIP_SLOTS.Length; i++){
 			GameObject go = Instantiate(_prefabUIItem, _content);
 			UIUnit uiUnit = go.GetComponent<UIUnit>();
-			uiUnit.Setup(_unit.GetTaggable().GetTag(_local, _EQUIP_SLOTS[i]).GetIGetUnit().GetUnit(_local, _unit), EquipInteract);
+			uiUnit.Setup(_unit.GetTag(_local, _EQUIP_SLOTS[i]).GetIGetUnit().GetUnit(_local, _unit), EquipInteract);
 			_tagUnits.Add(_EQUIP_SLOTS[i], uiUnit);
+		}
+	}
+	public void RefreshTags(){
+		for(int i = 0; i < _EQUIP_SLOTS.Length; i++){
+			SetTagUnit(_EQUIP_SLOTS[i]);
 		}
 	}
 	public void SetTagUnit(Tag.ID id){
 		if(_tagUnits.TryGetValue(id, out UIUnit uiUnit)){
-			uiUnit.Setup(_unit.GetTaggable().GetTag(_local, id).GetIGetUnit().GetUnit(_local, _unit), EquipInteract);
+			uiUnit.Setup(_unit.GetTag(_local, id).GetIGetUnit().GetUnit(_local, _unit), EquipInteract);
 		}
 	}
 	public void CreateUIUnit(Unit unit){
@@ -104,7 +110,7 @@ public class InventoryUIManager :
 	public void UnsubcribeFromEvents(){
 		_inventory.OnObjectAdded -= OnObjectAdded;
 		_inventory.OnObjectRemoved -= OnObjectRemoved;
-		_unit.GetTaggable().GetTag(_local, Tag.ID.Weapon).OnTagUpdate -= OnWeaponTagUpdate;
+		_unit.GetTag(_local, Tag.ID.Weapon).OnTagUpdate -= OnWeaponTagUpdate;
 	}
 	public void Clear(){
 		if(_uiUnits != null){
@@ -117,13 +123,13 @@ public class InventoryUIManager :
 	public void InventoryInteract(Unit item){
 		Unit player = PlayerController.GetInstance().GetPlayer();
 		if(Input.GetKey(KeyCode.LeftShift)){
-			item.GetTaggable().GetTag(_local, Tag.ID.Pickup).GetIRemoveUnit().Remove(_local, item, player);
+			item.GetTag(_local, Tag.ID.Pickup).GetIRemoveUnit().Remove(_local, item, player);
 		}else{
-			item.GetTaggable().GetTag(_local, Tag.ID.Equippable).GetIAddUnit().Add(_local, item, player);
+			item.GetTag(_local, Tag.ID.Equippable).GetIAddUnit().Add(_local, item, player);
 		}
 	}
 	public void EquipInteract(Unit item){
-		item.GetTaggable().GetTag(_local, Tag.ID.Equippable).GetIRemoveUnit().Remove(_local, item, PlayerController.GetInstance().GetPlayer());
+		item.GetTag(_local, Tag.ID.Equippable).GetIRemoveUnit().Remove(_local, item, PlayerController.GetInstance().GetPlayer());
 	}
 	private void OnObjectAdded(object sender, Register<Unit>.OnObjectChangedEventArgs e){
 		CreateUIUnit(e.value);

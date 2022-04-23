@@ -6,9 +6,9 @@ using UnityEngine;
 [Serializable]
 public class LightWorldVisual : WorldVisual{
 	public override bool Check(Game game, Unit self){
-		return self.GetTileable().GetTile(game).GetLightable().GetLight() > 0;
+		return self.GetTag(game, Tag.ID.Position).GetIGetTile().GetTile(game, self).GetLightable().GetLight() > 0;
 	}
-	public static Tag Create(SpriteSheet.SpriteID spriteID, int spriteIndex, int sortingOrder){
+	public static new Tag Create(SpriteSheet.SpriteID spriteID, int spriteIndex, int sortingOrder){
 		LightWorldVisual tag = new LightWorldVisual();
 		tag.Setup(spriteID, spriteIndex, sortingOrder);
 		return tag;

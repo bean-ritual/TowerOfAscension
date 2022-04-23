@@ -59,6 +59,9 @@ public class TagControl :
 	public override Tag.IClear GetIClear(){
 		return this;
 	}
+	public static void InvokePlayerControl(object sender, Unit unit){
+		OnPlayerControl?.Invoke(sender, new OnPlayerControlEventArgs(unit));
+	}
 	public static Tag Create(){
 		TagControl tag = new TagControl();
 		tag.Setup();

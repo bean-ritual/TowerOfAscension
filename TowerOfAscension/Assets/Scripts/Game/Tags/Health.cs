@@ -5,6 +5,7 @@ using UnityEngine;
 [Serializable]
 public class Health : 
 	Tag,
+	Tag.IStringValueEvent,
 	Tag.IFortifyValue1<int>,
 	Tag.IFortifyValue2<int>,
 	Tag.IDamageValue1<int>,
@@ -12,6 +13,7 @@ public class Health :
 	Tag.IGetIntValue1,
 	Tag.IGetIntValue2
 	{
+	[field:NonSerialized]public	event EventHandler<ValueEventArgs<string>> OnStringValueEvent;
 	private static Queue<Health> _POOL = new Queue<Health>();
 	private const Tag.ID _TAG_ID = Tag.ID.Health;
 	private const int _MAX_MAX_VALUE = 999;
@@ -30,6 +32,7 @@ public class Health :
 		_POOL.Enqueue(this);
 	}
 	public void FortifyValue1(Game game, Unit self, int value){
+		OnStringValueEvent?.Invoke(this, new Tag.ValueEventArgs<string>("+" + value));
 		_value = (_value + value);
 		_value = Mathf.Clamp(_value, _MIN_VALUE, _maxValue);
 		TagUpdateEvent();
@@ -40,13 +43,12 @@ public class Health :
 		TagUpdateEvent();
 	}
 	public void DamageValue1(Game game, Unit self, int value){
+		OnStringValueEvent?.Invoke(this, new Tag.ValueEventArgs<string>("-" + value));
 		_value = (_value - value);
 		if(_value <= 0){
-			self.GetTaggable().GetTag(game, Tag.ID.Alive).GetIDamageValue1().DamageValue1(game, self);
-			//self.GetKillable().Kill(game);
+			self.GetTag(game, Tag.ID.Alive).GetIDamageValue1().DamageValue1(game, self);
 		}
 		TagUpdateEvent();
-		self.GetVisualController().GetVisualController(game).InvokeDamagePopup("-" + value);
 	}
 	public void DamageValue2(Game game, Unit self, int value){
 		_maxValue = (_maxValue - value);
@@ -61,6 +63,9 @@ public class Health :
 	}
 	public int GetIntValue2(Game game, Unit self){
 		return _maxValue;
+	}
+	public override Tag.IStringValueEvent GetIStringValueEvent(){
+		return this;
 	}
 	public override Tag.IFortifyValue1<int> GetIFortifyValue1Int(){
 		return this;

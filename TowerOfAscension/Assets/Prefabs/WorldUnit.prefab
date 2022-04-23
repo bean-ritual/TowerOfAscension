@@ -111,7 +111,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: -0.5, y: -0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 1, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &6151631811077874414
@@ -133,7 +133,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 100
   m_TargetDisplay: 0
 --- !u!114 &3778614277198132548
 MonoBehaviour:
@@ -214,9 +214,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _uiCanvas: {fileID: 6151631811077874414}
-  _uiOffset: {fileID: 3477793413709834248}
+  _uiContent: {fileID: 2110310029356142034}
+  _uiRect: {fileID: 3477793413709834248}
   _health: {fileID: 7039552456366596098}
-  _healthContent: {fileID: 1134536947047612721}
 --- !u!1 &2483940975670085677
 GameObject:
   m_ObjectHideFlags: 0

@@ -23,7 +23,7 @@ public class HUDUIManager : MonoBehaviour{
 		Refresh();
 	}
 	public void Refresh(){
-		_healthBar.SetHealth(_unit, _unit.GetTaggable().GetTag(_local, Tag.ID.Health));
+		_healthBar.SetHealth(_unit, _unit.GetTag(_local, Tag.ID.Health));
 	}
 	public static HUDUIManager GetInstance(){
 		return _INSTANCE;

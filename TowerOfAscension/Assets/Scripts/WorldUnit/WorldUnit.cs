@@ -4,12 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 public class WorldUnit : 
-	MonoBehaviour,
-	IPointerEnterHandler,
-	IPointerExitHandler
+	MonoBehaviour
 	{
 	private Unit _unit = Unit.GetNullUnit();
-	private VisualController _controller = VisualController.GetNullVisualController();
 	private Game _local = Game.GetNullGame();
 	[SerializeField]private GameObject _offset;
 	[SerializeField]private SpriteRenderer _renderer;
@@ -21,41 +18,37 @@ public class WorldUnit :
 		UnsubscribeFromEvents();
 		_unit = unit;
 		_local = DungeonMaster.GetInstance().GetLocalGame();
-		_unit.GetTaggable().GetTag(_local, Tag.ID.WorldUnit).OnTagUpdate += OnWorldUnitTagUpdate;
-		_controller = unit.GetVisualController().GetVisualController(_local);
-		_controller.OnSpriteUpdate += OnSpriteUpdate;
-		_controller.OnSortingOrderUpdate += OnSortingOrderUpdate;
-		_controller.OnWorldPositionUpdate += OnWorldPositionUpdate;
-		_controller.OnAttackAnimation += OnAttackAnimation;
-		_controller.OnDamagePopup += OnDamagePopup;
+		_unit.GetTag(_local, Tag.ID.Position).OnTagUpdate += OnWorldPositionUpdate;
+		_unit.GetTag(_local, Tag.ID.WorldUnit).OnTagUpdate += OnWorldUnitTagUpdate;
+		_unit.GetTag(_local, Tag.ID.Health).GetIStringValueEvent().OnStringValueEvent += OnHealthStringValueEvent;
 		_local.GetLevel().OnLightUpdate += OnLightUpdate;
 		_worldUnitUI.Setup(_unit);
 		RefreshAll();
 	}
 	public void RefreshAll(){
 		_offset.transform.localPosition = _local.GetLevel().GetVector3CellOffset();
+		this.transform.localPosition = _unit.GetTag(_local, Tag.ID.Position).GetIGetVector().GetVector(_local, _unit);
 		RefreshSprite();
-		RefreshSortingOrder();
-		this.transform.localPosition = _controller.GetWorldPosition();
-		_worldUnitUI.RefreshAll();
 		RefreshVisibility();
+		_worldUnitUI.RefreshAll();
 	}
 	public void RefreshSprite(){
-		_renderer.sprite = _unit.GetTaggable().GetTag(_local, Tag.ID.WorldUnit).GetIGetSprite().GetSprite(_local, _unit);
-	}
-	public void RefreshSortingOrder(){
-		_renderer.sortingOrder = _unit.GetTaggable().GetTag(_local, Tag.ID.WorldUnit).GetIGetIntValue2().GetIntValue2(_local, _unit);
-	}
-	public void RefreshWorldPosition(){
-		RefreshVisibility();
-		if(_offset.activeSelf && _controller.GetMoveSpeed() > 0){
-			DungeonMaster.GetInstance().QueueAction(() => MoveAnimation(_controller.GetWorldPosition(), _controller.GetMoveSpeed()));
-		}else{
-			this.transform.localPosition = _controller.GetWorldPosition();
-		}
+		Tag tag = _unit.GetTag(_local, Tag.ID.WorldUnit);
+		_renderer.sprite = tag.GetIGetSprite().GetSprite(_local, _unit);
+		_renderer.sortingOrder = tag.GetIGetIntValue2().GetIntValue2(_local, _unit);
 	}
 	public void RefreshVisibility(){
-		_offset.SetActive(_unit.GetTaggable().GetTag(_local, Tag.ID.WorldUnit).GetICondition().Check(_local, _unit));
+		_offset.SetActive(_unit.GetTag(_local, Tag.ID.WorldUnit).GetICondition().Check(_local, _unit));
+	}
+	public void UpdateWorldPosition(){
+		RefreshVisibility();
+		Vector3 position = _unit.GetTag(_local, Tag.ID.Position).GetIGetVector().GetVector(_local, _unit);
+		int moveSpeed = _unit.GetTag(_local, Tag.ID.Move).GetIGetIntValue1().GetIntValue1(_local, _unit);
+		if(moveSpeed > 0 && _offset.activeSelf){
+			DungeonMaster.GetInstance().QueueAction(() => MoveAnimation(position, moveSpeed));
+		}else{
+			this.transform.localPosition = position;
+		}
 	}
 	public IEnumerator LerpToTarget(Vector3 target, float duration, Action OnAnimationComplete){
 		float time = 0f;
@@ -84,33 +77,22 @@ public class WorldUnit :
 	public void UnitDestroy(){
 		Destroy(gameObject);
 	}
-	public void OnPointerEnter(PointerEventData eventData){
-		ToolTipManager.GetInstance().ShowToolTip("Unit");
-	}
-	public void OnPointerExit(PointerEventData eventData){
-		ToolTipManager.GetInstance().HideToolTip();
-	}
 	private void UnsubscribeFromEvents(){
-		_unit.GetTaggable().GetTag(_local, Tag.ID.WorldUnit).OnTagUpdate -= OnWorldUnitTagUpdate;
-		_controller.OnSpriteUpdate -= OnSpriteUpdate;
-		_controller.OnSortingOrderUpdate -= OnSortingOrderUpdate;
-		_controller.OnWorldPositionUpdate -= OnWorldPositionUpdate;
-		_controller.OnAttackAnimation -= OnAttackAnimation;
+		_unit.GetTag(_local, Tag.ID.Position).OnTagUpdate -= OnWorldPositionUpdate;
+		_unit.GetTag(_local, Tag.ID.WorldUnit).OnTagUpdate -= OnWorldUnitTagUpdate;
+		_unit.GetTag(_local, Tag.ID.Health).GetIStringValueEvent().OnStringValueEvent -= OnHealthStringValueEvent;
 		_local.GetLevel().OnLightUpdate -= OnLightUpdate;
 	}
 	private void OnWorldUnitTagUpdate(object sender, EventArgs e){
 		RefreshSprite();
-		RefreshSortingOrder();
 	}
-	private void OnSpriteUpdate(object sender, EventArgs e){
-		RefreshSprite();
-	}
-	private void OnSortingOrderUpdate(object sender, EventArgs e){
-		RefreshSortingOrder();
+	private void OnHealthStringValueEvent(object sender, Tag.ValueEventArgs<string> e){
+		TextPopupManager.GetInstance().PopText(e.value, (_unit.GetTag(_local, Tag.ID.Position).GetIGetVector().GetVector(_local, _unit) + _local.GetLevel().GetVector3CellOffset()));
 	}
 	private void OnWorldPositionUpdate(object sender, EventArgs e){
-		RefreshWorldPosition();
+		UpdateWorldPosition();
 	}
+	/*
 	private void OnAttackAnimation(object sender, VisualController.VisualAnimateEventArgs e){
 		RefreshVisibility();
 		if(!_offset.activeSelf){
@@ -118,9 +100,7 @@ public class WorldUnit :
 		}
 		DungeonMaster.GetInstance().QueueAction(() => AttackAnimation((e.direction.GetWorldDirection(_local) / 2) + this.transform.localPosition));
 	}
-	private void OnDamagePopup(object sender, VisualController.DamagePopupEventArgs e){
-		TextPopupManager.GetInstance().PopText(e.text, (_controller.GetWorldPosition() + _local.GetLevel().GetVector3CellOffset()));
-	}
+	*/
 	private void OnLightUpdate(object sender, EventArgs e){
 		RefreshVisibility();
 	}

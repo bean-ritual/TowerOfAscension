@@ -3,30 +3,34 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 [Serializable]
-public abstract class Unit{
+public class Unit{
 	public static class UNIT_DATA{
-		public static Unit GetStairs(Game game){
-			VisualController controller = new VisualController();
-			controller.SetSpriteID(SpriteSheet.SpriteID.Stairs);
-			controller.SetSortingOrder(10);
-			return new LevelUnit(
+		public static Unit GetGrave(Game game){
+			return new Unit(
 				game,
-				controller,
 				new Tag[]{
-					TagStairs.Create(),
+					WorldVisual.Create(SpriteSheet.SpriteID.Grave, 0, 25),
+					WorldPosition.Create(),
+					GameOver.Create(),
+				}
+			);
+		}
+		public static Unit GetStairs(Game game){
+			return new Unit(
+				game,
+				new Tag[]{
 					WorldVisual.Create(SpriteSheet.SpriteID.Stairs, 0, 10),
+					WorldPosition.Create(),
+					TagStairs.Create(),
 				}
 			);
 		}
 		public static Unit GetLevelledDoor(Game game, int level){
-			VisualController controller = new VisualController();
-			controller.SetSpriteID(SpriteSheet.SpriteID.Door);
-			controller.SetSortingOrder(30);
-			return new LevelUnit(
+			return new Unit(
 				game,
-				controller,
 				new Tag[]{
 					WorldVisual.Create(SpriteSheet.SpriteID.Door, 0, 30),
+					WorldPosition.Create(),
 					LightControl.Create(),
 					Open.Create(),
 					Collision.Create(Tag.Collider.Basic),
@@ -34,66 +38,37 @@ public abstract class Unit{
 			);
 		}
 		public static Unit GetLevelledMonster(Game game, int level){
-			VisualController controller = new VisualController();
-			controller.SetSpriteID(SpriteSheet.SpriteID.Rat);
-			controller.SetSortingOrder(20);
-			controller.SetUISortingOrder(100);
-			controller.SetUIOffset(new Vector3(0, 0.9f));
-			controller.SetHealthBarActive(true);
-			return new LevelUnit(
+			return new Unit(
 				game,
-				controller,
 				new Tag[]{
 					LightWorldVisual.Create(SpriteSheet.SpriteID.Rat, 0, 20),
+					WorldPosition.Create(),
+					WorldVisualUI.Create(new Vector3(0, 0.9f)),
 					TagAI.Create(),
 					Alive.Create(),
-					Health.Create(5),
-					BasicAttack.Create(),
+					Health.Create(25),
+					TagAttack.Create(),
 					Attackable.Create(),
 					Value.Create(Tag.ID.Damage_Physical, 1),
-					Move.Create(),
+					Move.Create(1),
 					Collision.Create(Tag.Collider.Basic),
 				}
 			);
 		}
 		public static Unit GetLevelledItem(Game game, int level){
-			VisualController controller = new VisualController();
-			controller.SetSprite(SpriteSheet.SpriteID.Swords, UnityEngine.Random.Range(0, 5));
-			controller.SetSortingOrder(10);
-			return new LevelUnit(
+			return new Unit(
 				game,
-				controller,
 				new Tag[]{
 					LightWorldVisual.Create(SpriteSheet.SpriteID.Swords, UnityEngine.Random.Range(0, 5), 10),
+					WorldPosition.Create(),
 					Condition.Create(Tag.ID.UIUnit, false),
 					Pickup.Create(),
+					TagAttack.Create(),
+					Value.Create(Tag.ID.Damage_Physical, 5),
 					Equippable.Create(Tag.ID.Weapon),
 				}
 			);
 		}
-	}
-	public interface ITaggable{
-		void AddTag(Game game, Tag tag);
-		void RemoveTag(Game game, Tag.ID id);
-		Tag GetTag(Game game, Tag.ID id);
-	}
-	public interface IPositionable{
-		void SetPosition(Game game, int x, int y, int moveSpeed = 0);
-		void GetPosition(Game game, out int x, out int y);
-		void RemovePosition(Game game);
-		Vector3 GetPosition(Game game);
-		Tile GetTile(Game game);
-	}
-	public interface ITileable{
-		Tile GetTile(Game game);
-		Tile GetTileFrom(Game game, int x, int y);
-	}
-	public interface ISpawnable : 
-		IPositionable, 
-		Register<Unit>.IRegisterable
-		{
-		void Spawn(Game game, int x, int y);
-		void Despawn(Game game);
 	}
 	public interface IPlayable{
 		void SetPlayer(Game game);
@@ -114,12 +89,6 @@ public abstract class Unit{
 	[Serializable]
 	public class NullUnit : 
 		Unit,
-		Register<Unit>.IRegisterable,
-		VisualController.IVisualController,
-		Unit.ITaggable,
-		Unit.IPositionable,
-		Unit.ITileable,
-		Unit.ISpawnable,
 		Unit.IPlayable,
 		Unit.IProxyable,
 		Unit.IClassicGen,
@@ -131,42 +100,21 @@ public abstract class Unit{
 		public override bool IsNull(){
 			return true;
 		}
-		public void Add(Register<Unit> register){}
-		public void Remove(Register<Unit> register){}
-		public Register<Unit>.ID GetID(){
+		public override void Add(Register<Unit> register){}
+		public override void Remove(Register<Unit> register){}
+		public override Register<Unit>.ID GetID(){
 			return Register<Unit>.ID.GetNullID();
-		}
-		public VisualController GetVisualController(Game game){
-			return VisualController.GetNullVisualController();
-		}
-		public bool GetWorldVisibility(Game game){
-			return false;
 		}
 		public override bool Process(Game game){
 			return game.GetLevel().NextTurn();
 		}
-		public void AddTag(Game game, Tag tag){}
-		public void RemoveTag(Game game, Tag.ID id){}
-		public Tag GetTag(Game game, Tag.ID id){
+		public override void AddTag(Game game, Tag tag){}
+		public override void RemoveTag(Game game, Tag.ID id){}
+		public override Tag GetTag(Game game, Tag.ID id){
 			return Tag.GetNullTag();
 		}
-		public void SetPosition(Game game, int x, int y, int moveSpeed = 0){}
-		public void GetPosition(Game game, out int x, out int y){
-			x = _NULL_X;
-			y = _NULL_Y;
-		}
-		public void RemovePosition(Game game){}
-		public Vector3 GetPosition(Game game){
-			return Vector3.zero;
-		}
-		public Tile GetTile(Game game){
-			return Tile.GetNullTile();
-		}
-		public Tile GetTileFrom(Game game, int x, int y){
-			return Tile.GetNullTile();
-		}
-		public void Spawn(Game game, int x, int y){}
-		public void Despawn(Game game){}
+		public override void Spawn(Game game, int x, int y){}
+		public override void Despawn(Game game){}
 		public void SetPlayer(Game game){}
 		public void RemovePlayer(Game game){}
 		public void SetProxyID(Game game, Register<Unit>.ID id){}
@@ -190,37 +138,61 @@ public abstract class Unit{
 			return _NULL_Y;
 		}
 	}
-	[field:NonSerialized]private static readonly NullUnit _NULL_UNIT = new NullUnit();
-	public Unit(){}
+	private static readonly NullUnit _NULL_UNIT = new NullUnit();
+	protected Dictionary<Tag.ID, Tag> _tags;
+	protected Register<Unit>.ID _id = Register<Unit>.ID.GetNullID();
+	public Unit(){
+		_tags = new Dictionary<Tag.ID, Tag>();
+	}
+	public Unit(Game game, Tag[] array){
+		_tags = new Dictionary<Tag.ID, Tag>(array.Length);
+		for(int i = 0; i < array.Length; i++){
+			AddTag(game, array[i]);
+		}
+	}
+	public Unit(Game game, List<Tag> list){
+		_tags = new Dictionary<Tag.ID, Tag>(list.Count);
+		for(int i = 0; i < list.Count; i++){
+			AddTag(game, list[i]);
+		}
+	}
 	public virtual bool Process(Game game){
-		return GetTaggable().GetTag(game, Tag.ID.AI).GetIProcess().Process(game, this);
+		return GetTag(game, Tag.ID.AI).GetIProcess().Process(game, this);
+	}
+	public virtual void Spawn(Game game, int x, int y){
+		Add(game.GetLevel().GetUnits());
+		this.GetPlayable().SetPlayer(game);
+		GetTag(game, Tag.ID.Position).GetISetValuesInt().SetValues(game, this, x, y);
+		game.GetLevel().LightUpdate(game, this);
+	}
+	public virtual void Despawn(Game game){
+		GetTag(game, Tag.ID.Position).GetIClear().Clear(game, this);
+		this.GetPlayable().RemovePlayer(game);
+		Remove(game.GetLevel().GetUnits());
+	}
+	public virtual void Add(Register<Unit> register){
+		register.Add(this, ref _id);
+	}
+	public virtual void Remove(Register<Unit> register){
+		register.Remove(_id);
+	}
+	public virtual Register<Unit>.ID GetID(){
+		return _id;
+	}
+	public virtual void AddTag(Game game, Tag tag){
+		tag.Add(_tags);
+	}
+	public virtual void RemoveTag(Game game, Tag.ID id){
+		GetTag(game, id).Remove(_tags);
+	}
+	public virtual Tag GetTag(Game game, Tag.ID id){
+		if(!_tags.TryGetValue(id, out Tag tag)){
+			tag = Tag.GetNullTag();
+		}
+		return tag;
 	}
 	public virtual bool IsNull(){
 		return false;
-	}
-	public virtual Register<Unit>.IRegisterable GetRegisterable(){
-		return _NULL_UNIT;
-	}
-	public virtual VisualController.IVisualController GetVisualController(){
-		return _NULL_UNIT;
-	}
-	public virtual Unit.ITaggable GetTaggable(){
-		return _NULL_UNIT;
-	}
-	public virtual IPositionable GetPositionable(){
-		return _NULL_UNIT;
-	}
-	public virtual ITileable GetTileable(){
-		return _NULL_UNIT;
-	}
-	public virtual ISpawnable GetSpawnable(){
-		return _NULL_UNIT;
-	}
-	public virtual IPlayable GetPlayable(){
-		return _NULL_UNIT;
-	}
-	public virtual IProxyable GetProxyable(){
-		return _NULL_UNIT;
 	}
 	public virtual IClassicGen GetClassicGen(){
 		return _NULL_UNIT;
@@ -228,6 +200,13 @@ public abstract class Unit{
 	public virtual ClassicGen.Spawner.IFinalize GetFinalize(){
 		return _NULL_UNIT;
 	}
+	public virtual Unit.IPlayable GetPlayable(){
+		return _NULL_UNIT;
+	}
+	public virtual Unit.IProxyable GetProxyable(){
+		return _NULL_UNIT;
+	}
+	/*
 	public static void Default_Spawn(Unit self, Game game, int x, int y){
 		self.GetRegisterable().Add(game.GetLevel().GetUnits());
 		self.GetPlayable().SetPlayer(game);
@@ -249,12 +228,7 @@ public abstract class Unit{
 	public static void Default_RemovePosition(Unit self, Game game, int x, int y){
 		game.GetLevel().Get(x, y).GetHasUnits().RemoveUnit(game, self.GetRegisterable().GetID());
 	}
-	public static void Default_SetPlayer(Game game, ref Register<Unit>.ID id){
-		game.GetPlayer().GetProxyable().SetProxyID(game, id);
-	}
-	public static void Default_RemovePlayer(Game game){
-		game.GetPlayer().GetProxyable().RemoveProxyID(game);
-	}
+	*/
 	public static Unit GetNullUnit(){
 		return _NULL_UNIT;
 	}

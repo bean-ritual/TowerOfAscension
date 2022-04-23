@@ -15,13 +15,13 @@ public class Pickup :
 	}
 	public override void Disassemble(){}
 	public void Add(Game game, Unit self, Unit holder){
-		holder.GetTaggable().GetTag(game, Tag.ID.Inventory).GetIAddUnit().Add(game, holder, self);
-		holder.GetTaggable().GetTag(game, Tag.ID.AI).GetIClear().Clear(game, holder);
+		holder.GetTag(game, Tag.ID.Inventory).GetIAddUnit().Add(game, holder, self);
+		holder.GetTag(game, Tag.ID.AI).GetIClear().Clear(game, holder);
 	}
 	public void Remove(Game game, Unit self, Unit holder){
-		holder.GetTaggable().GetTag(game, Tag.ID.Inventory).GetIRemoveUnitID().Remove(game, holder, self.GetRegisterable().GetID());
-		holder.GetPositionable().GetPosition(game, out int x, out int y);
-		self.GetSpawnable().Spawn(game, x, y);
+		holder.GetTag(game, Tag.ID.Inventory).GetIRemoveUnitID().Remove(game, holder, self.GetID());
+		holder.GetTag(game, Tag.ID.Position).GetIGetTile().GetTile(game, holder).GetXY(out int x, out int y);
+		self.Spawn(game, x, y);
 	}
 	public override Tag.IAdd<Unit> GetIAddUnit(){
 		return this;

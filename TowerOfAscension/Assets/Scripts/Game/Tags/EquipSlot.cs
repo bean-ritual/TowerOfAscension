@@ -19,25 +19,25 @@ public class EquipSlot :
 		return _tagID;
 	}
 	public void Add(Game game, Unit self, Unit equip){
-		_unit.GetTaggable().GetTag(game, Tag.ID.Equippable).GetIRemoveUnit().Remove(game, _unit, self);
+		_unit.GetTag(game, Tag.ID.Equippable).GetIRemoveUnit().Remove(game, _unit, self);
 		if(!_unit.IsNull()){
 			return;
 		}
-		equip.GetSpawnable().Despawn(game);
-		self.GetTaggable().GetTag(game, Tag.ID.Inventory).GetIRemoveUnitID().Remove(game, self, equip.GetRegisterable().GetID());
+		equip.Despawn(game);
+		self.GetTag(game, Tag.ID.Inventory).GetIRemoveUnitID().Remove(game, self, equip.GetID());
 		_unit = equip;
-		_unit.GetTaggable().GetTag(game, Tag.ID.UIUnit).GetISetValue1Bool().SetValue1(game, self, true);
+		_unit.GetTag(game, Tag.ID.UIUnit).GetISetValue1Bool().SetValue1(game, self, true);
 		TagUpdateEvent();
 	}
 	public void Remove(Game game, Unit self, Unit equip){
 		if(equip != _unit){
 			return;
 		}
-		_unit.GetTaggable().GetTag(game, Tag.ID.UIUnit).GetISetValue1Bool().SetValue1(game, self, false);
+		_unit.GetTag(game, Tag.ID.UIUnit).GetISetValue1Bool().SetValue1(game, self, false);
 		_unit = Unit.GetNullUnit();
-		self.GetPositionable().GetPosition(game, out int x, out int y);
-		equip.GetSpawnable().Spawn(game, x, y);
-		self.GetTaggable().GetTag(game, Tag.ID.Inventory).GetIAddUnit().Add(game, self, equip);
+		self.GetTag(game, Tag.ID.Position).GetIGetTile().GetTile(game, self).GetXY(out int x, out int y);
+		equip.Spawn(game, x, y);
+		self.GetTag(game, Tag.ID.Inventory).GetIAddUnit().Add(game, self, equip);
 		TagUpdateEvent();
 	}
 	public Unit GetUnit(Game game, Unit self){

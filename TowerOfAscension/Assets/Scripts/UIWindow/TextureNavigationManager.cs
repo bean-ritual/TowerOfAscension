@@ -29,6 +29,7 @@ public class TextureNavigationManager :
 	}
 	public void SetUnit(Unit target){
 		_target = target;
+		Reset();
 		_camera.Setup(GetPosition, GetZoom, true);
 	}
 	public void OnDrag(PointerEventData eventData){
@@ -45,7 +46,7 @@ public class TextureNavigationManager :
 		_window.SendWindowToFront();
 	}
 	public Vector3 GetPosition(){
-		return _target.GetPositionable().GetPosition(_local) + _delta;
+		return _delta;
 	}
 	public float GetZoom(){
 		return _zoom;
@@ -53,7 +54,7 @@ public class TextureNavigationManager :
 	public void Reset(){
 		const float DEFAULT_ZOOM = 10f;
 		_zoom = DEFAULT_ZOOM;
-		_delta = Vector3.zero;
+		_delta = _target.GetTag(_local, Tag.ID.Position).GetIGetVector().GetVector(_local, _target);
 	}
 	public UIWindowManager GetWindow(){
 		return _window;
