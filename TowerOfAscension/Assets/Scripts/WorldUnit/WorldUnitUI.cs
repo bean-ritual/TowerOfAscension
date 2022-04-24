@@ -3,7 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-public class WorldUnitUI : MonoBehaviour{
+using UnityEngine.EventSystems;
+public class WorldUnitUI : 
+	MonoBehaviour,
+	IPointerEnterHandler,
+	IPointerExitHandler
+	{
 	private const int _UI_SORTING_ORDER = 100;
 	private Game _local = Game.GetNullGame();
 	private Unit _unit = Unit.GetNullUnit();
@@ -14,9 +19,10 @@ public class WorldUnitUI : MonoBehaviour{
 	private void OnDestroy(){
 		UnsubscribeFromEvents();
 	}
-	public void Setup(Unit unit){
+	public void Setup(Unit unit, Camera camera){
 		UnsubscribeFromEvents();
 		_unit = unit;
+		_uiCanvas.worldCamera = camera;
 		_local = DungeonMaster.GetInstance().GetLocalGame();
 		_uiContent.SetActive(!_unit.GetTag(_local, Tag.ID.WorldUnitUI).IsNull());
 		_unit.GetTag(_local, Tag.ID.WorldUnit).OnTagUpdate += OnWorldUnitTagUpdate;
@@ -37,6 +43,12 @@ public class WorldUnitUI : MonoBehaviour{
 	public void UnsubscribeFromEvents(){
 		_unit.GetTag(_local, Tag.ID.WorldUnit).OnTagUpdate -= OnWorldUnitTagUpdate;
 		_unit.GetTag(_local, Tag.ID.WorldUnitUI).OnTagUpdate -= OnWorldUnitUITagUpdate;
+	}
+	public void OnPointerEnter(PointerEventData eventData){
+		ToolTipManager.GetInstance().ShowToolTip("bing");
+	}
+	public void OnPointerExit(PointerEventData eventData){
+		ToolTipManager.GetInstance().HideToolTip();
 	}
 	private void OnWorldUnitTagUpdate(object sender, EventArgs e){
 		RefreshSortingOrder();

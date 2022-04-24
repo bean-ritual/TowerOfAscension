@@ -12,10 +12,10 @@ public abstract class Tag{
 		WorldUnit,
 		WorldUnitUI,
 		UIUnit,
+		Level,
 		Health,
 		Armour,
 		Move,
-		Weapon,
 		Chestplate,
 		Boots,
 		Inventory,
@@ -33,9 +33,9 @@ public abstract class Tag{
 		Tripwire,
 		Exit,
 		AI,
-		Attackable,
 		Active,
-		Basic_Attack,
+		Attackable,
+		Attack_Slot,
 		Damage_Physical,
 		Damage_Magic,
 		Damage_Poison,
@@ -46,29 +46,6 @@ public abstract class Tag{
 		Null,
 		Basic,
 	};
-	public class ValueEventArgs<TValue> : EventArgs{
-		public TValue value;
-		public ValueEventArgs(TValue value){
-			this.value = value;
-		}
-	}
-	public class ValuesEventArgs<TValue1, TValue2> : EventArgs{
-		public TValue1 value1;
-		public TValue2 value2;
-		public ValuesEventArgs(TValue1 value1, TValue2 value2){
-			this.value1 = value1;
-			this.value2 = value2;
-		}
-	}
-	public interface IStringValueEvent{
-		event EventHandler<ValueEventArgs<string>> OnStringValueEvent;
-	}
-	public interface IDirectionValueEvent{
-		event EventHandler<ValueEventArgs<Direction>> OnDirectionValueEvent;
-	}
-	public interface IWorldAnimationEvent{
-		event EventHandler<ValuesEventArgs<Vector3, int>> OnWorldAnimationEvent;
-	}
 	public interface IProcess{
 		bool Process(Game game, Unit self);
 	}
@@ -138,6 +115,9 @@ public abstract class Tag{
 	public interface IGetRegisterEvents{
 		Register<Unit>.IRegisterEvents GetRegisterEvents(Game game, Unit self);
 	}
+	public interface IGetWorldUnitController{
+		WorldUnit.IWorldUnitController GetWorldUnitController(Game game, Unit self);
+	}
 	public interface ITrigger{
 		void Trigger(Game game, Unit self);
 	}
@@ -164,9 +144,6 @@ public abstract class Tag{
 	}
 	public class NullTag : 
 		Tag,
-		Tag.IStringValueEvent,
-		Tag.IDirectionValueEvent,
-		Tag.IWorldAnimationEvent,
 		Tag.IProcess,
 		Tag.ITrigger,
 		Tag.ICondition,
@@ -195,6 +172,7 @@ public abstract class Tag{
 		Tag.IGetSprite,
 		Tag.IGetVector,
 		Tag.IGetRegisterEvents,
+		Tag.IGetWorldUnitController,
 		Tag.IInput<Direction>,
 		Tag.IInput<Unit>,
 		Tag.IInput<Tile>,
@@ -205,14 +183,6 @@ public abstract class Tag{
 		Tag.IRemove<Unit, Unit>,
 		Tag.IRemove<Register<Unit>.ID>
 		{
-		[field:NonSerialized]public	event EventHandler<ValueEventArgs<string>> OnStringValueEvent;
-		[field:NonSerialized]public	event EventHandler<ValueEventArgs<Direction>> OnDirectionValueEvent;
-		[field:NonSerialized]public event EventHandler<ValuesEventArgs<Vector3, int>> OnWorldAnimationEvent;
-		private void ShutupUnityEventWarning(){
-			OnStringValueEvent?.Invoke(this, new ValueEventArgs<string>(""));
-			OnDirectionValueEvent?.Invoke(this, new ValueEventArgs<Direction>(Direction.GetNullDirection()));
-			OnWorldAnimationEvent?.Invoke(this, new ValuesEventArgs<Vector3, int>(Vector3.zero, 0));
-		}
 		//
 		public bool Process(Game game, Unit self){
 			return game.GetLevel().NextTurn();
@@ -268,6 +238,9 @@ public abstract class Tag{
 		public Register<Unit>.IRegisterEvents GetRegisterEvents(Game game, Unit self){
 			return Inventory.GetNullInventory();
 		}
+		public WorldUnit.IWorldUnitController GetWorldUnitController(Game game, Unit self){
+			return WorldUnit.GetNullWorldUnitController();
+		}
 		public void Input(Game game, Unit self, Direction direction){}
 		public void Input(Game game, Unit self, Unit unit){}
 		public void Input(Game game, Unit self, Tile tile){}
@@ -321,15 +294,6 @@ public abstract class Tag{
 	public virtual void BuildString(StringBuilder builder){}
 	protected virtual void TagUpdateEvent(){
 		OnTagUpdate?.Invoke(this, EventArgs.Empty);
-	}
-	public virtual Tag.IStringValueEvent GetIStringValueEvent(){
-		return _NULL_TAG;
-	}
-	public virtual Tag.IDirectionValueEvent GetIDirectionValueEvent(){
-		return _NULL_TAG;
-	}
-	public virtual Tag.IWorldAnimationEvent GetIWorldAnimationEvent(){
-		return _NULL_TAG;
 	}
 	public virtual Tag.IProcess GetIProcess(){
 		return _NULL_TAG;
@@ -413,6 +377,9 @@ public abstract class Tag{
 		return _NULL_TAG;
 	}
 	public virtual Tag.IGetRegisterEvents GetIGetRegisterEvents(){
+		return _NULL_TAG;
+	}
+	public virtual Tag.IGetWorldUnitController GetIGetWorldUnitController(){
 		return _NULL_TAG;
 	}
 	public virtual Tag.IInput<Direction> GetIInputDirection(){

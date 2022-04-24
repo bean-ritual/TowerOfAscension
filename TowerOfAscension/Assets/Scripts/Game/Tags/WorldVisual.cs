@@ -11,8 +11,12 @@ public class WorldVisual :
 	Tag.ISetValue2<int>,
 	Tag.IGetSprite,
 	Tag.IGetIntValue2,
-	Tag.ICondition
+	Tag.ICondition,
+	Tag.IGetWorldUnitController,
+	WorldUnit.IWorldUnitController
 	{
+	[field:NonSerialized]public event EventHandler<WorldUnit.MeleeAttackEventArgs> OnMeleeAttackAnimation;
+	[field:NonSerialized]public event EventHandler<WorldUnit.TextPopupEventArgs> OnTextPopupEvent;
 	private const Tag.ID _TAG_ID = Tag.ID.WorldUnit;
 	private SpriteSheet.SpriteID _spriteID = SpriteSheet.SpriteID.Null;
 	private int _spriteIndex;
@@ -49,6 +53,15 @@ public class WorldVisual :
 	public virtual bool Check(Game game, Unit self){
 		return true;
 	}
+	public void InvokeMeleeAttackAnimation(Direction direction){
+		OnMeleeAttackAnimation?.Invoke(this, new WorldUnit.MeleeAttackEventArgs(direction));
+	}
+	public void InvokeTextPopupEvent(string text){
+		OnTextPopupEvent?.Invoke(this, new WorldUnit.TextPopupEventArgs(text));
+	}
+	public WorldUnit.IWorldUnitController GetWorldUnitController(Game game, Unit self){
+		return this;
+	}
 	public override Tag.ISetValue1<SpriteSheet.SpriteID> GetISetValue1SpriteID(){
 		return this;
 	}
@@ -65,6 +78,9 @@ public class WorldVisual :
 		return this;
 	}
 	public override Tag.ICondition GetICondition(){
+		return this;
+	}
+	public override Tag.IGetWorldUnitController GetIGetWorldUnitController(){
 		return this;
 	}
 	public static Tag Create(SpriteSheet.SpriteID spriteID, int spriteIndex, int sortingOrder){

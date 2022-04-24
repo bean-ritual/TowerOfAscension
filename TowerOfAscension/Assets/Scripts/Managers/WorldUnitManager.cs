@@ -6,6 +6,7 @@ public class WorldUnitManager : MonoBehaviour{
 	private static WorldUnitManager _instance;
 	private Level _level = Level.GetNullLevel();
 	private Dictionary<Unit, WorldUnit> _worldUnits;
+	[SerializeField]private CameraManager _mainCamera;
 	[SerializeField]private GameObject _prefabWorldUnit;
 	private void Awake(){
 		if(_instance != null){
@@ -31,7 +32,7 @@ public class WorldUnitManager : MonoBehaviour{
 	private void CreateWorldUnit(Unit unit){
 		GameObject go = Instantiate(_prefabWorldUnit, this.transform);
 		WorldUnit worldUnit = go.GetComponent<WorldUnit>();
-		worldUnit.Setup(unit);
+		worldUnit.Setup(unit, _mainCamera.GetCamera());
 		_worldUnits.Add(unit, worldUnit);
 	}
 	private void RemoveWorldUnit(Unit unit){

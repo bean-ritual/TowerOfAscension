@@ -6,6 +6,37 @@ using UnityEngine.EventSystems;
 public class WorldUnit : 
 	MonoBehaviour
 	{
+	public interface IWorldUnitController{
+		event EventHandler<MeleeAttackEventArgs> OnMeleeAttackAnimation;
+		event EventHandler<TextPopupEventArgs> OnTextPopupEvent;
+		void InvokeMeleeAttackAnimation(Direction direction);
+		void InvokeTextPopupEvent(string text);
+	}
+	public class MeleeAttackEventArgs : EventArgs{
+		public Direction direction;
+		public MeleeAttackEventArgs(Direction direction){
+			this.direction = direction;
+		}
+	}
+	public class TextPopupEventArgs : EventArgs{
+		public string text;
+		public TextPopupEventArgs(string text){
+			this.text = text;
+		}
+	}
+	public class NullWorldUnitController : 
+		IWorldUnitController
+		{
+		[field:NonSerialized]public	event EventHandler<MeleeAttackEventArgs> OnMeleeAttackAnimation;
+		[field:NonSerialized]public	event EventHandler<TextPopupEventArgs> OnTextPopupEvent;
+		public void InvokeMeleeAttackAnimation(Direction direction){}
+		public void InvokeTextPopupEvent(string text){}
+		private void Silence(){
+			OnMeleeAttackAnimation?.Invoke(this, new MeleeAttackEventArgs(Direction.GetNullDirection()));
+			OnTextPopupEvent?.Invoke(this, new TextPopupEventArgs(""));
+		}
+	}
+	private static NullWorldUnitController _NULL_WORLD_UNIT_CTRL = new NullWorldUnitController();
 	private Unit _unit = Unit.GetNullUnit();
 	private Game _local = Game.GetNullGame();
 	[SerializeField]private GameObject _offset;
@@ -14,15 +45,16 @@ public class WorldUnit :
 	private void OnDisable(){
 		UnsubscribeFromEvents();
 	}
-	public void Setup(Unit unit){
+	public void Setup(Unit unit, Camera camera){
 		UnsubscribeFromEvents();
 		_unit = unit;
 		_local = DungeonMaster.GetInstance().GetLocalGame();
 		_unit.GetTag(_local, Tag.ID.Position).OnTagUpdate += OnWorldPositionUpdate;
 		_unit.GetTag(_local, Tag.ID.WorldUnit).OnTagUpdate += OnWorldUnitTagUpdate;
-		_unit.GetTag(_local, Tag.ID.Health).GetIStringValueEvent().OnStringValueEvent += OnHealthStringValueEvent;
+		_unit.GetTag(_local, Tag.ID.WorldUnit).GetIGetWorldUnitController().GetWorldUnitController(_local, _unit).OnMeleeAttackAnimation += OnMeleeAttackAnimation;
+		_unit.GetTag(_local, Tag.ID.WorldUnit).GetIGetWorldUnitController().GetWorldUnitController(_local, _unit).OnTextPopupEvent += OnTextPopupEvent;
 		_local.GetLevel().OnLightUpdate += OnLightUpdate;
-		_worldUnitUI.Setup(_unit);
+		_worldUnitUI.Setup(_unit, camera);
 		RefreshAll();
 	}
 	public void RefreshAll(){
@@ -80,28 +112,30 @@ public class WorldUnit :
 	private void UnsubscribeFromEvents(){
 		_unit.GetTag(_local, Tag.ID.Position).OnTagUpdate -= OnWorldPositionUpdate;
 		_unit.GetTag(_local, Tag.ID.WorldUnit).OnTagUpdate -= OnWorldUnitTagUpdate;
-		_unit.GetTag(_local, Tag.ID.Health).GetIStringValueEvent().OnStringValueEvent -= OnHealthStringValueEvent;
+		_unit.GetTag(_local, Tag.ID.WorldUnit).GetIGetWorldUnitController().GetWorldUnitController(_local, _unit).OnMeleeAttackAnimation -= OnMeleeAttackAnimation;
+		_unit.GetTag(_local, Tag.ID.WorldUnit).GetIGetWorldUnitController().GetWorldUnitController(_local, _unit).OnTextPopupEvent -= OnTextPopupEvent;
 		_local.GetLevel().OnLightUpdate -= OnLightUpdate;
-	}
-	private void OnWorldUnitTagUpdate(object sender, EventArgs e){
-		RefreshSprite();
-	}
-	private void OnHealthStringValueEvent(object sender, Tag.ValueEventArgs<string> e){
-		TextPopupManager.GetInstance().PopText(e.value, (_unit.GetTag(_local, Tag.ID.Position).GetIGetVector().GetVector(_local, _unit) + _local.GetLevel().GetVector3CellOffset()));
 	}
 	private void OnWorldPositionUpdate(object sender, EventArgs e){
 		UpdateWorldPosition();
 	}
-	/*
-	private void OnAttackAnimation(object sender, VisualController.VisualAnimateEventArgs e){
+	private void OnWorldUnitTagUpdate(object sender, EventArgs e){
+		RefreshSprite();
+	}
+	private void OnMeleeAttackAnimation(object sender, MeleeAttackEventArgs e){
 		RefreshVisibility();
 		if(!_offset.activeSelf){
 			return;
 		}
 		DungeonMaster.GetInstance().QueueAction(() => AttackAnimation((e.direction.GetWorldDirection(_local) / 2) + this.transform.localPosition));
 	}
-	*/
+	private void OnTextPopupEvent(object sender, TextPopupEventArgs e){
+		TextPopupManager.GetInstance().PopText(e.text, (_unit.GetTag(_local, Tag.ID.Position).GetIGetVector().GetVector(_local, _unit) + _local.GetLevel().GetVector3CellOffset()));
+	}
 	private void OnLightUpdate(object sender, EventArgs e){
 		RefreshVisibility();
+	}
+	public static IWorldUnitController GetNullWorldUnitController(){
+		return _NULL_WORLD_UNIT_CTRL;
 	}
 }

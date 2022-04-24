@@ -476,6 +476,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e31d7f71ade8ad43916307de0359d56, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _mainCamera: {fileID: 519420030}
   _prefabWorldUnit: {fileID: 2483940975670085677, guid: 3a9158d72221e53459190a7ca30b1bb2, type: 3}
 --- !u!1 &421298100
 GameObject:

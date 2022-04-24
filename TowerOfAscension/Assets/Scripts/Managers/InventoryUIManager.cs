@@ -15,7 +15,7 @@ public class InventoryUIManager :
 	private static NullInventoryUIManager _NULL_INVENTORY_UI = new NullInventoryUIManager();
 	private static InventoryUIManager _INSTANCE;
 	private static Tag.ID[] _EQUIP_SLOTS = {
-		Tag.ID.Weapon,
+		Tag.ID.Attack_Slot,
 		Tag.ID.Chestplate,
 		Tag.ID.Boots,
 	};
@@ -73,7 +73,7 @@ public class InventoryUIManager :
 		}
 		_inventory.OnObjectAdded += OnObjectAdded;
 		_inventory.OnObjectRemoved += OnObjectRemoved;
-		_unit.GetTag(_local, Tag.ID.Weapon).OnTagUpdate += OnWeaponTagUpdate;
+		_unit.GetTag(_local, Tag.ID.Attack_Slot).OnTagUpdate += OnWeaponTagUpdate;
 	}
 	public void SetupTags(){
 		_tagUnits = new Dictionary<Tag.ID, UIUnit>();
@@ -110,7 +110,7 @@ public class InventoryUIManager :
 	public void UnsubcribeFromEvents(){
 		_inventory.OnObjectAdded -= OnObjectAdded;
 		_inventory.OnObjectRemoved -= OnObjectRemoved;
-		_unit.GetTag(_local, Tag.ID.Weapon).OnTagUpdate -= OnWeaponTagUpdate;
+		_unit.GetTag(_local, Tag.ID.Attack_Slot).OnTagUpdate -= OnWeaponTagUpdate;
 	}
 	public void Clear(){
 		if(_uiUnits != null){
@@ -138,7 +138,7 @@ public class InventoryUIManager :
 		RemoveUIUnit(e.value);
 	}
 	private void OnWeaponTagUpdate(object sender, EventArgs e){
-		SetTagUnit(Tag.ID.Weapon);
+		SetTagUnit(Tag.ID.Attack_Slot);
 	}
 	private void OnChestplateTagUpdate(object sender, EventArgs e){
 		SetTagUnit(Tag.ID.Chestplate);

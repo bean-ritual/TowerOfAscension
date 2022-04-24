@@ -46,8 +46,10 @@ public class Unit{
 					WorldVisualUI.Create(new Vector3(0, 0.9f)),
 					TagAI.Create(),
 					Alive.Create(),
+					Value.Create(Tag.ID.Level, UnityEngine.Random.Range(1, 110)),
 					Health.Create(25),
-					TagAttack.Create(),
+					AttackSlot.Create(),
+					BasicAttack.Create(),
 					Attackable.Create(),
 					Value.Create(Tag.ID.Damage_Physical, 1),
 					Move.Create(1),
@@ -63,9 +65,9 @@ public class Unit{
 					WorldPosition.Create(),
 					Condition.Create(Tag.ID.UIUnit, false),
 					Pickup.Create(),
-					TagAttack.Create(),
+					BasicAttack.Create(),
 					Value.Create(Tag.ID.Damage_Physical, 5),
-					Equippable.Create(Tag.ID.Weapon),
+					Equippable.Create(Tag.ID.Attack_Slot),
 				}
 			);
 		}

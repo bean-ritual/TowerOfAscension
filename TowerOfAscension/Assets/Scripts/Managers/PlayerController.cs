@@ -30,16 +30,17 @@ public class PlayerController : MonoBehaviour{
 		TagControl.OnPlayerControl += OnPlayerControl;
 	}
 	private void Update(){
+		/*
 		if(EventSystem.current.IsPointerOverGameObject()){
 			return;
 		}
-		//
+		*/
 		_direction = MouseDirectionHandling();
 		TileTargetManager.GetInstance().SetTile(_direction.GetTile(_local, _player.GetTag(_local, Tag.ID.Position).GetIGetTile().GetTile(_local, _player)));
 		//
 		if(Input.GetMouseButtonDown(0)){
 			if(Input.GetKey(KeyCode.A)){
-				_player.GetTag(_local, Tag.ID.Basic_Attack).GetIInputDirection().Input(_local, _player, _direction);
+				_player.GetTag(_local, Tag.ID.Attack_Slot).GetIInputDirection().Input(_local, _player, _direction);
 				return;
 			}
 			if(Input.GetKey(KeyCode.LeftShift)){
