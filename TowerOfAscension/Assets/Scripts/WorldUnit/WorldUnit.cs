@@ -2,9 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 public class WorldUnit : 
-	MonoBehaviour
+	MonoBehaviour,
+	WorldUnitCollider.IToolTip
 	{
 	public interface IWorldUnitController{
 		event EventHandler<MeleeAttackEventArgs> OnMeleeAttackAnimation;
@@ -37,12 +37,13 @@ public class WorldUnit :
 		}
 	}
 	private static NullWorldUnitController _NULL_WORLD_UNIT_CTRL = new NullWorldUnitController();
-	private Unit _unit = Unit.GetNullUnit();
 	private Game _local = Game.GetNullGame();
-	[SerializeField]private GameObject _offset;
+	private Unit _unit = Unit.GetNullUnit();
+	[SerializeField]private GameObject _visual;
 	[SerializeField]private SpriteRenderer _renderer;
 	[SerializeField]private WorldUnitUI _worldUnitUI;
-	private void OnDisable(){
+	[SerializeField]private WorldUnitCollider _worldUnitCollider;
+	private void OnDestroy(){
 		UnsubscribeFromEvents();
 	}
 	public void Setup(Unit unit, Camera camera){
@@ -55,10 +56,13 @@ public class WorldUnit :
 		_unit.GetTag(_local, Tag.ID.WorldUnit).GetIGetWorldUnitController().GetWorldUnitController(_local, _unit).OnTextPopupEvent += OnTextPopupEvent;
 		_local.GetLevel().OnLightUpdate += OnLightUpdate;
 		_worldUnitUI.Setup(_unit, camera);
+		_worldUnitCollider.Setup(this);
 		RefreshAll();
 	}
 	public void RefreshAll(){
-		_offset.transform.localPosition = _local.GetLevel().GetVector3CellOffset();
+		Vector3 offset = _local.GetLevel().GetVector3CellOffset();
+		_visual.transform.localPosition = offset;
+		_worldUnitCollider.SetPosition(offset);
 		this.transform.localPosition = _unit.GetTag(_local, Tag.ID.Position).GetIGetVector().GetVector(_local, _unit);
 		RefreshSprite();
 		RefreshVisibility();
@@ -69,18 +73,25 @@ public class WorldUnit :
 		_renderer.sprite = tag.GetIGetSprite().GetSprite(_local, _unit);
 		_renderer.sortingOrder = tag.GetIGetIntValue2().GetIntValue2(_local, _unit);
 	}
+	public bool CheckVisibility(){
+		return _visual.activeSelf || _unit.GetTag(_local, Tag.ID.WorldUnit).GetICondition().Check(_local, _unit);
+	}
 	public void RefreshVisibility(){
-		_offset.SetActive(_unit.GetTag(_local, Tag.ID.WorldUnit).GetICondition().Check(_local, _unit));
+		_visual.SetActive(_unit.GetTag(_local, Tag.ID.WorldUnit).GetICondition().Check(_local, _unit));
+		_worldUnitCollider.SetActive(_unit.GetTag(_local, Tag.ID.Tooltip).GetICondition().Check(_local, _unit));
 	}
 	public void UpdateWorldPosition(){
-		RefreshVisibility();
 		Vector3 position = _unit.GetTag(_local, Tag.ID.Position).GetIGetVector().GetVector(_local, _unit);
 		int moveSpeed = _unit.GetTag(_local, Tag.ID.Move).GetIGetIntValue1().GetIntValue1(_local, _unit);
-		if(moveSpeed > 0 && _offset.activeSelf){
+		if(moveSpeed > 0 && CheckVisibility()){
 			DungeonMaster.GetInstance().QueueAction(() => MoveAnimation(position, moveSpeed));
 		}else{
 			this.transform.localPosition = position;
+			RefreshVisibility();
 		}
+	}
+	public string GetToolTip(){
+		return _unit.GetTag(_local, Tag.ID.Tooltip).GetIGetStringValue1().GetStringValue1(_local, _unit);
 	}
 	public IEnumerator LerpToTarget(Vector3 target, float duration, Action OnAnimationComplete){
 		float time = 0f;
@@ -97,7 +108,7 @@ public class WorldUnit :
 	}
 	public void MoveAnimation(Vector3 target, int moveSpeed){
 		const float MOVE_FACTOR = 10f;
-		StartCoroutine(LerpToTarget(target, moveSpeed / MOVE_FACTOR, null));
+		StartCoroutine(LerpToTarget(target, moveSpeed / MOVE_FACTOR, RefreshVisibility));
 	}
 	public void AttackAnimation(Vector3 target){
 		const float ATTACK_SPEED = 0.1f;
@@ -123,11 +134,9 @@ public class WorldUnit :
 		RefreshSprite();
 	}
 	private void OnMeleeAttackAnimation(object sender, MeleeAttackEventArgs e){
-		RefreshVisibility();
-		if(!_offset.activeSelf){
-			return;
+		if(CheckVisibility()){
+			DungeonMaster.GetInstance().QueueAction(() => AttackAnimation((e.direction.GetWorldDirection(_local) / 2) + this.transform.localPosition));
 		}
-		DungeonMaster.GetInstance().QueueAction(() => AttackAnimation((e.direction.GetWorldDirection(_local) / 2) + this.transform.localPosition));
 	}
 	private void OnTextPopupEvent(object sender, TextPopupEventArgs e){
 		TextPopupManager.GetInstance().PopText(e.text, (_unit.GetTag(_local, Tag.ID.Position).GetIGetVector().GetVector(_local, _unit) + _local.GetLevel().GetVector3CellOffset()));

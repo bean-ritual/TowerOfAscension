@@ -19,7 +19,7 @@ public class Hero :
 			Attackable.Create(),
 			WeaponSlot.Create(),
 			BasicAttack.Create(),
-			Value.Create(Tag.ID.Damage_Physical, 1),
+			Value.Create(Tag.ID.Damage_Physical, 100),
 			TagInventory.Create(),
 			Value.Create(Tag.ID.Light, 3),
 			Discoverer.Create(),

@@ -54,6 +54,29 @@ public class Unit{
 					Value.Create(Tag.ID.Damage_Physical, 1),
 					Move.Create(1),
 					Collision.Create(Tag.Collider.Basic),
+					Text.Create(Tag.ID.Name, "Rat"),
+					Tooltip.Create(),
+				}
+			);
+		}
+		public static Unit GetLevelledRat(Game game, int level){
+			return new Unit(
+				game,
+				new Tag[]{
+					LightWorldVisual.Create(SpriteSheet.SpriteID.Rat, 0, 20),
+					WorldPosition.Create(),
+					WorldVisualUI.Create(new Vector3(0, 0.9f)),
+					TagAI.Create(),
+					Alive.Create(),
+					Value.Create(Tag.ID.Level, UnityEngine.Random.Range(1, 110)),
+					Health.Create(25),
+					AttackSlot.Create(),
+					BasicAttack.Create(),
+					Attackable.Create(),
+					Value.Create(Tag.ID.Damage_Physical, 1),
+					Move.Create(1),
+					Collision.Create(Tag.Collider.Basic),
+					Tooltip.Create(),
 				}
 			);
 		}
@@ -68,8 +91,16 @@ public class Unit{
 					BasicAttack.Create(),
 					Value.Create(Tag.ID.Damage_Physical, 5),
 					Equippable.Create(Tag.ID.Attack_Slot),
+					Text.Create(Tag.ID.Name, "Sword"),
+					Tooltip.Create(),
 				}
 			);
+		}
+		public static Unit GetLevelledUnit(Game game, int level){
+			switch(level){
+				default: return Unit.GetNullUnit();
+				case 0: return GetLevelledMonster(game, level);
+			}
 		}
 	}
 	public interface IPlayable{

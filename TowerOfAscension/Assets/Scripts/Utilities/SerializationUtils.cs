@@ -53,34 +53,35 @@ public static class SerializationUtils{
 	public static bool SaveSerialized<T>(string file, T data, BinaryFormatter formatter, string directory, string extension = ".save"){
 		if(!Directory.Exists(directory)){
 			Directory.CreateDirectory(directory);
-			UnityEngine.Debug.Log("Save serialized directory created at: " + directory);
+			//UnityEngine.Debug.Log("Save serialized directory created at: " + directory);
 		}
 		string path = Path.Combine(directory, file + extension);
 		using(FileStream stream = new FileStream(path, FileMode.Create)){
 			formatter.Serialize(stream, data);
 		}
-		UnityEngine.Debug.Log("Save serialized complete at: " + path);
+		//UnityEngine.Debug.Log("Save serialized complete at: " + path);
 		return true;
 	}
 	public static bool LoadSerialized<T>(string file, out T data, BinaryFormatter formatter, string directory, string extension = ".save"){
 		string path = Path.Combine(directory, file + extension);
 		if(!File.Exists(path)){
-			UnityEngine.Debug.Log("File name does not exist at: " + path);
+			//UnityEngine.Debug.Log("File name does not exist at: " + path);
 			data = default;
 			return false;
 		}
 		if(formatter == null){
-			UnityEngine.Debug.Log("test");
+			//UnityEngine.Debug.Log("test");
 		}
 		try{
 			using(FileStream stream = new FileStream(path, FileMode.Open)){
 				data = (T)formatter.Deserialize(stream);
 			}
-			UnityEngine.Debug.Log("Load serialized complete at: " + path);
+			//UnityEngine.Debug.Log("Load serialized complete at: " + path);
 			return true;
 		}catch(Exception e){
-			UnityEngine.Debug.Log("Failed to load file at: " + path);
-			UnityEngine.Debug.Log(e.Message);
+			//UnityEngine.Debug.Log("Failed to load file at: " + path);
+			//UnityEngine.Debug.Log(e.Message);
+			string silence = e.Message;
 			data = default;
 			return false;
 		}

@@ -68,12 +68,12 @@ public class Game{
 		for(int sanity = 0; sanity < MAX_SANITY; sanity++){
 			classic.Process(this);
 			if(classic.IsFinished()){
-				UnityEngine.Debug.Log("Game :: NewLevel() :: Completed");
+				//UnityEngine.Debug.Log("Game :: NewLevel() :: Completed");
 				SaveSystem.Save(this);
 				return;
 			}
 		}
-		UnityEngine.Debug.Log("Game :: NewLevel() :: Failed");
+		//UnityEngine.Debug.Log("Game :: NewLevel() :: Failed");
 		NewLevel();
 	}
 	public virtual Unit GetPlayer(){

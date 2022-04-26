@@ -30,11 +30,9 @@ public class PlayerController : MonoBehaviour{
 		TagControl.OnPlayerControl += OnPlayerControl;
 	}
 	private void Update(){
-		/*
 		if(EventSystem.current.IsPointerOverGameObject()){
 			return;
 		}
-		*/
 		_direction = MouseDirectionHandling();
 		TileTargetManager.GetInstance().SetTile(_direction.GetTile(_local, _player.GetTag(_local, Tag.ID.Position).GetIGetTile().GetTile(_local, _player)));
 		//

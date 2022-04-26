@@ -3,11 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
 public class WorldUnitUI : 
-	MonoBehaviour,
-	IPointerEnterHandler,
-	IPointerExitHandler
+	MonoBehaviour
 	{
 	private const int _UI_SORTING_ORDER = 100;
 	private Game _local = Game.GetNullGame();
@@ -43,12 +40,6 @@ public class WorldUnitUI :
 	public void UnsubscribeFromEvents(){
 		_unit.GetTag(_local, Tag.ID.WorldUnit).OnTagUpdate -= OnWorldUnitTagUpdate;
 		_unit.GetTag(_local, Tag.ID.WorldUnitUI).OnTagUpdate -= OnWorldUnitUITagUpdate;
-	}
-	public void OnPointerEnter(PointerEventData eventData){
-		ToolTipManager.GetInstance().ShowToolTip("bing");
-	}
-	public void OnPointerExit(PointerEventData eventData){
-		ToolTipManager.GetInstance().HideToolTip();
 	}
 	private void OnWorldUnitTagUpdate(object sender, EventArgs e){
 		RefreshSortingOrder();

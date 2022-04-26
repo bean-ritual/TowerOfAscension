@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -21,6 +22,9 @@ public class Value :
 	}
 	public override void Disassemble(){
 		_POOL.Enqueue(this);
+	}
+	public override void BuildString(StringBuilder builder){
+		builder.Append(_tagID.ToString() + " ").Append(_value + " ");
 	}
 	public void SetValue1(Game game, Unit self, int value){
 		_value = value;

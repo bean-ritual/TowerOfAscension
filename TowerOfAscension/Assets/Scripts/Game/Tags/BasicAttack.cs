@@ -9,29 +9,26 @@ public class BasicAttack :
 	Tag.IInput<Unit, Direction>
 	{
 	private const Tag.ID _TAG_ID = Tag.ID.Active;
-	private Tag.ID _skill = Tag.ID.Null;
 	public override Tag.ID GetTagID(){
 		return _TAG_ID;
 	}
 	public override void Disassemble(){}
 	public void Input(Game game, Unit self, Unit caster, Direction direction){
-		const int MIN_ROLL = 0;
-		const int MAX_ROLL = 100;
+		const int MIN_ROLL = 5;
+		const int MAX_ROLL = 95;
+		const int BASE_ACCURACY = 45;
 		Tile tile = direction.GetTile(game, caster.GetTag(game, Tag.ID.Position).GetIGetTile().GetTile(game, caster));
 		tile.GetHasUnits().DoUnits(game, (Tile tile, Unit target) => {
 			//accuracy
-			int accuracy = (int)Mathf.Clamp(
-				(UnityEngine.Random.Range(MIN_ROLL, MAX_ROLL) +
-				(float)target.GetTag(game, Tag.ID.Level).GetIReduceInt().Reduce(game, target, caster.GetTag(game, Tag.ID.Level).GetIGetIntValue1().GetIntValue1(game, caster)))
-				/ 2,
-				MIN_ROLL, 
-				MAX_ROLL 
-			);
-			if(UnityEngine.Random.Range(MIN_ROLL, MAX_ROLL) < accuracy){
+			int attack = caster.GetTag(game, Tag.ID.Level).GetIGetIntValue1().GetIntValue1(game, caster);
+			int defence = target.GetTag(game, Tag.ID.Level).GetIGetIntValue1().GetIntValue1(game, target);
+			int accuracy = (int)Mathf.Clamp(BASE_ACCURACY + (attack - defence) * 1.5f, MIN_ROLL, MAX_ROLL);
+			//UnityEngine.Debug.Log(accuracy + "");
+			if(UnityEngine.Random.Range(0, 100) < accuracy){
+				target.GetTag(game, Tag.ID.Attackable).GetIInput2Units().Input(game, target, caster, self);
+			}else{
 				target.GetTag(game, Tag.ID.WorldUnit).GetIGetWorldUnitController().GetWorldUnitController(game, caster).InvokeTextPopupEvent("Miss!");
-				return true;
 			}
-			target.GetTag(game, Tag.ID.Attackable).GetIInput2Units().Input(game, target, caster, self);
 			return true;
 		});
 		caster.GetTag(game, Tag.ID.WorldUnit).GetIGetWorldUnitController().GetWorldUnitController(game, caster).InvokeMeleeAttackAnimation(direction);

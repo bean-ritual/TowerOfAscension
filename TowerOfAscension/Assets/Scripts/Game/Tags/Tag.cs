@@ -7,11 +7,13 @@ using UnityEngine;
 public abstract class Tag{
 	public enum ID{
 		Null,
+		Name,
 		Alive,
 		Position,
 		WorldUnit,
 		WorldUnitUI,
 		UIUnit,
+		Tooltip,
 		Level,
 		Health,
 		Armour,
@@ -97,6 +99,9 @@ public abstract class Tag{
 	public interface IGetIntValue3{
 		int GetIntValue3(Game game, Unit self);
 	}
+	public interface IGetStringValue1{
+		string GetStringValue1(Game game, Unit self);
+	}
 	public interface IGetUnit{
 		Unit GetUnit(Game game, Unit self);
 	}
@@ -166,6 +171,7 @@ public abstract class Tag{
 		Tag.IGetIntValue1,
 		Tag.IGetIntValue2,
 		Tag.IGetIntValue3,
+		Tag.IGetStringValue1,
 		Tag.IGetUnit,
 		Tag.IGetTile,
 		Tag.IGetCollider,
@@ -219,6 +225,9 @@ public abstract class Tag{
 		}
 		public int GetIntValue3(Game game, Unit self){
 			return 0;
+		}
+		public string GetStringValue1(Game game, Unit self){
+			return "";
 		}
 		public Unit GetUnit(Game game, Unit self){
 			return Unit.GetNullUnit();
@@ -359,6 +368,9 @@ public abstract class Tag{
 		return _NULL_TAG;
 	}
 	public virtual Tag.IGetIntValue3 GetIGetIntValue3(){
+		return _NULL_TAG;
+	}
+	public virtual Tag.IGetStringValue1 GetIGetStringValue1(){
 		return _NULL_TAG;
 	}
 	public virtual Tag.IGetUnit GetIGetUnit(){

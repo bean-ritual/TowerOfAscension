@@ -14,11 +14,18 @@ public class UIUnit :
 	private Game _local = Game.GetNullGame();
 	private Unit _unit = Unit.GetNullUnit();
 	private ButtonInteract Interact = _NULL_INTERACT;
+	private bool _highlighted = false;
 	[SerializeField]private Button _button;
 	[SerializeField]private Image _image;
 	[SerializeField]private GameObject _border;
 	private void OnDestroy(){
 		UnsubcribeFromEvents();
+	}
+	private void OnDisable(){
+		if(_highlighted){
+			ToolTipManager.GetInstance().HideToolTip();
+			_highlighted = false;
+		}
 	}
 	public void Setup(Unit unit, ButtonInteract Interact){
 		UnsubcribeFromEvents();
@@ -53,10 +60,12 @@ public class UIUnit :
 		Destroy(gameObject);
 	}
 	public void OnPointerEnter(PointerEventData eventData){
-		ToolTipManager.GetInstance().ShowToolTip("bing");
+		ToolTipManager.GetInstance().ShowToolTip(_unit.GetTag(_local, Tag.ID.Tooltip).GetIGetStringValue1().GetStringValue1(_local, _unit));
+		_highlighted = true;
 	}
 	public void OnPointerExit(PointerEventData eventData){
 		ToolTipManager.GetInstance().HideToolTip();
+		_highlighted = false;
 	}
 	private void OnWorldUnitTagUpdate(object sender, EventArgs e){
 		RefreshSprite();

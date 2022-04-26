@@ -45,7 +45,7 @@ public class ToolTipManager :
 		_toolTipRect.anchoredPosition = _anchor;
 	}
 	public void ShowToolTip(string text){
-		if(text.Length <= 0){
+		if(string.IsNullOrEmpty(text)){
 			return;
 		}
 		_control.SetActive(true);
