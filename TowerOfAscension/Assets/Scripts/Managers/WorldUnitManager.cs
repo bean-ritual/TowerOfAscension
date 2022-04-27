@@ -52,6 +52,6 @@ public class WorldUnitManager : MonoBehaviour{
 		CreateWorldUnit(e.value);
 	}
 	private void OnObjectRemoved(object sender, Register<Unit>.OnObjectChangedEventArgs e){
-		DungeonMaster.GetInstance().QueueAction(() => RemoveWorldUnit(e.value));
+		RemoveWorldUnit(e.value);
 	}
 }

@@ -18,8 +18,9 @@ public class Tooltip :
 	}
 	public string GetStringValue1(Game game, Unit self){
 		StringBuilder builder = new StringBuilder();
-		self.GetTag(game, Tag.ID.Level).BuildString(builder);
 		self.GetTag(game, Tag.ID.Name).BuildString(builder);
+		self.GetTag(game, Tag.ID.Level).BuildString(builder);
+		self.GetTag(game, Tag.ID.Damage_Physical).BuildString(builder);
 		return builder.ToString();
 	}
 	public bool Check(Game game, Unit self){

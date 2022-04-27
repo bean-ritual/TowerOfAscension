@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class WorldUnitUI : 
 	MonoBehaviour
 	{
-	private const int _UI_SORTING_ORDER = 100;
+	private const int _UI_SORTING_ORDER = 1000;
 	private Game _local = Game.GetNullGame();
 	private Unit _unit = Unit.GetNullUnit();
 	[SerializeField]private Canvas _uiCanvas;

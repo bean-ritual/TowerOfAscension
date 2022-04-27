@@ -24,6 +24,18 @@ public class TextPopupManager : MonoBehaviour{
 			_sortingOrder
 		);
 	}
+	public void PopText(string text, Vector3 position, TextPopup.TextColour colour){
+		Instantiate(
+			_prefabTextPopup,
+			position,
+			Quaternion.identity,
+			this.transform
+		).GetComponent<TextPopup>().Setup(
+			text,
+			_sortingOrder,
+			colour
+		);
+	}
 	public static TextPopupManager GetInstance(){
 		return _INSTANCE;
 	}

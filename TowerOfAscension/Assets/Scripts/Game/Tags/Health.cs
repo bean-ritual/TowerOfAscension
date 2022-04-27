@@ -30,7 +30,7 @@ public class Health :
 		_POOL.Enqueue(this);
 	}
 	public void FortifyValue1(Game game, Unit self, int value){
-		self.GetTag(game, Tag.ID.WorldUnit).GetIGetWorldUnitController().GetWorldUnitController(game, self).InvokeTextPopupEvent("+" + value);
+		self.GetTag(game, Tag.ID.WorldUnit).GetIGetWorldUnitController().GetWorldUnitController(game, self).InvokeTextPopupEvent(("+" + value), TextPopup.TextColour.Green);
 		_value = (_value + value);
 		_value = Mathf.Clamp(_value, _MIN_VALUE, _maxValue);
 		TagUpdateEvent();
@@ -41,7 +41,7 @@ public class Health :
 		TagUpdateEvent();
 	}
 	public void DamageValue1(Game game, Unit self, int value){
-		self.GetTag(game, Tag.ID.WorldUnit).GetIGetWorldUnitController().GetWorldUnitController(game, self).InvokeTextPopupEvent("-" + value);
+		self.GetTag(game, Tag.ID.WorldUnit).GetIGetWorldUnitController().GetWorldUnitController(game, self).InvokeTextPopupEvent(("-" + value), TextPopup.TextColour.Red);
 		_value = (_value - value);
 		if(_value <= 0){
 			self.GetTag(game, Tag.ID.Alive).GetIDamageValue1().DamageValue1(game, self);

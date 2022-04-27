@@ -11,6 +11,7 @@ public class WorldUnit :
 		event EventHandler<TextPopupEventArgs> OnTextPopupEvent;
 		void InvokeMeleeAttackAnimation(Direction direction);
 		void InvokeTextPopupEvent(string text);
+		void InvokeTextPopupEvent(string text, TextPopup.TextColour colour);
 	}
 	public class MeleeAttackEventArgs : EventArgs{
 		public Direction direction;
@@ -20,8 +21,13 @@ public class WorldUnit :
 	}
 	public class TextPopupEventArgs : EventArgs{
 		public string text;
+		public TextPopup.TextColour colour = TextPopup.TextColour.White;
 		public TextPopupEventArgs(string text){
 			this.text = text;
+		}
+		public TextPopupEventArgs(string text, TextPopup.TextColour colour){
+			this.text = text;
+			this.colour = colour;
 		}
 	}
 	public class NullWorldUnitController : 
@@ -31,6 +37,7 @@ public class WorldUnit :
 		[field:NonSerialized]public	event EventHandler<TextPopupEventArgs> OnTextPopupEvent;
 		public void InvokeMeleeAttackAnimation(Direction direction){}
 		public void InvokeTextPopupEvent(string text){}
+		public void InvokeTextPopupEvent(string text, TextPopup.TextColour colour){}
 		private void Silence(){
 			OnMeleeAttackAnimation?.Invoke(this, new MeleeAttackEventArgs(Direction.GetNullDirection()));
 			OnTextPopupEvent?.Invoke(this, new TextPopupEventArgs(""));
@@ -107,7 +114,7 @@ public class WorldUnit :
 		DungeonMaster.GetInstance().BusyFrame();
 	}
 	public void MoveAnimation(Vector3 target, int moveSpeed){
-		const float MOVE_FACTOR = 10f;
+		const float MOVE_FACTOR = 100f;
 		StartCoroutine(LerpToTarget(target, moveSpeed / MOVE_FACTOR, RefreshVisibility));
 	}
 	public void AttackAnimation(Vector3 target){
@@ -118,6 +125,7 @@ public class WorldUnit :
 		}));
 	}
 	public void UnitDestroy(){
+		StopAllCoroutines();
 		Destroy(gameObject);
 	}
 	private void UnsubscribeFromEvents(){
@@ -139,7 +147,11 @@ public class WorldUnit :
 		}
 	}
 	private void OnTextPopupEvent(object sender, TextPopupEventArgs e){
-		TextPopupManager.GetInstance().PopText(e.text, (_unit.GetTag(_local, Tag.ID.Position).GetIGetVector().GetVector(_local, _unit) + _local.GetLevel().GetVector3CellOffset()));
+		TextPopupManager.GetInstance().PopText(
+			e.text, 
+			(_unit.GetTag(_local, Tag.ID.Position).GetIGetVector().GetVector(_local, _unit) + _local.GetLevel().GetVector3CellOffset()), 
+			e.colour
+		);
 	}
 	private void OnLightUpdate(object sender, EventArgs e){
 		RefreshVisibility();

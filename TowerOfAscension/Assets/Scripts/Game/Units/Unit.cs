@@ -38,26 +38,11 @@ public class Unit{
 			);
 		}
 		public static Unit GetLevelledMonster(Game game, int level){
-			return new Unit(
-				game,
-				new Tag[]{
-					LightWorldVisual.Create(SpriteSheet.SpriteID.Rat, 0, 20),
-					WorldPosition.Create(),
-					WorldVisualUI.Create(new Vector3(0, 0.9f)),
-					TagAI.Create(),
-					Alive.Create(),
-					Value.Create(Tag.ID.Level, UnityEngine.Random.Range(1, 110)),
-					Health.Create(25),
-					AttackSlot.Create(),
-					BasicAttack.Create(),
-					Attackable.Create(),
-					Value.Create(Tag.ID.Damage_Physical, 1),
-					Move.Create(1),
-					Collision.Create(Tag.Collider.Basic),
-					Text.Create(Tag.ID.Name, "Rat"),
-					Tooltip.Create(),
-				}
-			);
+			if(UnityEngine.Random.Range(0, 100) < 50){
+				return GetLevelledRat(game, level);
+			}else{
+				return GetLevelledSkeleton(game, level);
+			}
 		}
 		public static Unit GetLevelledRat(Game game, int level){
 			return new Unit(
@@ -68,14 +53,39 @@ public class Unit{
 					WorldVisualUI.Create(new Vector3(0, 0.9f)),
 					TagAI.Create(),
 					Alive.Create(),
-					Value.Create(Tag.ID.Level, UnityEngine.Random.Range(1, 110)),
-					Health.Create(25),
+					Value.Create(Tag.ID.Level, level),
+					Health.Create(5),
 					AttackSlot.Create(),
 					BasicAttack.Create(),
 					Attackable.Create(),
+					Experiance.Create(10),
 					Value.Create(Tag.ID.Damage_Physical, 1),
-					Move.Create(1),
+					Move.Create(8),
 					Collision.Create(Tag.Collider.Basic),
+					Text.Create(Tag.ID.Name, "Rat"),
+					Tooltip.Create(),
+				}
+			);
+		}
+		public static Unit GetLevelledSkeleton(Game game, int level){
+			return new Unit(
+				game,
+				new Tag[]{
+					LightWorldVisual.Create(SpriteSheet.SpriteID.Skeleton, 0, 20),
+					WorldPosition.Create(),
+					WorldVisualUI.Create(new Vector3(0, 1)),
+					TagAI.Create(),
+					Alive.Create(),
+					Value.Create(Tag.ID.Level, level),
+					Health.Create(10),
+					AttackSlot.Create(),
+					BasicAttack.Create(),
+					Attackable.Create(),
+					Experiance.Create(25),
+					Value.Create(Tag.ID.Damage_Physical, 10),
+					Move.Create(10),
+					Collision.Create(Tag.Collider.Basic),
+					Text.Create(Tag.ID.Name, "Skeleton"),
 					Tooltip.Create(),
 				}
 			);
@@ -89,7 +99,7 @@ public class Unit{
 					Condition.Create(Tag.ID.UIUnit, false),
 					Pickup.Create(),
 					BasicAttack.Create(),
-					Value.Create(Tag.ID.Damage_Physical, 5),
+					Value.Create(Tag.ID.Damage_Physical, UnityEngine.Random.Range(1, 20)),
 					Equippable.Create(Tag.ID.Attack_Slot),
 					Text.Create(Tag.ID.Name, "Sword"),
 					Tooltip.Create(),

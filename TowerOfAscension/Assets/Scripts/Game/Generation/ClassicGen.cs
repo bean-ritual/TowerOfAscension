@@ -241,7 +241,7 @@ public class ClassicGen :
 	public class MonsterSpawner : Spawner{
 		public MonsterSpawner(int x, int y) : base(x, y){}
 		public override void Spawn(Game game, Unit master){
-			Unit.UNIT_DATA.GetLevelledMonster(game, 0).Spawn(game, _x, _y);
+			Unit.UNIT_DATA.GetLevelledMonster(game, game.GetFloor()).Spawn(game, _x, _y);
 		}
 		public override void AddToMaster(Game game, Unit master){
 			master.GetClassicGen().AddDetailSpawner(this);
@@ -251,7 +251,7 @@ public class ClassicGen :
 	public class LootSpawner : Spawner{
 		public LootSpawner(int x, int y) : base(x, y){}
 		public override void Spawn(Game game, Unit master){
-			Unit.UNIT_DATA.GetLevelledItem(game, 0).Spawn(game, _x, _y);
+			Unit.UNIT_DATA.GetLevelledItem(game, game.GetFloor()).Spawn(game, _x, _y);
 		}
 		public override void AddToMaster(Game game, Unit master){
 			master.GetClassicGen().AddDetailSpawner(this);

@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 [Serializable]
-public class LightWorldVisual : WorldVisual{
+public class LightWorldVisual : WorldVisualAnimations{
 	public override bool Check(Game game, Unit self){
 		return self.GetTag(game, Tag.ID.Position).GetIGetTile().GetTile(game, self).GetLightable().GetLight() > 0;
 	}

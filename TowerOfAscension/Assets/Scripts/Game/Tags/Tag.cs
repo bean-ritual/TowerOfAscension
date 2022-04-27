@@ -28,6 +28,7 @@ public abstract class Tag{
 		Opacity,
 		Collision,
 		Loot,
+		Experiance,
 		Discoverer,
 		Interactor,
 		Interactable,
@@ -160,6 +161,7 @@ public abstract class Tag{
 		Tag.IDamageValue1,
 		Tag.IDamageValue1<int>,
 		Tag.IDamageValue2<int>,
+		Tag.ISetValue1<Register<Unit>.ID>,
 		Tag.ISetValue1<Tag.Collider>,
 		Tag.ISetValue1<SpriteSheet.SpriteID>,
 		Tag.ISetValue1<int>,
@@ -207,6 +209,7 @@ public abstract class Tag{
 		public void DamageValue1(Game game, Unit self){}
 		public void DamageValue1(Game game, Unit self, int value){}
 		public void DamageValue2(Game game, Unit self, int value){}
+		public void SetValue1(Game game, Unit self, Register<Unit>.ID value){}
 		public void SetValue1(Game game, Unit self, Tag.Collider value){}
 		public void SetValue1(Game game, Unit self, SpriteSheet.SpriteID value){}
 		public void SetValue1(Game game, Unit self, int value){}
@@ -335,6 +338,9 @@ public abstract class Tag{
 		return _NULL_TAG;
 	}
 	public virtual Tag.IDamageValue2<int> GetIDamageValue2Int(){
+		return _NULL_TAG;
+	}
+	public virtual Tag.ISetValue1<Register<Unit>.ID> GetISetValue1UnitID(){
 		return _NULL_TAG;
 	}
 	public virtual Tag.ISetValue1<Tag.Collider> GetISetValue1Collider(){

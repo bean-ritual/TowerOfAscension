@@ -4,26 +4,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 [Serializable]
-public class Value : 
+public class Experiance : 
 	Tag,
 	Tag.ISetValue1<int>,
-	Tag.IGetIntValue1
+	Tag.IGetIntValue1,
+	Tag.IInput<Unit>
 	{
-	private static Queue<Value> _POOL = new Queue<Value>();
-	private Tag.ID _tagID = Tag.ID.Null;
+	private static Tag.ID _TAG_ID = Tag.ID.Experiance;
 	private int _value;
-	public void Setup(Tag.ID tagID, int value){
-		_tagID = tagID;
+	public void Setup(int value){
 		_value = value;
 	}
 	public override Tag.ID GetTagID(){
-		return _tagID;
+		return _TAG_ID;
 	}
 	public override void Disassemble(){
-		_POOL.Enqueue(this);
-	}
-	public override void BuildString(StringBuilder builder){
-		builder.Append(_tagID.ToString() + " " + _value).Append(System.Environment.NewLine);
+		//
 	}
 	public void SetValue1(Game game, Unit self, int value){
 		_value = value;
@@ -31,20 +27,21 @@ public class Value :
 	public int GetIntValue1(Game game, Unit self){
 		return _value;
 	}
+	public void Input(Game game, Unit self, Unit value){
+		UnityEngine.Debug.Log("EXP GAINED TEST " + _value);
+	}
 	public override Tag.ISetValue1<int> GetISetValue1Int(){
 		return this;
 	}
 	public override Tag.IGetIntValue1 GetIGetIntValue1(){
 		return this;
 	}
-	public static Tag Create(Tag.ID tagID, int value){
-		Value tag;
-		if(_POOL.Count > 0){
-			tag = _POOL.Dequeue();
-		}else{
-			tag = new Value();
-		}
-		tag.Setup(tagID, value);
+	public override Tag.IInput<Unit> GetIInputUnit(){
+		return this;
+	}
+	public static Tag Create(int value){
+		Experiance tag = new Experiance();
+		tag.Setup(value);
 		return tag;
 	}
 }

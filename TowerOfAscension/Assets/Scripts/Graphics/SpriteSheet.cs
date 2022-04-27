@@ -12,6 +12,8 @@ public class SpriteSheet{
 				SafeCreateSpriteSheet(Resources.LoadAll<Sprite>(SpriteID.Hero.ToString())),
 				SafeCreateSpriteSheet(Resources.LoadAll<Sprite>(SpriteID.Door.ToString())),
 				SafeCreateSpriteSheet(Resources.LoadAll<Sprite>(SpriteID.Rat.ToString())),
+				SafeCreateSpriteSheet(Resources.LoadAll<Sprite>(SpriteID.Skeleton.ToString())),
+				SafeCreateSpriteSheet(Resources.LoadAll<Sprite>(SpriteID.Spider.ToString())),
 				SafeCreateSpriteSheet(Resources.LoadAll<Sprite>(SpriteID.Stairs.ToString())),
 				SafeCreateSpriteSheet(Resources.LoadAll<Sprite>(SpriteID.Swords.ToString())),
 				SafeCreateSpriteSheet(Resources.LoadAll<Sprite>(SpriteID.Potions.ToString())),
@@ -41,13 +43,15 @@ public class SpriteSheet{
 				case SpriteID.Hero: return _SPRITESHEETS[1];
 				case SpriteID.Door: return _SPRITESHEETS[2];
 				case SpriteID.Rat: return _SPRITESHEETS[3];
-				case SpriteID.Stairs: return _SPRITESHEETS[4];
-				case SpriteID.Swords: return _SPRITESHEETS[5];
-				case SpriteID.Potions: return _SPRITESHEETS[6];
-				case SpriteID.Chestplates: return _SPRITESHEETS[7];
-				case SpriteID.Boots: return _SPRITESHEETS[8];
-				case SpriteID.Gold: return _SPRITESHEETS[9];
-				case SpriteID.Grave: return _SPRITESHEETS[10];
+				case SpriteID.Skeleton: return _SPRITESHEETS[4];
+				case SpriteID.Spider: return _SPRITESHEETS[5];
+				case SpriteID.Stairs: return _SPRITESHEETS[6];
+				case SpriteID.Swords: return _SPRITESHEETS[7];
+				case SpriteID.Potions: return _SPRITESHEETS[8];
+				case SpriteID.Chestplates: return _SPRITESHEETS[9];
+				case SpriteID.Boots: return _SPRITESHEETS[10];
+				case SpriteID.Gold: return _SPRITESHEETS[11];
+				case SpriteID.Grave: return _SPRITESHEETS[12];
 			}
 		}
 	}
@@ -80,6 +84,8 @@ public class SpriteSheet{
 		Hero,
 		Door,
 		Rat,
+		Skeleton,
+		Spider,
 		Stairs,
 		Swords,
 		Potions,

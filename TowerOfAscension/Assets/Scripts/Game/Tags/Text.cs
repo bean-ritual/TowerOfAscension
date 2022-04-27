@@ -21,7 +21,7 @@ public class Text :
 		//
 	}
 	public override void BuildString(StringBuilder builder){
-		builder.Append(_text + " ");
+		builder.Append(_text).Append(System.Environment.NewLine);
 	}
 	public string GetStringValue1(Game game, Unit self){
 		return _text;
