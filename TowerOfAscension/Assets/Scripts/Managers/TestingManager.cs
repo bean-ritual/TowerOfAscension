@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 public class TestingManager : MonoBehaviour{
+	private int _value = 0;
 	private Game _local = Game.GetNullGame();
 	private void Start(){
 		_local = DungeonMaster.GetInstance().GetLocalGame();
@@ -13,7 +14,6 @@ public class TestingManager : MonoBehaviour{
 		}
 	}
 	public void Test(){
-		_local.GetPlayer().GetTag(_local, Tag.ID.Health).GetIDamageValue1Int().DamageValue1(_local, _local.GetPlayer(), 999);
-		//UnityEngine.Debug.Log(_local.GetPlayer().GetTag(_local, Tag.ID.Position).GetIGetVector().GetVector(_local, _local.GetPlayer()));
+		
 	}
 }

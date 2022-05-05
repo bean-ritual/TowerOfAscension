@@ -19,6 +19,7 @@ public class Health :
 	private const int _MIN_VALUE = 0;
 	private int _value;
 	private int _maxValue;
+	private int _scaling;
 	public void Setup(int value){
 		_value = value;
 		_maxValue = value;
@@ -30,7 +31,9 @@ public class Health :
 		_POOL.Enqueue(this);
 	}
 	public void FortifyValue1(Game game, Unit self, int value){
+		const string FORTIFY_MESSAGE = "You gain {0} Hitpoints";
 		self.GetTag(game, Tag.ID.WorldUnit).GetIGetWorldUnitController().GetWorldUnitController(game, self).InvokeTextPopupEvent(("+" + value), TextPopup.TextColour.Green);
+		self.GetTag(game, Tag.ID.PlayerLog).GetIInputString().Input(game, self, String.Format(FORTIFY_MESSAGE, value));
 		_value = (_value + value);
 		_value = Mathf.Clamp(_value, _MIN_VALUE, _maxValue);
 		TagUpdateEvent();
@@ -41,7 +44,9 @@ public class Health :
 		TagUpdateEvent();
 	}
 	public void DamageValue1(Game game, Unit self, int value){
+		const string DAMAGE_MESSAGE = "You take {0} Damage";
 		self.GetTag(game, Tag.ID.WorldUnit).GetIGetWorldUnitController().GetWorldUnitController(game, self).InvokeTextPopupEvent(("-" + value), TextPopup.TextColour.Red);
+		self.GetTag(game, Tag.ID.PlayerLog).GetIInputString().Input(game, self, String.Format(DAMAGE_MESSAGE, value));
 		_value = (_value - value);
 		if(_value <= 0){
 			self.GetTag(game, Tag.ID.Alive).GetIDamageValue1().DamageValue1(game, self);

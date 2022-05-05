@@ -25,6 +25,9 @@ public class Player :
 	public override Tag GetTag(Game game, Tag.ID id){
 		return game.GetPlayer().GetTag(game, id);
 	}
+	public override void UpdateAllTags(Game game){
+		game.GetPlayer().UpdateAllTags(game);
+	}
 	public override bool Process(Game game){
 		return game.GetPlayer().Process(game);
 	}

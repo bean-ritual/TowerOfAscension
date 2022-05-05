@@ -8,6 +8,7 @@ public abstract class Tag{
 	public enum ID{
 		Null,
 		Name,
+		PlayerLog,
 		Alive,
 		Position,
 		WorldUnit,
@@ -28,6 +29,7 @@ public abstract class Tag{
 		Opacity,
 		Collision,
 		Loot,
+		ExpDrop,
 		Experiance,
 		Discoverer,
 		Interactor,
@@ -165,6 +167,7 @@ public abstract class Tag{
 		Tag.ISetValue1<Tag.Collider>,
 		Tag.ISetValue1<SpriteSheet.SpriteID>,
 		Tag.ISetValue1<int>,
+		Tag.ISetValue1<float>,
 		Tag.ISetValue1<bool>,
 		Tag.ISetValue2<int>,
 		Tag.ISetValue3<int>,
@@ -181,6 +184,7 @@ public abstract class Tag{
 		Tag.IGetVector,
 		Tag.IGetRegisterEvents,
 		Tag.IGetWorldUnitController,
+		Tag.IInput<string>,
 		Tag.IInput<Direction>,
 		Tag.IInput<Unit>,
 		Tag.IInput<Tile>,
@@ -213,6 +217,7 @@ public abstract class Tag{
 		public void SetValue1(Game game, Unit self, Tag.Collider value){}
 		public void SetValue1(Game game, Unit self, SpriteSheet.SpriteID value){}
 		public void SetValue1(Game game, Unit self, int value){}
+		public void SetValue1(Game game, Unit self, float value){}
 		public void SetValue1(Game game, Unit self, bool value){}
 		public void SetValue2(Game game, Unit self, int value){}
 		public void SetValue3(Game game, Unit self, int value){}
@@ -253,6 +258,7 @@ public abstract class Tag{
 		public WorldUnit.IWorldUnitController GetWorldUnitController(Game game, Unit self){
 			return WorldUnit.GetNullWorldUnitController();
 		}
+		public void Input(Game game, Unit self, string value){}
 		public void Input(Game game, Unit self, Direction direction){}
 		public void Input(Game game, Unit self, Unit unit){}
 		public void Input(Game game, Unit self, Tile tile){}
@@ -277,7 +283,7 @@ public abstract class Tag{
 		public override bool IsNull(){
 			return true;
 		}
-		protected override void TagUpdateEvent(){}
+		public override void TagUpdateEvent(){}
 	}
 	private static readonly NullTag _NULL_TAG = new NullTag();
 	[field:NonSerialized]public event EventHandler<EventArgs> OnTagUpdate;
@@ -304,7 +310,7 @@ public abstract class Tag{
 		return tags.Remove(GetTagID());
 	}
 	public virtual void BuildString(StringBuilder builder){}
-	protected virtual void TagUpdateEvent(){
+	public virtual void TagUpdateEvent(){
 		OnTagUpdate?.Invoke(this, EventArgs.Empty);
 	}
 	public virtual Tag.IProcess GetIProcess(){
@@ -350,6 +356,9 @@ public abstract class Tag{
 		return _NULL_TAG;
 	}
 	public virtual Tag.ISetValue1<int> GetISetValue1Int(){
+		return _NULL_TAG;
+	}
+	public virtual Tag.ISetValue1<float> GetISetValue1Float(){
 		return _NULL_TAG;
 	}
 	public virtual Tag.ISetValue1<bool> GetISetValue1Bool(){
@@ -398,6 +407,9 @@ public abstract class Tag{
 		return _NULL_TAG;
 	}
 	public virtual Tag.IGetWorldUnitController GetIGetWorldUnitController(){
+		return _NULL_TAG;
+	}
+	public virtual Tag.IInput<string> GetIInputString(){
 		return _NULL_TAG;
 	}
 	public virtual Tag.IInput<Direction> GetIInputDirection(){

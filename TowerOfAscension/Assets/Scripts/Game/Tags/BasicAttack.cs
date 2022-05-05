@@ -14,24 +14,28 @@ public class BasicAttack :
 	}
 	public override void Disassemble(){}
 	public void Input(Game game, Unit self, Unit caster, Direction direction){
+		const string DODGE_MESSAGE = "You dodge the Attack!";
+		const string DODGE_POPUP = "Miss!";
 		const int MIN_ROLL = 5;
 		const int MAX_ROLL = 95;
 		const int BASE_ACCURACY = 75;
+		const float SCALER = 1.5f;
 		Tile tile = direction.GetTile(game, caster.GetTag(game, Tag.ID.Position).GetIGetTile().GetTile(game, caster));
 		tile.GetHasUnits().DoUnits(game, (Tile tile, Unit target) => {
 			//accuracy
 			int attack = caster.GetTag(game, Tag.ID.Level).GetIGetIntValue1().GetIntValue1(game, caster);
 			int defence = target.GetTag(game, Tag.ID.Level).GetIGetIntValue1().GetIntValue1(game, target);
-			int accuracy = (int)Mathf.Clamp(BASE_ACCURACY + (attack - defence) * 1.5f, MIN_ROLL, MAX_ROLL);
+			int accuracy = (int)Mathf.Clamp(BASE_ACCURACY + (attack - defence) * SCALER, MIN_ROLL, MAX_ROLL);
 			if(UnityEngine.Random.Range(0, 100) < accuracy){
 				target.GetTag(game, Tag.ID.Attackable).GetIInput2Units().Input(game, target, caster, self);
 			}else{
-				target.GetTag(game, Tag.ID.WorldUnit).GetIGetWorldUnitController().GetWorldUnitController(game, caster).InvokeTextPopupEvent("Miss!");
+				target.GetTag(game, Tag.ID.WorldUnit).GetIGetWorldUnitController().GetWorldUnitController(game, caster).InvokeTextPopupEvent(DODGE_POPUP);
+				target.GetTag(game, Tag.ID.PlayerLog).GetIInputString().Input(game, target, DODGE_MESSAGE);
 			}
+			caster.GetTag(game, Tag.ID.AI).GetIClear().Clear(game, caster);
 			return true;
 		});
 		caster.GetTag(game, Tag.ID.WorldUnit).GetIGetWorldUnitController().GetWorldUnitController(game, caster).InvokeMeleeAttackAnimation(direction);
-		caster.GetTag(game, Tag.ID.AI).GetIClear().Clear(game, caster);
 	}
 	public override Tag.IInput<Unit, Direction> GetIInputUnitDirection(){
 		return this;

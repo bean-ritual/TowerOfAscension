@@ -31,9 +31,11 @@ public class Alive :
 		return _value;
 	}
 	public void DamageValue1(Game game, Unit self){
+		const string DEATH_MESSAGE = "You Died!";
 		_value = false;
 		self.GetTag(game, Tag.ID.Loot).GetITrigger().Trigger(game, self);
-		self.GetTag(game, Tag.ID.Experiance).GetIInputUnit().Input(game, self, game.GetLevel().GetUnits().Get(_killer));
+		self.GetTag(game, Tag.ID.ExpDrop).GetIInputUnit().Input(game, self, game.GetLevel().GetUnits().Get(_killer));
+		self.GetTag(game, Tag.ID.PlayerLog).GetIInputString().Input(game, self, DEATH_MESSAGE);
 		self.Despawn(game);
 	}
 	public Unit GetUnit(Game game, Unit self){

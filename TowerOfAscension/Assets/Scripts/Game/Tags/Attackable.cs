@@ -17,8 +17,8 @@ public class Attackable :
 	}
 	public void Input(Game game, Unit self, Unit attacker, Unit damage){
 		int physical = damage.GetTag(game, Tag.ID.Damage_Physical).GetIGetIntValue1().GetIntValue1(game, damage);
+		self.GetTag(game, Tag.ID.Alive).GetISetValue1UnitID().SetValue1(game, self, attacker.GetID());
 		self.GetTag(game, Tag.ID.Health).GetIDamageValue1Int().DamageValue1(game, self, physical);
-		
 	}
 	public override Tag.IInput<Unit, Unit> GetIInput2Units(){
 		return this;

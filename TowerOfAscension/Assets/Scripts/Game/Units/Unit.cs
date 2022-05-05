@@ -58,8 +58,9 @@ public class Unit{
 					AttackSlot.Create(),
 					BasicAttack.Create(),
 					Attackable.Create(),
-					Experiance.Create(10),
-					Value.Create(Tag.ID.Damage_Physical, 1),
+					Loot.Create(1),
+					ExpDrop.Create(10),
+					RangeValue.Create(Tag.ID.Damage_Physical, 1, 5),
 					Move.Create(8),
 					Collision.Create(Tag.Collider.Basic),
 					Text.Create(Tag.ID.Name, "Rat"),
@@ -81,8 +82,9 @@ public class Unit{
 					AttackSlot.Create(),
 					BasicAttack.Create(),
 					Attackable.Create(),
-					Experiance.Create(25),
-					Value.Create(Tag.ID.Damage_Physical, 10),
+					Loot.Create(1),
+					ExpDrop.Create(25),
+					RangeValue.Create(Tag.ID.Damage_Physical, 1, 7),
 					Move.Create(10),
 					Collision.Create(Tag.Collider.Basic),
 					Text.Create(Tag.ID.Name, "Skeleton"),
@@ -99,7 +101,7 @@ public class Unit{
 					Condition.Create(Tag.ID.UIUnit, false),
 					Pickup.Create(),
 					BasicAttack.Create(),
-					Value.Create(Tag.ID.Damage_Physical, UnityEngine.Random.Range(1, 20)),
+					RangeValue.Create(Tag.ID.Damage_Physical, 3, 9),
 					Equippable.Create(Tag.ID.Attack_Slot),
 					Text.Create(Tag.ID.Name, "Sword"),
 					Tooltip.Create(),
@@ -233,6 +235,11 @@ public class Unit{
 			tag = Tag.GetNullTag();
 		}
 		return tag;
+	}
+	public virtual void UpdateAllTags(Game game){
+		foreach(KeyValuePair<Tag.ID, Tag> keyValue in _tags){
+			keyValue.Value.TagUpdateEvent();
+		}
 	}
 	public virtual bool IsNull(){
 		return false;

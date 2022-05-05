@@ -7,13 +7,16 @@ public class Hero :
 	Unit,
 	Unit.IProxyable
 	{
+	private const int _BASE_EXP = 50;
+	private const float _EXP_FACTOR = 1.6f;
 	public Hero(Game game) : base(game,
 		new Tag[]{
 			LightWorldVisual.Create(SpriteSheet.SpriteID.Hero, 0, 25),
 			WorldPosition.Create(),
 			TagControl.Create(),
+			Experiance.Create(_BASE_EXP, _EXP_FACTOR),
+			TagLevel.Create(1),
 			Alive.Create(),
-			Value.Create(Tag.ID.Level, 1),
 			Health.Create(95),
 			Grave.Create(),
 			Attackable.Create(),
@@ -29,6 +32,7 @@ public class Hero :
 			Move.Create(10),
 			Collision.Create(Tag.Collider.Basic),
 			Exit.Create(),
+			Log.Create(),
 		}
 	){}
 	public override void Spawn(Game game, int x, int y){
