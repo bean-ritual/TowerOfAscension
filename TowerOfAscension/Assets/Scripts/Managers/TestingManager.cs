@@ -14,6 +14,6 @@ public class TestingManager : MonoBehaviour{
 		}
 	}
 	public void Test(){
-		
+
 	}
 }

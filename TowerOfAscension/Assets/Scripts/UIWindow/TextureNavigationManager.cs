@@ -46,7 +46,7 @@ public class TextureNavigationManager :
 		_window.SendWindowToFront();
 	}
 	public Vector3 GetPosition(){
-		return _delta;
+		return _delta + _target.GetTag(_local, Tag.ID.Position).GetIGetVector().GetVector(_local, _target);
 	}
 	public float GetZoom(){
 		return _zoom;
@@ -54,7 +54,7 @@ public class TextureNavigationManager :
 	public void Reset(){
 		const float DEFAULT_ZOOM = 10f;
 		_zoom = DEFAULT_ZOOM;
-		_delta = _target.GetTag(_local, Tag.ID.Position).GetIGetVector().GetVector(_local, _target);
+		_delta = Vector3.zero;
 	}
 	public UIWindowManager GetWindow(){
 		return _window;

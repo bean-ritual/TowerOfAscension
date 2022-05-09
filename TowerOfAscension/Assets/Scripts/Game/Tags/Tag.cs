@@ -54,6 +54,9 @@ public abstract class Tag{
 	public interface IProcess{
 		bool Process(Game game, Unit self);
 	}
+	public interface IRefresh{
+		void Refresh(Game game, Unit self);
+	}
 	public interface ICondition{
 		bool Check(Game game, Unit self);
 	}
@@ -153,6 +156,7 @@ public abstract class Tag{
 	public class NullTag : 
 		Tag,
 		Tag.IProcess,
+		Tag.IRefresh,
 		Tag.ITrigger,
 		Tag.ICondition,
 		Tag.ICondition<Tag.Collider>,
@@ -199,6 +203,7 @@ public abstract class Tag{
 		public bool Process(Game game, Unit self){
 			return game.GetLevel().NextTurn();
 		}
+		public void Refresh(Game game, Unit self){}
 		public void Trigger(Game game, Unit self){}
 		public bool Check(Game game, Unit self){
 			return false;
@@ -274,10 +279,10 @@ public abstract class Tag{
 			return TAG_ID;
 		}
 		public override void Disassemble(){}
-		public override bool Add(Dictionary<ID, Tag> tags){
+		public override bool Add(Game game, Unit self, Dictionary<ID, Tag> tags){
 			return false;
 		}
-		public override bool Remove(Dictionary<ID, Tag> tags){
+		public override bool Remove(Game game, Unit self, Dictionary<ID, Tag> tags){
 			return false;
 		}
 		public override bool IsNull(){
@@ -294,7 +299,7 @@ public abstract class Tag{
 	public abstract Tag.ID GetTagID();
 	public abstract void Disassemble();
 	//
-	public virtual bool Add(Dictionary<Tag.ID, Tag> tags){
+	public virtual bool Add(Game game, Unit self, Dictionary<Tag.ID, Tag> tags){
 		Tag.ID id = GetTagID();
 		if(id == ID.Null){
 			return false;
@@ -306,7 +311,7 @@ public abstract class Tag{
 		}
 		return true;
 	}
-	public virtual bool Remove(Dictionary<ID, Tag> tags){
+	public virtual bool Remove(Game game, Unit self, Dictionary<ID, Tag> tags){
 		return tags.Remove(GetTagID());
 	}
 	public virtual void BuildString(StringBuilder builder){}
@@ -314,6 +319,9 @@ public abstract class Tag{
 		OnTagUpdate?.Invoke(this, EventArgs.Empty);
 	}
 	public virtual Tag.IProcess GetIProcess(){
+		return _NULL_TAG;
+	}
+	public virtual Tag.IRefresh GetIRefresh(){
 		return _NULL_TAG;
 	}
 	public virtual Tag.ITrigger GetITrigger(){

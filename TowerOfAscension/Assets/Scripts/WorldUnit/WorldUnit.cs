@@ -128,6 +128,13 @@ public class WorldUnit :
 		StopAllCoroutines();
 		Destroy(gameObject);
 	}
+	public Vector3 GetRandomTextPopupPosition(){
+		Vector3 offset = _local.GetLevel().GetVector3CellOffset();
+		const int MIN = 0;
+		float randomX = UnityEngine.Random.Range(MIN, offset.x);
+		float randomY = UnityEngine.Random.Range(MIN, offset.y);
+		return _unit.GetTag(_local, Tag.ID.Position).GetIGetVector().GetVector(_local, _unit) + new Vector3(randomX, randomY);
+	}
 	private void UnsubscribeFromEvents(){
 		_unit.GetTag(_local, Tag.ID.Position).OnTagUpdate -= OnWorldPositionUpdate;
 		_unit.GetTag(_local, Tag.ID.WorldUnit).OnTagUpdate -= OnWorldUnitTagUpdate;
@@ -149,7 +156,7 @@ public class WorldUnit :
 	private void OnTextPopupEvent(object sender, TextPopupEventArgs e){
 		TextPopupManager.GetInstance().PopText(
 			e.text, 
-			(_unit.GetTag(_local, Tag.ID.Position).GetIGetVector().GetVector(_local, _unit) + _local.GetLevel().GetVector3CellOffset()), 
+			GetRandomTextPopupPosition(), 
 			e.colour
 		);
 	}

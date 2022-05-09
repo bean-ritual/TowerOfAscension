@@ -17,7 +17,7 @@ public class Hero :
 			Experiance.Create(_BASE_EXP, _EXP_FACTOR),
 			TagLevel.Create(1),
 			Alive.Create(),
-			Health.Create(95),
+			Health.Create(95, 5),
 			Grave.Create(),
 			Attackable.Create(),
 			WeaponSlot.Create(),

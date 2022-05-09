@@ -54,7 +54,7 @@ public class Unit{
 					TagAI.Create(),
 					Alive.Create(),
 					Value.Create(Tag.ID.Level, level),
-					Health.Create(5),
+					Health.Create(5, 1),
 					AttackSlot.Create(),
 					BasicAttack.Create(),
 					Attackable.Create(),
@@ -78,7 +78,7 @@ public class Unit{
 					TagAI.Create(),
 					Alive.Create(),
 					Value.Create(Tag.ID.Level, level),
-					Health.Create(10),
+					Health.Create(10, 2),
 					AttackSlot.Create(),
 					BasicAttack.Create(),
 					Attackable.Create(),
@@ -107,6 +107,9 @@ public class Unit{
 					Tooltip.Create(),
 				}
 			);
+		}
+		public static Unit GetLantern(Game game){
+			return Unit.GetNullUnit();
 		}
 		public static Unit GetLevelledUnit(Game game, int level){
 			switch(level){
@@ -225,10 +228,10 @@ public class Unit{
 		return _id;
 	}
 	public virtual void AddTag(Game game, Tag tag){
-		tag.Add(_tags);
+		tag.Add(game, this, _tags);
 	}
 	public virtual void RemoveTag(Game game, Tag.ID id){
-		GetTag(game, id).Remove(_tags);
+		GetTag(game, id).Remove(game, this, _tags);
 	}
 	public virtual Tag GetTag(Game game, Tag.ID id){
 		if(!_tags.TryGetValue(id, out Tag tag)){
@@ -239,6 +242,11 @@ public class Unit{
 	public virtual void UpdateAllTags(Game game){
 		foreach(KeyValuePair<Tag.ID, Tag> keyValue in _tags){
 			keyValue.Value.TagUpdateEvent();
+		}
+	}
+	public virtual void RefreshAllTags(Game game){
+		foreach(KeyValuePair<Tag.ID, Tag> keyValue in _tags){
+			keyValue.Value.GetIRefresh().Refresh(game, this);
 		}
 	}
 	public virtual bool IsNull(){

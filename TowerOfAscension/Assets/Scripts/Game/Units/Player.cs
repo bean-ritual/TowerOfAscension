@@ -28,6 +28,9 @@ public class Player :
 	public override void UpdateAllTags(Game game){
 		game.GetPlayer().UpdateAllTags(game);
 	}
+	public override void RefreshAllTags(Game game){
+		game.GetPlayer().RefreshAllTags(game);
+	}
 	public override bool Process(Game game){
 		return game.GetPlayer().Process(game);
 	}
