@@ -66,7 +66,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: de677611e18701049b47f057ec52a0ea, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 0f7f3e4c71eed0244ac9d65613cfc6ea, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -75,7 +75,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
+  m_PixelsPerUnitMultiplier: 2
 --- !u!1 &1156618177843969587
 GameObject:
   m_ObjectHideFlags: 0
@@ -225,7 +225,7 @@ RectTransform:
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
   m_AnchoredPosition: {x: -12, y: 0}
-  m_SizeDelta: {x: 14, y: 14}
+  m_SizeDelta: {x: 16, y: 16}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!114 &8597569503448161149
 MonoBehaviour:
@@ -269,7 +269,7 @@ MonoBehaviour:
   m_Interactable: 1
   m_TargetGraphic: {fileID: 7460738186571142966}
   toggleTransition: 1
-  graphic: {fileID: 1457563203693896891}
+  graphic: {fileID: 7460738186571142966}
   m_Group: {fileID: 0}
   onValueChanged:
     m_PersistentCalls:
@@ -754,8 +754,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 35a28b2b9c87ef7469c62ca3b5aaa2ad, type: 3}
-  m_Type: 1
+  m_Sprite: {fileID: 960534701, guid: e13cf5459e0eb8841abdc8b9fef077d7, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
