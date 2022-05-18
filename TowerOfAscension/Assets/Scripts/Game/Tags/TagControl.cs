@@ -35,8 +35,8 @@ public class TagControl :
 	public bool Process(Game game, Unit self){
 		OnPlayerControl?.Invoke(this, new OnPlayerControlEventArgs(self));
 		switch(_state){
-			default: return game.GetLevel().NextTurn();
-			case ControlState.Null: return game.GetLevel().NextTurn();
+			default: return game.GetLevel().NextTurn(game);
+			case ControlState.Null: return game.GetLevel().NextTurn(game);
 			case ControlState.Locked:{
 				if(_state != ControlState.Input){
 					_state = ControlState.Input;
@@ -49,8 +49,7 @@ public class TagControl :
 	public void Clear(Game game, Unit self){
 		if(_state == ControlState.Input){
 			_state = ControlState.Locked;
-			game.GetLevel().LightUpdate(game, self);
-			game.GetLevel().NextTurn();
+			game.GetLevel().NextTurn(game);
 		}
 	}
 	public override Tag.IProcess GetIProcess(){

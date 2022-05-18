@@ -308,7 +308,7 @@ public class ClassicGen :
 				break;
 			}
 		}
-		return game.GetLevel().NextTurn();
+		return game.GetLevel().NextTurn(game);
 	}
 	//
 	public virtual void AddStructureSpawner(Spawner spawner){

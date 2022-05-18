@@ -59,7 +59,7 @@ public class Unit{
 					BasicAttack.Create(),
 					Attackable.Create(),
 					Loot.Create(1),
-					ExpDrop.Create(10),
+					ExpDrop.Create(2),
 					RangeValue.Create(Tag.ID.Damage_Physical, 1, 5),
 					Move.Create(8),
 					Collision.Create(Tag.Collider.Basic),
@@ -83,7 +83,7 @@ public class Unit{
 					BasicAttack.Create(),
 					Attackable.Create(),
 					Loot.Create(1),
-					ExpDrop.Create(25),
+					ExpDrop.Create(7),
 					RangeValue.Create(Tag.ID.Damage_Physical, 1, 7),
 					Move.Create(10),
 					Collision.Create(Tag.Collider.Basic),
@@ -109,7 +109,20 @@ public class Unit{
 			);
 		}
 		public static Unit GetLantern(Game game){
-			return Unit.GetNullUnit();
+			return new Unit(
+				game,
+				new Tag[]{
+					LightWorldVisual.Create(SpriteSheet.SpriteID.Lamp, 0, 10),
+					WorldPosition.Create(),
+					Condition.Create(Tag.ID.UIUnit, false),
+					Pickup.Create(),
+					Equippable.Create(Tag.ID.Light),
+					Torchlight.Create(5),
+					ClampedValue.Create(Tag.ID.Fuel, 250),
+					Text.Create(Tag.ID.Name, "Lantern"),
+					Tooltip.Create(),
+				}
+			);
 		}
 		public static Unit GetLevelledUnit(Game game, int level){
 			switch(level){
@@ -154,11 +167,15 @@ public class Unit{
 			return Register<Unit>.ID.GetNullID();
 		}
 		public override bool Process(Game game){
-			return game.GetLevel().NextTurn();
+			return game.GetLevel().NextTurn(game);
 		}
+		public override void EndTurn(Game game){}
 		public override void AddTag(Game game, Tag tag){}
 		public override void RemoveTag(Game game, Tag.ID id){}
 		public override Tag GetTag(Game game, Tag.ID id){
+			return Tag.GetNullTag();
+		}
+		public override Tag GetRealTag(Game game, Tag.ID id){
 			return Tag.GetNullTag();
 		}
 		public override void Spawn(Game game, int x, int y){}
@@ -186,6 +203,13 @@ public class Unit{
 			return _NULL_Y;
 		}
 	}
+	[Serializable]
+	public class RealUnit : Unit{
+		private int _id;
+		public RealUnit(int id){
+			_id = id;
+		}
+	}
 	private static readonly NullUnit _NULL_UNIT = new NullUnit();
 	protected Dictionary<Tag.ID, Tag> _tags;
 	protected Register<Unit>.ID _id = Register<Unit>.ID.GetNullID();
@@ -207,11 +231,14 @@ public class Unit{
 	public virtual bool Process(Game game){
 		return GetTag(game, Tag.ID.AI).GetIProcess().Process(game, this);
 	}
+	public virtual void EndTurn(Game game){
+		GetTag(game, Tag.ID.Light).GetIEndTurn().OnEndTurn(game, this);
+	}
 	public virtual void Spawn(Game game, int x, int y){
 		Add(game.GetLevel().GetUnits());
 		this.GetPlayable().SetPlayer(game);
 		GetTag(game, Tag.ID.Position).GetISetValuesInt().SetValues(game, this, x, y);
-		game.GetLevel().LightUpdate(game, this);
+		EndTurn(game);
 	}
 	public virtual void Despawn(Game game){
 		GetTag(game, Tag.ID.Position).GetIClear().Clear(game, this);
@@ -234,6 +261,13 @@ public class Unit{
 		GetTag(game, id).Remove(game, this, _tags);
 	}
 	public virtual Tag GetTag(Game game, Tag.ID id){
+		if(!_tags.TryGetValue(id, out Tag tag)){
+			tag = Tag.GetNullTag();
+		}
+		return tag;
+		//return tag.GetSelf(game, this);
+	}
+	public virtual Tag GetRealTag(Game game, Tag.ID id){
 		if(!_tags.TryGetValue(id, out Tag tag)){
 			tag = Tag.GetNullTag();
 		}

@@ -1,10 +1,8 @@
-using System;
-using System.Text;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-[Serializable]
-public class LightSource : MonoBehaviour
+
+public class IGeneration : MonoBehaviour
 {
     // Start is called before the first frame update
     void Start()

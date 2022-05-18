@@ -28,6 +28,7 @@ public class WeaponSlot :
 		self.GetTag(game, Tag.ID.Inventory).GetIRemoveUnitID().Remove(game, self, equip.GetID());
 		_unit = equip;
 		_unit.GetTag(game, Tag.ID.UIUnit).GetISetValue1Bool().SetValue1(game, self, true);
+		self.GetTag(game, Tag.ID.AI).GetIClear().Clear(game, self);
 		TagUpdateEvent();
 	}
 	public void Remove(Game game, Unit self, Unit equip){
@@ -39,6 +40,7 @@ public class WeaponSlot :
 		self.GetTag(game, Tag.ID.Position).GetIGetTile().GetTile(game, self).GetXY(out int x, out int y);
 		equip.Spawn(game, x, y);
 		self.GetTag(game, Tag.ID.Inventory).GetIAddUnit().Add(game, self, equip);
+		self.GetTag(game, Tag.ID.AI).GetIClear().Clear(game, self);
 		TagUpdateEvent();
 	}
 	public void Input(Game game, Unit self, Direction direction){

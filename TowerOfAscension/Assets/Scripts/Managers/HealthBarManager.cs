@@ -10,7 +10,6 @@ public class HealthBarManager : MonoBehaviour{
 	private Tag _health = Tag.GetNullTag();
 	[SerializeField]private Slider _slider;
 	[SerializeField]private GameObject _control;
-	[SerializeField]private TextMeshProUGUI _text;
 	private void Start(){
 		_local = DungeonMaster.GetInstance().GetLocalGame();
 		SetHealth(_unit, _health);
@@ -31,9 +30,6 @@ public class HealthBarManager : MonoBehaviour{
 		_control.SetActive(maxValue > 0);
 		_slider.maxValue = maxValue;
 		_slider.value = value;
-		if(_text != null){
-			_text.text = "HP: " + value + "/" + maxValue;
-		}
 	}
 	public void UnsubscribeFromEvents(){
 		_health.OnTagUpdate -= OnTagUpdate;

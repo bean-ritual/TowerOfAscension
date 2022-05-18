@@ -28,7 +28,7 @@ public class Level : GridMap<Tile>{
 		public override Tile Get(int x, int y){
 			return Tile.GetNullTile();
 		}
-		public override bool NextTurn(){
+		public override bool NextTurn(Game game){
 			return false;
 		}
 		public override void ResetTurn(){}
@@ -69,9 +69,7 @@ public class Level : GridMap<Tile>{
 	}
 	public virtual void LightUpdate(Game game, Unit unit){
 		int lightRange = unit.GetTag(game, Tag.ID.Light).GetIGetIntValue1().GetIntValue1(game, unit);
-		if(lightRange <= 0){
-			return;
-		}
+		UnityEngine.Debug.Log(lightRange + " " + unit.GetTag(game, Tag.ID.Name).GetIGetStringValue1().GetStringValue1(game, unit));
 		for(int x = 0; x < GetWidth(); x++){
 			for(int y = 0; y < GetHeight(); y++){
 				Get(x, y).GetLightable().SetLight(0);
@@ -89,7 +87,8 @@ public class Level : GridMap<Tile>{
 		});
 		OnLightUpdate?.Invoke(this, EventArgs.Empty);
 	}
-	public virtual bool NextTurn(){
+	public virtual bool NextTurn(Game game){
+		_units.Get(_index).EndTurn(game);
 		int count = _units.GetCount();
 		if(count <= 0){
 			return false;

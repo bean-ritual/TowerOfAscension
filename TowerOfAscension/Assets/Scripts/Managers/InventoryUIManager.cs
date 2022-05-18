@@ -16,6 +16,7 @@ public class InventoryUIManager :
 	private static InventoryUIManager _INSTANCE;
 	private static Tag.ID[] _EQUIP_SLOTS = {
 		Tag.ID.Attack_Slot,
+		Tag.ID.Light,
 		Tag.ID.Chestplate,
 		Tag.ID.Boots,
 	};
@@ -74,6 +75,7 @@ public class InventoryUIManager :
 		_inventory.OnObjectAdded += OnObjectAdded;
 		_inventory.OnObjectRemoved += OnObjectRemoved;
 		_unit.GetTag(_local, Tag.ID.Attack_Slot).OnTagUpdate += OnWeaponTagUpdate;
+		_unit.GetTag(_local, Tag.ID.Light).OnTagUpdate += OnLightTagUpdate;
 	}
 	public void SetupTags(){
 		_tagUnits = new Dictionary<Tag.ID, UIUnit>();
@@ -111,6 +113,7 @@ public class InventoryUIManager :
 		_inventory.OnObjectAdded -= OnObjectAdded;
 		_inventory.OnObjectRemoved -= OnObjectRemoved;
 		_unit.GetTag(_local, Tag.ID.Attack_Slot).OnTagUpdate -= OnWeaponTagUpdate;
+		_unit.GetTag(_local, Tag.ID.Light).OnTagUpdate -= OnLightTagUpdate;
 	}
 	public void Clear(){
 		if(_uiUnits != null){
@@ -129,7 +132,11 @@ public class InventoryUIManager :
 		}
 	}
 	public void EquipInteract(Unit item){
-		item.GetTag(_local, Tag.ID.Equippable).GetIRemoveUnit().Remove(_local, item, PlayerController.GetInstance().GetPlayer());
+		Unit player = PlayerController.GetInstance().GetPlayer();
+		item.GetTag(_local, Tag.ID.Equippable).GetIRemoveUnit().Remove(_local, item, player);
+		if(Input.GetKey(KeyCode.LeftShift)){
+			item.GetTag(_local, Tag.ID.Pickup).GetIRemoveUnit().Remove(_local, item, player);
+		}
 	}
 	private void OnObjectAdded(object sender, Register<Unit>.OnObjectChangedEventArgs e){
 		CreateUIUnit(e.value);
@@ -139,6 +146,9 @@ public class InventoryUIManager :
 	}
 	private void OnWeaponTagUpdate(object sender, EventArgs e){
 		SetTagUnit(Tag.ID.Attack_Slot);
+	}
+	private void OnLightTagUpdate(object sender, EventArgs e){
+		SetTagUnit(Tag.ID.Light);
 	}
 	private void OnChestplateTagUpdate(object sender, EventArgs e){
 		SetTagUnit(Tag.ID.Chestplate);

@@ -23,8 +23,10 @@ public abstract class Tag{
 		Boots,
 		Inventory,
 		Pickup,
+		Stack,
 		Drop,
 		Equippable,
+		Fuel,
 		Light,
 		Opacity,
 		Collision,
@@ -51,6 +53,12 @@ public abstract class Tag{
 		Null,
 		Basic,
 	};
+	public interface IDoTurn{
+		bool DoTurn(Game game, Unit self);
+	}
+	public interface IEndTurn{
+		void OnEndTurn(Game game, Unit self);
+	}
 	public interface IProcess{
 		bool Process(Game game, Unit self);
 	}
@@ -83,6 +91,9 @@ public abstract class Tag{
 	}
 	public interface IDamageValue2<TValue>{
 		void DamageValue2(Game game, Unit self, TValue value);
+	}
+	public interface ISubtractValue1<TValue>{
+		TValue SubtractValue1(Game game, Unit self, TValue value);
 	}
 	public interface ISetValue1<TValue>{
 		void SetValue1(Game game, Unit self, TValue value);
@@ -155,6 +166,8 @@ public abstract class Tag{
 	}
 	public class NullTag : 
 		Tag,
+		Tag.IDoTurn,
+		Tag.IEndTurn,
 		Tag.IProcess,
 		Tag.IRefresh,
 		Tag.ITrigger,
@@ -167,6 +180,7 @@ public abstract class Tag{
 		Tag.IDamageValue1,
 		Tag.IDamageValue1<int>,
 		Tag.IDamageValue2<int>,
+		Tag.ISubtractValue1<int>,
 		Tag.ISetValue1<Register<Unit>.ID>,
 		Tag.ISetValue1<Tag.Collider>,
 		Tag.ISetValue1<SpriteSheet.SpriteID>,
@@ -191,6 +205,7 @@ public abstract class Tag{
 		Tag.IInput<string>,
 		Tag.IInput<Direction>,
 		Tag.IInput<Unit>,
+		Tag.IInput<Inventory>,
 		Tag.IInput<Tile>,
 		Tag.IInput<Unit, Unit>,
 		Tag.IInput<Unit, Direction>,
@@ -200,8 +215,12 @@ public abstract class Tag{
 		Tag.IRemove<Register<Unit>.ID>
 		{
 		//
+		public bool DoTurn(Game game, Unit self){
+			return game.GetLevel().NextTurn(game);
+		}
+		public void OnEndTurn(Game game, Unit self){}
 		public bool Process(Game game, Unit self){
-			return game.GetLevel().NextTurn();
+			return game.GetLevel().NextTurn(game);
 		}
 		public void Refresh(Game game, Unit self){}
 		public void Trigger(Game game, Unit self){}
@@ -218,6 +237,9 @@ public abstract class Tag{
 		public void DamageValue1(Game game, Unit self){}
 		public void DamageValue1(Game game, Unit self, int value){}
 		public void DamageValue2(Game game, Unit self, int value){}
+		public int SubtractValue1(Game game, Unit self, int value){
+			return 0;
+		}
 		public void SetValue1(Game game, Unit self, Register<Unit>.ID value){}
 		public void SetValue1(Game game, Unit self, Tag.Collider value){}
 		public void SetValue1(Game game, Unit self, SpriteSheet.SpriteID value){}
@@ -266,6 +288,7 @@ public abstract class Tag{
 		public void Input(Game game, Unit self, string value){}
 		public void Input(Game game, Unit self, Direction direction){}
 		public void Input(Game game, Unit self, Unit unit){}
+		public void Input(Game game, Unit self, Inventory inventory){}
 		public void Input(Game game, Unit self, Tile tile){}
 		public void Input(Game game, Unit self, Unit unit1, Unit unit2){}
 		public void Input(Game game, Unit self, Unit unit, Direction direction){}
@@ -314,9 +337,18 @@ public abstract class Tag{
 	public virtual bool Remove(Game game, Unit self, Dictionary<ID, Tag> tags){
 		return tags.Remove(GetTagID());
 	}
+	public virtual Tag GetSelf(Game game, Unit self){
+		return this;
+	}
 	public virtual void BuildString(StringBuilder builder){}
 	public virtual void TagUpdateEvent(){
 		OnTagUpdate?.Invoke(this, EventArgs.Empty);
+	}
+	public virtual Tag.IDoTurn GetIDoTurn(){
+		return _NULL_TAG;
+	}
+	public virtual Tag.IEndTurn GetIEndTurn(){
+		return _NULL_TAG;
 	}
 	public virtual Tag.IProcess GetIProcess(){
 		return _NULL_TAG;
@@ -352,6 +384,9 @@ public abstract class Tag{
 		return _NULL_TAG;
 	}
 	public virtual Tag.IDamageValue2<int> GetIDamageValue2Int(){
+		return _NULL_TAG;
+	}
+	public virtual Tag.ISubtractValue1<int> GetISubtractValue1Int(){
 		return _NULL_TAG;
 	}
 	public virtual Tag.ISetValue1<Register<Unit>.ID> GetISetValue1UnitID(){
@@ -424,6 +459,9 @@ public abstract class Tag{
 		return _NULL_TAG;
 	}
 	public virtual Tag.IInput<Unit> GetIInputUnit(){
+		return _NULL_TAG;
+	}
+	public virtual Tag.IInput<Inventory> GetIInputInventory(){
 		return _NULL_TAG;
 	}
 	public virtual Tag.IInput<Tile> GetIInputTile(){

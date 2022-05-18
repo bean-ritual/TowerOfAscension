@@ -14,6 +14,7 @@ public class TestingManager : MonoBehaviour{
 		}
 	}
 	public void Test(){
-
+		Unit player = _local.GetPlayer();
+		UnityEngine.Debug.Log(player.GetTag(_local, Tag.ID.Light).GetIGetIntValue1().GetIntValue1(_local, player) + "");
 	}
 }

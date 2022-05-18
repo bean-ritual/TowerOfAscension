@@ -11,7 +11,7 @@ public class Hero :
 	private const float _EXP_FACTOR = 1.6f;
 	public Hero(Game game) : base(game,
 		new Tag[]{
-			LightWorldVisual.Create(SpriteSheet.SpriteID.Hero, 0, 25),
+			HeroWorldVisual.Create(SpriteSheet.SpriteID.Hero, 0, 25),
 			WorldPosition.Create(),
 			TagControl.Create(),
 			Experiance.Create(_BASE_EXP, _EXP_FACTOR),
@@ -24,7 +24,7 @@ public class Hero :
 			BasicAttack.Create(),
 			Value.Create(Tag.ID.Damage_Physical, 1),
 			TagInventory.Create(),
-			Value.Create(Tag.ID.Light, 3),
+			LanternSlot.Create(),
 			Discoverer.Create(),
 			Interactor.Create(),
 			Hostility.Create(),
@@ -33,8 +33,11 @@ public class Hero :
 			Collision.Create(Tag.Collider.Basic),
 			Exit.Create(),
 			Log.Create(),
+			Text.Create(Tag.ID.Name, "Hero"),
 		}
-	){}
+	){
+		GetTag(game, Tag.ID.Light).GetIAddUnit().Add(game, this, Unit.UNIT_DATA.GetLantern(game));
+	}
 	public override void Spawn(Game game, int x, int y){
 		Unit proxy = new Player();
 		proxy.Spawn(game, x, y);

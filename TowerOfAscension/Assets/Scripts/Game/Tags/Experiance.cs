@@ -44,6 +44,8 @@ public class Experiance :
 	}
 	public void FortifyValue1(Game game, Unit self, int value){
 		const string EXPERIANCE_GAIN = "You gain {0} EXP!";
+		const string EXP_SUFFIX = " EXP!";
+		self.GetTag(game, Tag.ID.WorldUnit).GetIGetWorldUnitController().GetWorldUnitController(game, self).InvokeTextPopupEvent(("+" + value + EXP_SUFFIX), TextPopup.TextColour.Blue);
 		self.GetTag(game, Tag.ID.PlayerLog).GetIInputString().Input(game, self, String.Format(EXPERIANCE_GAIN, value));
 		_value = (_value + value);
 		if(_value > GetIntValue2(game, self)){

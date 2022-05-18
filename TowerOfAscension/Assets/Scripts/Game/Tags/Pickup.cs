@@ -22,6 +22,7 @@ public class Pickup :
 		holder.GetTag(game, Tag.ID.Inventory).GetIRemoveUnitID().Remove(game, holder, self.GetID());
 		holder.GetTag(game, Tag.ID.Position).GetIGetTile().GetTile(game, holder).GetXY(out int x, out int y);
 		self.Spawn(game, x, y);
+		holder.GetTag(game, Tag.ID.AI).GetIClear().Clear(game, holder);
 	}
 	public override Tag.IAdd<Unit> GetIAddUnit(){
 		return this;

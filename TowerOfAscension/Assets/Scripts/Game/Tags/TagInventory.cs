@@ -25,6 +25,11 @@ public class TagInventory :
 	public void Add(Game game, Unit self, Unit item){
 		item.Despawn(game);
 		item.Add(_inventory);
+		/*
+		for(int i = 0; i < _inventory.GetCount; i++){
+			item.GetTag(game, Tag.ID.Stack).GetInputUnit().Input(game, item, self, _inventory.Get(i));
+		}
+		*/
 	}
 	public void Remove(Game game, Unit self, Register<Unit>.ID itemID){
 		_inventory.Get(itemID).Remove(_inventory);

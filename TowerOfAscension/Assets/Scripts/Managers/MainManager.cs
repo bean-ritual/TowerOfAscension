@@ -30,7 +30,7 @@ public class MainManager : MonoBehaviour{
 		LoadSystem.Load(LoadSystem.Scene.Game, null);
 	}
 	public void OnNewGame(){
-		LoadSystem.Load(LoadSystem.Scene.Game, () => DungeonMaster.DUNGEONMASTER_DATA.SetGame(Game.GAME_DATA.GetNewGame()));
+		LoadSystem.Load(LoadSystem.Scene.Game, () => DungeonMaster.DUNGEONMASTER_DATA.SetGame(new Game.TOAGame()));
 	}
 	public void OnOptions(){
 		
