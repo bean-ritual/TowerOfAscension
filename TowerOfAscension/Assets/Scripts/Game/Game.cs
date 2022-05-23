@@ -4,70 +4,162 @@ using System.Collections.Generic;
 using UnityEngine;
 [Serializable]
 public abstract class Game{
-	public static class GAME_DATA{
-		public static string GetRandomString(int length){
-			const string letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-			char[] chars = new char[length];
-			for(int i = 0; i < chars.Length; i++){
-				chars[i] = letters[UnityEngine.Random.Range(0, letters.Length)];
-			}
-			return new String(chars);
-		}
-	}
 	[Serializable]
 	public class NullGame : Game{
-		public NullGame(){}
-		public override bool Process(){
-			return false;
+		public override bool Tick(){
+			return true;
 		}
-		public override void NextLevel(){}
-		public override void GameOver(){}
-		public override GameUnits GetGameUnits(){
-			return GameUnits.GetNullGameUnits();
+		public override GameData GetGameData(){
+			return GameData.GetNullGameData();
 		}
 		public override GameBlocks GetGameBlocks(int index){
 			return GameBlocks.GetNullGameBlocks();
 		}
-		public override Unit GetPlayer(){
-			return Unit.GetNullUnit();
+		public override GameWorld GetGameWorld(){
+			return GameWorld.GetNullGameWorld();
 		}
-		public override Level GetLevel(){
-			return Level.GetNullLevel();
+		public override Map GetMap(){
+			return Map.GetNullMap();
+		}
+		public override Generation GetGeneration(){
+			return Generation.GetNullGeneration();
+		}
+		public override Data GetPlayer(){
+			return Data.GetNullData();
 		}
 		public override int GetGameBlocksCount(){
 			return 0;
 		}
-		public override int GetFloor(){
+		public override bool IsNull(){
+			return true;
+		}
+	}
+	[Serializable]
+	public class TestGame : Game{
+		private Map _map;
+		public TestGame(){
+			_map = new TestMap(100, 100);
+		}
+		public override bool Tick(){
+			return true;
+		}
+		public override GameData GetGameData(){
+			return GameData.GetNullGameData();
+		}
+		public override GameBlocks GetGameBlocks(int index){
+			return GameBlocks.GetNullGameBlocks();
+		}
+		public override GameWorld GetGameWorld(){
+			return GameWorld.GetNullGameWorld();
+		}
+		public override Map GetMap(){
+			return _map;
+		}
+		public override Generation GetGeneration(){
+			return Generation.GetNullGeneration();
+		}
+		public override Data GetPlayer(){
+			return Data.GetNullData();
+		}
+		public override int GetGameBlocksCount(){
 			return 0;
 		}
 		public override bool IsNull(){
-			return true;
-		}	
+			return false;
+		}
 	}
 	[Serializable]
 	public class TOAGame : Game{
+		/*
+			GameLoop
+			
+			Basic
+			Progress through increasing difficulty dungeon
+			Gain experiance -> levels and skillpoints to use better equipment and spells
+			Gain gold -> spent at merchants for supplies
+			Gain loot -> weapons, armour and consumables
+			Merchants at inbetween floors, elements of inventory management
+			
+			Advancing events mechanic
+			As you move through the dungeon your actions impact random events that can happen to you
+			Hard enemies spawn on you
+			Loot spawns on you
+			You gain a temporary buff
+			Being seen by enemies increases chances of bad events
+			Events trigger by number of random steps walked
+			
+			Enemy traits
+			All enemies will have a trait to decercne them
+			i.e Unlucky Skeleton
+			These traits will buff/nerf/modify their stats or give them new gameplay mechanics
+			
+			Tooltip
+			Most of the game info will be shown through a tooltip system
+			For enemy health and stats this wil be shown in a contextual way
+			i.e Health: Dire, Fatigue: Exhausted, Morale: Good
+			
+			Combat
+			Fatigue mechanic lowering the damage/effectiveness of the weapon or spell propotianally
+			No cap for damage reduction but many differant types of damage
+			
+			Morale mechanic
+			The casting certain spells will reduce morale
+			On low morale events can trigger
+			i.e self fear, self paralyze
+			Certain weapons and spells can also lower targets morale
+			
+		*/
+		/*
+			Priority
+			[0] Movement, turns, ai and control
+			[1] Gameover and floor up
+			[2] Health defensive stats and attackable
+			[3] Equipment and inventory
+			[4] Effects: temporary/equipment
+			[5] Merchant floors
+			[6] Boss floors
+		*/
 		private int _floor;
-		private GameUnits _units;
+		private GameData _data;
 		private GameBlocks[] _blocks;
-		//private Unit _player;
-		private Level _level;
+		private GameWorld _world;
+		private Map _map;
+		private Generation _master;
+		//
+		public const int BLOCK_TILE = 0;
+		public const int BLOCK_WORLD = 1;
+		public const int BLOCK_VISUAL = 2;
+		public const int BLOCK_DOTURN = 3;
+		public const int BLOCK_INVENTORY = 4;
+		public const int BLOCK_ITEM = 5;
+		public const int BLOCK_EQUIP = 6;
+		//
 		public TOAGame(){
+			const int BLOCKS = 10;
 			_floor = 0;
-			//_player = new Hero(this);
-			_units = new GameUnits.UnlimitedGameUnits(100);
-			NewLevel();
+			_data = new GameData.UnlimitedGameData(100);
+			_blocks = new GameBlocks[BLOCKS];
+			for(int i = 0; i < BLOCKS; i++){
+				_blocks[i] = new GameBlocks.RealGameBlocks(i);
+			}
+			_world = new GameWorld.TOAGameWorld();
+			_map = new LevelMap(100, 100);
+			_master = Generation.GetNullGeneration();
+			Data.DATA.CreatePlayer(this);
+			Generate();
 		}
-		public override bool Process(){
-			return _level.Process(this);
+		private void Generate(){
+			_master = new Generation.ClassicGeneration(10);
+			while(!_master.IsFinished() && !_master.IsFailed()){
+				_master.Process(this);
+			}
+			_master = Generation.GetNullGeneration();
 		}
-		public override void NextLevel(){
-			DungeonMaster.GetTriggers().QueueAction(() => LoadSystem.Load(LoadSystem.Scene.Game, NewLevel));
+		public override bool Tick(){
+			return _world.Tick(this);
 		}
-		public override void GameOver(){
-			DungeonMaster.GetTriggers().QueueAction(() => LoadSystem.Load(LoadSystem.Scene.GameOver, () => SaveSystem.Save(this)));
-		}
-		public override GameUnits GetGameUnits(){
-			return _units;
+		public override GameData GetGameData(){
+			return _data;
 		}
 		public override GameBlocks GetGameBlocks(int index){
 			if(index < 0 || index >= _blocks.Length){
@@ -76,14 +168,17 @@ public abstract class Game{
 				return _blocks[index];
 			}
 		}
-		public override Unit GetPlayer(){
-			return _units.Get(0);
+		public override GameWorld GetGameWorld(){
+			return _world;
 		}
-		public override Level GetLevel(){
-			return _level;
+		public override Map GetMap(){
+			return _map;
 		}
-		public override int GetFloor(){
-			return _floor;
+		public override Generation GetGeneration(){
+			return _master;
+		}
+		public override Data GetPlayer(){
+			return _data.Get(0);
 		}
 		public override int GetGameBlocksCount(){
 			return _blocks.Length;
@@ -91,38 +186,18 @@ public abstract class Game{
 		public override bool IsNull(){
 			return false;
 		}
-		private void NewLevel(){
-			_floor = (_floor + 1);
-			_level = new Level(100, 100);
-			_level.GetMidPoint(out int x, out int y);
-			ClassicGen classic = new ClassicGen(this, 10);
-			classic.Spawn(this, x, y);
-			const int MAX_SANITY = 1000;
-			for(int sanity = 0; sanity < MAX_SANITY; sanity++){
-				classic.Process(this);
-				if(classic.IsFinished()){
-					//UnityEngine.Debug.Log("Game :: NewLevel() :: Completed");
-					SaveSystem.Save(this);
-					return;
-				}
-			}
-			//UnityEngine.Debug.Log("Game :: NewLevel() :: Failed");
-			NewLevel();
-		}
 	}
-	//
-	public abstract bool Process();
-	public abstract void NextLevel();
-	public abstract void GameOver();
-	public abstract GameUnits GetGameUnits();
+	public abstract bool Tick();
+	public abstract GameData GetGameData();
 	public abstract GameBlocks GetGameBlocks(int index);
-	public abstract Unit GetPlayer();
-	public abstract Level GetLevel();
+	public abstract GameWorld GetGameWorld();
+	public abstract Map GetMap();
+	public abstract Generation GetGeneration();
+	public abstract Data GetPlayer();
 	public abstract int GetGameBlocksCount();
-	public abstract int GetFloor();
 	public abstract bool IsNull();
 	//
-	private static readonly NullGame _NULL_GAME = new NullGame();
+	private static NullGame _NULL_GAME = new NullGame();
 	public static Game GetNullGame(){
 		return _NULL_GAME;
 	}

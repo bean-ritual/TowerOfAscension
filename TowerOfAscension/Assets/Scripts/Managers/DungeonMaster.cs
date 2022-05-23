@@ -4,78 +4,73 @@ using System.Collections.Generic;
 using UnityEngine;
 public class DungeonMaster : 
 	MonoBehaviour,
-	DungeonMaster.IGameTriggers
+	DungeonMaster.IDungeonMaster
 	{
 	public static class DUNGEONMASTER_DATA{
-		private static Game _game = Game.GetNullGame();
+		private static Game _global;
+		static DUNGEONMASTER_DATA(){
+			_global = Game.GetNullGame();
+		}
 		public static void SetGame(Game game){
-			_game = game;
+			_global = game;
 		}
 		public static void ClearGame(){
-			_game = Game.GetNullGame();
+			_global = Game.GetNullGame();
 		}
 		public static Game GetGame(){
-			return _game;
+			return _global;
 		}
 	}
-	public interface IGameTriggers{
+	public interface IDungeonMaster{
 		void QueueAction(Action action);
+		Game GetGame();
 	}
-	public class NullGameTriggers :
-		IGameTriggers
+	public class NullDungeonMaster :
+		IDungeonMaster
 		{
-		public void QueueAction(Action action){
-			UnityEngine.Debug.Log("NullGameTriggers");
+		public void QueueAction(Action action){}
+		public Game GetGame(){
+			return Game.GetNullGame();
 		}
 	}
-	private static readonly NullGameTriggers _NULL_GAME_TRIGGERS = new NullGameTriggers();
 	private static DungeonMaster _INSTANCE;
 	private Game _local = Game.GetNullGame();
 	private Queue<Action> _actions;
 	private bool _tick;
-	private bool _busy;
 	private WaitForFixedUpdate _update;
 	private void Awake(){
 		GameManager.GetInstance().RingTheDinkster();
-		if(_INSTANCE != null){
+		if(_INSTANCE == null){
+			_INSTANCE = this;
+			_local = DUNGEONMASTER_DATA.GetGame();
+			_actions = new Queue<Action>();
+			if(_local.IsNull()){
+				_actions.Enqueue(() => LoadSystem.Load(LoadSystem.Scene.Main, () => SaveSystem.Save(_local)));
+			}else{
+				Play();
+			}
+		}else{
 			Destroy(gameObject);
-			return;
 		}
-		_INSTANCE = this;
-		_local = DUNGEONMASTER_DATA.GetGame();
-		_actions = new Queue<Action>();
-		if(_local.IsNull()){
-			_actions.Enqueue(() => LoadSystem.Load(LoadSystem.Scene.Main, () => SaveSystem.Save(_local)));
-		}
-		Play();
 	}
 	private void LateUpdate(){
-		if(!_busy && _actions.Count > 0){
+		if(!WorldDataManager.GetInstance().IsBusy() && _actions.Count > 0){
 			_actions.Dequeue()?.Invoke();
-			_busy = true;
-			return;
 		}
-		_busy = false;
 	}
 	public IEnumerator GameLoop(){
 		yield return _update;
 		while(_tick){
-			if(IsBusy()){
+			if(WorldDataManager.GetInstance().IsBusy()){
 				yield return _update;
 			}
-			if(!_local.Process()){
+			if(_local.Tick()){
 				yield return _update;
 			}
 		}
 	}
 	public void QueueAction(Action action){
 		_actions.Enqueue(action);
-	}
-	public void BusyFrame(){
-		_busy = true;
-	}
-	public bool IsBusy(){
-		return _busy || _actions.Count > 0;
 	}
 	public void Play(){
 		_tick = true;
@@ -84,24 +79,16 @@ public class DungeonMaster :
 	public void Pause(){
 		_tick = false;
 	}
-	public void Process(){
-		if(!_tick){
-			_local.Process();
-		}
-	}
-	public Game GetLocalGame(){
+	public Game GetGame(){
 		return _local;
 	}
-	public Level GetLevel(){
-		return _local.GetLevel();
-	}
-	public static DungeonMaster GetInstance(){
-		return _INSTANCE;
-	}
-	public static IGameTriggers GetTriggers(){
+	//
+	private static NullDungeonMaster _NULL_DUNGEON_MASTER = new NullDungeonMaster();
+	public static IDungeonMaster GetInstance(){
 		if(_INSTANCE == null){
-			return _NULL_GAME_TRIGGERS;
+			return _NULL_DUNGEON_MASTER;
+		}else{
+			return _INSTANCE;
 		}
-		return _INSTANCE;
 	}
 }

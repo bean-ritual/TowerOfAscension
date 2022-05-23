@@ -8,33 +8,21 @@ public class MessageBoxManager :
 	{
 	public interface IMessageBoxManager{
 		void ShowMessage(string text);
-		bool IsNull();
 	}
-	public class NullMessageBoxManager : 
-		MessageBoxManager.IMessageBoxManager
-		{
+	[Serializable]
+	public class NullMessageBoxManager : IMessageBoxManager{
 		public void ShowMessage(string text){}
-		public bool IsNull(){
-			const bool NULL = true;
-			return NULL;
-		}
 	}
-	private static NullMessageBoxManager _NULL_MESSAGE_BOX = new NullMessageBoxManager();
-	private static IMessageBoxManager _INSTANCE = _NULL_MESSAGE_BOX;
+	private static IMessageBoxManager _INSTANCE;
 	private Queue<TextMessage> _messages;
 	[SerializeField]private RectTransform _contentRect;
 	[SerializeField]private GameObject _prefabMessage;
-	private void OnDestroy(){
-		if(_INSTANCE == this){
-			_INSTANCE = _NULL_MESSAGE_BOX;
-		}
-	}
 	private void Awake(){
-		if(!_INSTANCE.IsNull()){
-			Destroy(gameObject);
-		}else{
+		if(_INSTANCE == null){
 			_INSTANCE = this;
 			_messages = new Queue<TextMessage>();
+		}else{
+			Destroy(gameObject);
 		}
 	}
 	public void ShowMessage(string text){
@@ -49,14 +37,12 @@ public class MessageBoxManager :
 		message.Setup(text);
 		_messages.Enqueue(message);
 	}
-	public bool IsNull(){
-		const bool NULL = false;
-		return NULL;
-	}
-	public static IMessageBoxManager GetNullMessageBox(){
-		return _NULL_MESSAGE_BOX;
-	}
+	private static NullMessageBoxManager _NULL_MESSAGE_BOX = new NullMessageBoxManager();
 	public static IMessageBoxManager GetInstance(){
-		return _INSTANCE;
+		if(_INSTANCE == null){
+			return _NULL_MESSAGE_BOX;
+		}else{
+			return _INSTANCE;
+		}
 	}
 }

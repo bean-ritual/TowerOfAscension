@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2934025882487176299}
   - component: {fileID: 2934025882487176292}
   - component: {fileID: 8064491354596415718}
-  m_Layer: 11
+  m_Layer: 0
   m_Name: TextPopup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -77,8 +77,8 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 1703778557
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &2934025882487176292

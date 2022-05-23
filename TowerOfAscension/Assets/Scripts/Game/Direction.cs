@@ -6,10 +6,10 @@ using UnityEngine;
 public abstract class Direction{
 	[Serializable]
 	public class NullDirection : Direction{
-		public override Tile GetTile(Game game, Tile tile){
-			return Tile.GetNullTile();
+		public override Map.Tile GetTile(Map map, Map.Tile tile){
+			return Map.Tile.GetNullTile();
 		}
-		public override Vector3 GetWorldDirection(Game game){
+		public override Vector3 GetWorldDirection(Map map){
 			return Vector3.zero;
 		}
 		public override bool IsNull(){
@@ -17,192 +17,201 @@ public abstract class Direction{
 		}
 	}
 	[Serializable]
-	public class North : Direction{
+	public class North : BaseDirection{
 		private const int _X = 0;
 		private const int _Y = 1;
-		public override Tile GetTile(Game game, Tile tile){
-			return tile.GetTileFrom(game, _X, _Y);
+		public override Map.Tile GetTile(Map map, Map.Tile tile){
+			return tile.GetTileFrom(map, _X, _Y);
 		}
-		public override Vector3 GetWorldDirection(Game game){
-			return game.GetLevel().GetWorldPosition(_X, _Y);
+		public override Vector3 GetWorldDirection(Map map){
+			return map.GetWorldPosition(_X, _Y);
 		}
 	}
 	[Serializable]
-	public class South : Direction{
+	public class South : BaseDirection{
 		private const int _X = 0;
 		private const int _Y = -1;
-		public override Tile GetTile(Game game, Tile tile){
-			return tile.GetTileFrom(game, _X, _Y);
+		public override Map.Tile GetTile(Map map, Map.Tile tile){
+			return tile.GetTileFrom(map, _X, _Y);
 		}
-		public override Vector3 GetWorldDirection(Game game){
-			return game.GetLevel().GetWorldPosition(_X, _Y);
+		public override Vector3 GetWorldDirection(Map map){
+			return map.GetWorldPosition(_X, _Y);
 		}
 	}
 	[Serializable]
-	public class East : Direction{
+	public class East : BaseDirection{
 		private const int _X = 1;
 		private const int _Y = 0;
-		public override Tile GetTile(Game game, Tile tile){
-			return tile.GetTileFrom(game, _X, _Y);
+		public override Map.Tile GetTile(Map map, Map.Tile tile){
+			return tile.GetTileFrom(map, _X, _Y);
 		}
-		public override Vector3 GetWorldDirection(Game game){
-			return game.GetLevel().GetWorldPosition(_X, _Y);
+		public override Vector3 GetWorldDirection(Map map){
+			return map.GetWorldPosition(_X, _Y);
 		}
 	}
 	[Serializable]
-	public class West : Direction{
+	public class West : BaseDirection{
 		private const int _X = -1;
 		private const int _Y = 0;
-		public override Tile GetTile(Game game, Tile tile){
-			return tile.GetTileFrom(game, _X, _Y);
+		public override Map.Tile GetTile(Map map, Map.Tile tile){
+			return tile.GetTileFrom(map, _X, _Y);
 		}
-		public override Vector3 GetWorldDirection(Game game){
-			return game.GetLevel().GetWorldPosition(_X, _Y);
+		public override Vector3 GetWorldDirection(Map map){
+			return map.GetWorldPosition(_X, _Y);
 		}
 	}
 	[Serializable]
-	public class NorthEast : Direction{
+	public class NorthEast : BaseDirection{
 		private const int _X = 1;
 		private const int _Y = 1;
-		public override Tile GetTile(Game game, Tile tile){
-			return tile.GetTileFrom(game, _X, _Y);
+		public override Map.Tile GetTile(Map map, Map.Tile tile){
+			return tile.GetTileFrom(map, _X, _Y);
 		}
-		public override Vector3 GetWorldDirection(Game game){
-			return game.GetLevel().GetWorldPosition(_X, _Y);
+		public override Vector3 GetWorldDirection(Map map){
+			return map.GetWorldPosition(_X, _Y);
 		}
 	}
 	[Serializable]
-	public class NorthWest : Direction{
+	public class NorthWest : BaseDirection{
 		private const int _X = -1;
 		private const int _Y = 1;
-		public override Tile GetTile(Game game, Tile tile){
-			return tile.GetTileFrom(game, _X, _Y);
+		public override Map.Tile GetTile(Map map, Map.Tile tile){
+			return tile.GetTileFrom(map, _X, _Y);
 		}
-		public override Vector3 GetWorldDirection(Game game){
-			return game.GetLevel().GetWorldPosition(_X, _Y);
+		public override Vector3 GetWorldDirection(Map map){
+			return map.GetWorldPosition(_X, _Y);
 		}
 	}
 	[Serializable]
-	public class SouthEast : Direction{
+	public class SouthEast : BaseDirection{
 		private const int _X = 1;
 		private const int _Y = -1;
-		public override Tile GetTile(Game game, Tile tile){
-			return tile.GetTileFrom(game, _X, _Y);
+		public override Map.Tile GetTile(Map map, Map.Tile tile){
+			return tile.GetTileFrom(map, _X, _Y);
 		}
-		public override Vector3 GetWorldDirection(Game game){
-			return game.GetLevel().GetWorldPosition(_X, _Y);
+		public override Vector3 GetWorldDirection(Map map){
+			return map.GetWorldPosition(_X, _Y);
 		}
 	}
 	[Serializable]
-	public class SouthWest : Direction{
+	public class SouthWest : BaseDirection{
 		private const int _X = -1;
 		private const int _Y = -1;
-		public override Tile GetTile(Game game, Tile tile){
-			return tile.GetTileFrom(game, _X, _Y);
+		public override Map.Tile GetTile(Map map, Map.Tile tile){
+			return tile.GetTileFrom(map, _X, _Y);
 		}
-		public override Vector3 GetWorldDirection(Game game){
-			return game.GetLevel().GetWorldPosition(_X, _Y);
+		public override Vector3 GetWorldDirection(Map map){
+			return map.GetWorldPosition(_X, _Y);
 		}
 	}
-	[field:NonSerialized]private static readonly NullDirection _NULL_DIRECTION = new NullDirection();
-	[field:NonSerialized]private static readonly North _NORTH = new North();
-	[field:NonSerialized]private static readonly South _SOUTH = new South();
-	[field:NonSerialized]private static readonly East _EAST = new East();
-	[field:NonSerialized]private static readonly West _WEST = new West();
-	[field:NonSerialized]private static readonly NorthEast _NORTH_EAST = new NorthEast();
-	[field:NonSerialized]private static readonly NorthWest _NORTH_WEST = new NorthWest();
-	[field:NonSerialized]private static readonly SouthEast _SOUTH_EAST = new SouthEast();
-	[field:NonSerialized]private static readonly SouthWest _SOUTH_WEST = new SouthWest();
+	[Serializable]
+	public abstract class BaseDirection : Direction{
+		public override bool IsNull(){
+			return false;
+		}
+	}
+	private static Direction[] _DIRECTIONS = {
+		new NullDirection(),
+		new North(),
+		new South(),
+		new East(),
+		new West(),
+		new NorthEast(),
+		new NorthWest(),
+		new SouthEast(),
+		new SouthWest(),
+	};
+	private const int _NULL_DIRECTION = 0;
+	private const int _NORTH = 1;
+	private const int _SOUTH = 2;
+	private const int _EAST = 3;
+	private const int _WEST = 4;
+	private const int _NORTH_EAST = 5;
+	private const int _NORTH_WEST = 6;
+	private const int _SOUTH_EAST = 7;
+	private const int _SOUTH_WEST = 8;
 	//
-	public abstract Tile GetTile(Game game, Tile tile);
-	public abstract Vector3 GetWorldDirection(Game game);
-	public virtual bool IsNull(){
-		return false;
-	}
+	public abstract Map.Tile GetTile(Map map, Map.Tile tile);
+	public abstract Vector3 GetWorldDirection(Map map);
+	public abstract bool IsNull();
 	//
 	public static Direction IntToDirection(int x, int y){
 		if(y > 0){
 			if(x > 0){
-				return _NORTH_EAST;
+				return _DIRECTIONS[_NORTH_EAST];
 			}
 			if(x < 0){
-				return _NORTH_WEST;
+				return _DIRECTIONS[_NORTH_WEST];
 			}
-			return _NORTH;
+			return _DIRECTIONS[_NORTH];
 		}
 		if(y < 0){
 			if(x > 0){
-				return _SOUTH_EAST;
+				return _DIRECTIONS[_SOUTH_EAST];
 			}
 			if(x < 0){
-				return _SOUTH_WEST;
+				return _DIRECTIONS[_SOUTH_WEST];
 			}
-			return _SOUTH;
+			return _DIRECTIONS[_SOUTH];
 		}
 		if(x > 0){
 			if(y > 0){
-				return _NORTH_EAST;
+				return _DIRECTIONS[_NORTH_EAST];
 			}
 			if(y < 0){
-				return _SOUTH_EAST;
+				return _DIRECTIONS[_SOUTH_EAST];
 			}
-			return _EAST;
+			return _DIRECTIONS[_EAST];
 		}
 		if(x < 0){
 			if(y > 0){
-				return _NORTH_WEST;
+				return _DIRECTIONS[_NORTH_WEST];
 			}
 			if(y < 0){
-				return _SOUTH_WEST;
+				return _DIRECTIONS[_SOUTH_WEST];
 			}
-			return _WEST;
+			return _DIRECTIONS[_WEST];
 		}
-		return _NULL_DIRECTION;
+		return _DIRECTIONS[_NULL_DIRECTION];
 	}
-	public static Direction IntToDirection(int unitX, int unitY, int targetX, int targetY){
-		return IntToDirection(targetX - unitX, targetY - unitY);
+	public static Direction IntToDirection(int posX, int posY, int targetX, int targetY){
+		return IntToDirection(targetX - posX, targetY - posY);
 	}
 	public static Direction GetNullDirection(){
-		return _NULL_DIRECTION;
+		return _DIRECTIONS[_NULL_DIRECTION];
 	}
 	public static Direction GetNorth(){
-		return _NORTH;
+		return _DIRECTIONS[_NORTH];
 	}
 	public static Direction GetSouth(){
-		return _SOUTH;
+		return _DIRECTIONS[_SOUTH];
 	}
 	public static Direction GetEast(){
-		return _EAST;
+		return _DIRECTIONS[_EAST];
 	}
 	public static Direction GetWest(){
-		return _WEST;
+		return _DIRECTIONS[_WEST];
 	}
 	public static Direction GetNorthEast(){
-		return _NORTH_EAST;
+		return _DIRECTIONS[_NORTH_EAST];
 	}
 	public static Direction GetNorthWest(){
-		return _NORTH_WEST;
+		return _DIRECTIONS[_NORTH_WEST];
 	}
 	public static Direction GetSouthEast(){
-		return _SOUTH_EAST;
+		return _DIRECTIONS[_SOUTH_EAST];
 	}
 	public static Direction GetSouthWest(){
-		return _SOUTH_WEST;
+		return _DIRECTIONS[_SOUTH_WEST];
 	}
-	public static Direction GetIntDirection(int i){
-		switch(i){
-			default: return _NORTH;
-			case 0: return _NORTH;
-			case 1: return _SOUTH;
-			case 2: return _WEST;
-			case 3: return _EAST;
-			case 4: return _NORTH_EAST;
-			case 5: return _NORTH_WEST;
-			case 6: return _SOUTH_EAST;
-			case 7: return _SOUTH_WEST;
+	public static Direction GetIntDirection(int index){
+		if(index < 0 || index >= _DIRECTIONS.Length){
+			return _DIRECTIONS[0];
+		}else{
+			return _DIRECTIONS[index];
 		}
 	}
 	public static Direction GetRandomDirection(){
-		return GetIntDirection(UnityEngine.Random.Range(0, 8));
+		return GetIntDirection(UnityEngine.Random.Range(1, 9));
 	}
 }

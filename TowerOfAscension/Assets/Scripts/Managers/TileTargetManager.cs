@@ -2,14 +2,24 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-public class TileTargetManager : MonoBehaviour{
+public class TileTargetManager : 
+	MonoBehaviour,
+	TileTargetManager.ITileTargetManager
+	{
+	public interface ITileTargetManager{
+		void SetTile(Map.Tile tile);
+	}
+	[Serializable]
+	public class NullTileTargetManager : ITileTargetManager{
+		public void SetTile(Map.Tile tile){}
+	}
+	//
 	private static TileTargetManager _INSTANCE;
-	private Level _level = Level.GetNullLevel();
-	private Tile _tile = Tile.GetNullTile();
+	private Game _game = Game.GetNullGame();
+	private Map _map = Map.GetNullMap();
+	private Map.Tile _tile = Map.Tile.GetNullTile();
 	[SerializeField]private Transform _target;
-	[SerializeField]private Transform _offset;
 	[SerializeField]private SpriteRenderer _renderer;
-	[SerializeField]private int _sortingOrder;
 	private void Awake(){
 		if(_INSTANCE != null){
 			Destroy(gameObject);
@@ -17,18 +27,22 @@ public class TileTargetManager : MonoBehaviour{
 		_INSTANCE = this;
 	}
 	private void Start(){
-		_level = DungeonMaster.GetInstance().GetLevel();
-		_offset.localPosition = _level.GetVector3CellOffset();
-		_renderer.sortingOrder = _sortingOrder;
+		_game = DungeonMaster.GetInstance().GetGame();
+		_map = _game.GetMap();
 		_renderer.color = Color.green;
 		SetTile(_tile);
 	}
-	public void SetTile(Tile tile){
+	public void SetTile(Map.Tile tile){
 		_tile = tile;
-		_tile.GetXY(out int x, out int y);
-		_target.localPosition = _level.GetWorldPosition(x, y);
+		_target.localPosition = _tile.GetPosition(_map) + _map.GetVector3TileOffset();
 	}
-	public static TileTargetManager GetInstance(){
-		return _INSTANCE;
+	//
+	private static NullTileTargetManager _NULL_TILE_TARGET_MANAGER = new NullTileTargetManager();
+	public static ITileTargetManager GetInstance(){
+		if(_INSTANCE == null){
+			return _NULL_TILE_TARGET_MANAGER;
+		}else{
+			return _INSTANCE;
+		}
 	}
 }

@@ -9,7 +9,7 @@ public class UVAtlas{
 		static UVATLAS_DATA(){
 			_UV_ATLASES = new UVAtlas[]{
 				SafeCreateUVAtlas(
-					Resources.Load<Texture>(AtlasID.Colours.ToString()),
+					Resources.Load<Texture>("Colours"),
 					() => {
 						return new UVAtlas.UVPixel[]{
 							new UVAtlas.UVPixel(new Vector2Int(0,0), new Vector2Int(1,1)),
@@ -24,22 +24,23 @@ public class UVAtlas{
 					}
 				),
 				SafeCreateUVAtlas(
-					Resources.Load<Texture>(AtlasID.Tilemap.ToString()),
+					Resources.Load<Texture>("Tilemap"),
 					() => {
 						return new UVAtlas.UVPixel[]{
 							new UVAtlas.UVPixel(new Vector2Int(0,0), new Vector2Int(32,32)),
 							new UVAtlas.UVPixel(new Vector2Int(32,0), new Vector2Int(64,32)),
 							new UVAtlas.UVPixel(new Vector2Int(64,0), new Vector2Int(96,32)),
-							new UVAtlas.UVPixel(new Vector2Int(96,0), new Vector2Int(128,32))
+							new UVAtlas.UVPixel(new Vector2Int(96,0), new Vector2Int(128,32)),
 						};
 					}
 				),
 				SafeCreateUVAtlas(
-					Resources.Load<Texture>(AtlasID.Lighting.ToString()),
+					Resources.Load<Texture>("Shadowmap"),
 					() => {
 						return new UVAtlas.UVPixel[]{
 							new UVAtlas.UVPixel(new Vector2Int(0,0), new Vector2Int(1,1)),
-							new UVAtlas.UVPixel(new Vector2Int(1,0), new Vector2Int(2,1))
+							new UVAtlas.UVPixel(new Vector2Int(1,0), new Vector2Int(2,1)),
+							new UVAtlas.UVPixel(new Vector2Int(2,0), new Vector2Int(3,1)),
 						};
 					}
 				),
@@ -52,22 +53,14 @@ public class UVAtlas{
 			}
 			return new UVAtlas(texture, SetUVPixels);
 		}
-		public static UVAtlas GetUVAtlas(AtlasID id){
-			switch(id){
-				default: return UVAtlas.GetNullUVAtlas();
-				case AtlasID.Null: return UVAtlas.GetNullUVAtlas();
-				case AtlasID.Colours: return _UV_ATLASES[0];
-				case AtlasID.Tilemap: return _UV_ATLASES[1];
-				case AtlasID.Lighting: return _UV_ATLASES[2];
+		public static UVAtlas GetUVAtlas(int id){
+			if(id < 0 || id >= _UV_ATLASES.Length){
+				return UVAtlas.GetNullUVAtlas();
+			}else{
+				return _UV_ATLASES[id];
 			}
 		}
 	}
-	public enum AtlasID{
-		Null,
-		Colours,
-		Tilemap,
-		Lighting,
-	};
 	[Serializable]
 	public class NullUVAtlas : UVAtlas{
 		private static readonly Vector2 _NULL_VECTOR2 = Vector2.zero;

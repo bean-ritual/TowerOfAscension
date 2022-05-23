@@ -7,13 +7,82 @@ using UnityEngine;
 public abstract class Block{
 	[Serializable]
 	public class NullBlock : 
-		Block
+		Block,
+		IProcess,
+		IStats,
+		IWorldPosition,
+		IListData,
+		ICanPrint,
+		ICanConnect,
+		IVisual,
+		IDoTurn,
+		IEndTurn,
+		MapMeshManager.ITileMeshData
 		{
 		//
+		public void Process(Game game){}
 		//
-		public override void SetIDs(int unitID, int blockID){}
-		public override Unit GetSelf(Game game){
-			return Unit.GetNullUnit();
+		public int GetHealth(Game game){
+			return 0;
+		}
+		public int GetMaxHealth(Game game){
+			return 0;
+		}
+		//
+		public void Spawn(Game game, int x, int y){}
+		public void Despawn(Game game){}
+		public void SetPosition(Game game, int x, int y){}
+		public void ClearPosition(Game game){}
+		public Map.Tile GetTile(Game game){
+			return Map.Tile.GetNullTile();
+		}
+		public Vector3 GetPosition(Game game){
+			return Vector3.zero;
+		}
+		//
+		public bool CanPrint(Game game){
+			return true;
+		}
+		//
+		public bool CanConnect(Game game){
+			return false;
+		}
+		//
+		public void PlayAnimation(Game game, WorldAnimation animation){}
+		public int GetSprite(Game game){
+			return 0;
+		}
+		public int GetSortingOrder(Game game){
+			return 0;
+		}
+		public bool GetRender(Game game){
+			return false;
+		}
+		public int GetAtlasIndex(Game game){
+			return 0;
+		}
+		public int GetUVFactor(Game game){
+			return 0;
+		}
+		//
+		public bool DoTurn(Game game){
+			return true;
+		}
+		//
+		public void EndTurn(Game game){}
+		//
+		public void AddData(Game game, Data data){}
+		public void RemoveData(Game game, Data data){}
+		public Data GetData(Game game, int index){
+			return Data.GetNullData();
+		}
+		public int GetDataCount(){
+			return 0;
+		}
+		//
+		public override void SetIDs(int dataID, int blockID){}
+		public override Data GetSelf(Game game){
+			return Data.GetNullData();
 		}
 		public override GameBlocks GetGameBlocks(Game game){
 			return GameBlocks.GetNullGameBlocks();
@@ -25,14 +94,14 @@ public abstract class Block{
 	}
 	[Serializable]
 	public abstract class BaseBlock : Block{
-		private int _unitID;
+		private int _dataID;
 		private int _blockID;
-		public override void SetIDs(int unitID, int blockID){
-			_unitID = unitID;
+		public override void SetIDs(int dataID, int blockID){
+			_dataID = dataID;
 			_blockID = blockID;
 		}
-		public override Unit GetSelf(Game game){
-			return game.GetGameUnits().Get(_unitID);
+		public override Data GetSelf(Game game){
+			return game.GetGameData().Get(_dataID);
 		}
 		public override GameBlocks GetGameBlocks(Game game){
 			return game.GetGameBlocks(_blockID);
@@ -41,15 +110,45 @@ public abstract class Block{
 			return false;
 		}
 		protected void FireBlockUpdateEvent(Game game){
-			//GetSelf(game).FireBlockUpdateEvent(_blockID);
+			GetSelf(game).FireBlockUpdateEvent(_blockID);
 		}
 	}
-	public abstract void SetIDs(int unitID, int blockID);
-	public abstract Unit GetSelf(Game game);
+	public abstract void SetIDs(int dataID, int blockID);
+	public abstract Data GetSelf(Game game);
 	public abstract GameBlocks GetGameBlocks(Game game);
 	public abstract void Disassemble(Game game);
 	public abstract bool IsNull();
 	//
+	public virtual IProcess GetIProcess(){
+		return _NULL_BLOCK;
+	}
+	public virtual IStats GetIStats(){
+		return _NULL_BLOCK;
+	}
+	public virtual IWorldPosition GetIWorldPosition(){
+		return _NULL_BLOCK;
+	}
+	public virtual IListData GetIListData(){
+		return _NULL_BLOCK;
+	}
+	public virtual ICanPrint GetICanPrint(){
+		return _NULL_BLOCK;
+	}
+	public virtual ICanConnect GetICanConnect(){
+		return _NULL_BLOCK;
+	}
+	public virtual IVisual GetIVisual(){
+		return _NULL_BLOCK;
+	}
+	public virtual IDoTurn GetIDoTurn(){
+		return _NULL_BLOCK;
+	}
+	public virtual IEndTurn GetIEndTurn(){
+		return _NULL_BLOCK;
+	}
+	public virtual MapMeshManager.ITileMeshData GetITileMeshData(){
+		return _NULL_BLOCK;
+	}
 	//
 	private static NullBlock _NULL_BLOCK = new NullBlock();
 	public static Block GetNullBlock(){

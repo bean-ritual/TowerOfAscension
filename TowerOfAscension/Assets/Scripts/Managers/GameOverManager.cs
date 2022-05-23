@@ -14,17 +14,17 @@ public class GameOverManager : MonoBehaviour{
 	private void Awake(){
 		GameManager.GetInstance().RingTheDinkster();
 		if(_INSTANCE != null){
+			_INSTANCE = this;
+			_over = DungeonMaster.DUNGEONMASTER_DATA.GetGame();
+			_exit.onClick.AddListener(OnExit);
+			RefreshScore();
+		}else{
 			Destroy(gameObject);
-			return;
 		}
-		_INSTANCE = this;
-		_over = DungeonMaster.DUNGEONMASTER_DATA.GetGame();
-		_exit.onClick.AddListener(OnExit);
-		RefreshScore();
 	}
 	public void RefreshScore(){
-		const string SCORE_TEXT = "Floor: ";
-		_scoreText.text = SCORE_TEXT + _over.GetFloor();
+		const string SCORE_TEXT = "Floor: {0}";
+		//_scoreText.text = string.Format(SCORE_TEXT, _over.GetFloor());
 	}
 	public void OnExit(){
 		LoadSystem.Load(LoadSystem.Scene.Main, () => SaveSystem.Save(Game.GetNullGame()));

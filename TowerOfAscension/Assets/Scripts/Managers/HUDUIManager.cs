@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 public class HUDUIManager : MonoBehaviour{
+	/*
 	private static HUDUIManager _INSTANCE;
 	private Game _local = Game.GetNullGame();
 	private Unit _unit = Unit.GetNullUnit();
@@ -55,11 +56,9 @@ public class HUDUIManager : MonoBehaviour{
 	public void RefreshLantern(){
 		_lantern.GetTag(_local, Tag.ID.Fuel).OnTagUpdate -= OnLightTagUpdate;
 		_lantern = _unit.GetTag(_local, Tag.ID.Light).GetIGetUnit().GetUnit(_local, _unit);
-		/*
 		if(_lantern.IsNull()){
 			_lantern = _unit;
 		}
-		*/
 		_lantern.GetTag(_local, Tag.ID.Fuel).OnTagUpdate += OnLightTagUpdate;
 		RefreshLight();
 	}
@@ -93,4 +92,5 @@ public class HUDUIManager : MonoBehaviour{
 	public static HUDUIManager GetInstance(){
 		return _INSTANCE;
 	}
+	*/
 }

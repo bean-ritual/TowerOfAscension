@@ -2,10 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-public class InventoryUIManager : 
-	MonoBehaviour,
-	InventoryUIManager.IInventoryUIManager
-	{
+public class InventoryUIManager : MonoBehaviour{
+	/*
 	public interface IInventoryUIManager{
 		void SetUnit(Unit unit);
 	}
@@ -163,4 +161,5 @@ public class InventoryUIManager :
 			return _INSTANCE;
 		}
 	}
+	*/
 }

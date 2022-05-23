@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 public class PickupUIManager : MonoBehaviour{
+	/*
 	private static PickupUIManager _INSTANCE;
 	private Game _local = Game.GetNullGame();
-	private Level _level = Level.GetNullLevel();
-	private Tile _tile = Tile.GetNullTile();
-	private Dictionary<Unit, UIUnit> _uiUnits;
+	private Data _tile = Data.GetNullData();
+	private Dictionary<Unit, UIData> _uiUnits;
 	private UIWindowManager _uiWindow;
 	private RectTransform _content;
 	[SerializeField]private GameObject _prefabUIWindow;
@@ -95,4 +95,5 @@ public class PickupUIManager : MonoBehaviour{
 	public static PickupUIManager GetInstance(){
 		return _INSTANCE;
 	}
+	*/
 }

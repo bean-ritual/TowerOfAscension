@@ -10,20 +10,20 @@ public class MainManager : MonoBehaviour{
 	[SerializeField]private Button _exit;
 	private void Awake(){
 		GameManager.GetInstance().RingTheDinkster();
-		if(_INSTANCE != null){
-			Destroy(gameObject);
-			return;
-		}
-		_INSTANCE = this;
-		_continue.onClick.AddListener(OnContinue);
-		_newGame.onClick.AddListener(OnNewGame);
-		_options.onClick.AddListener(OnOptions);
-		_exit.onClick.AddListener(OnExit);
-		if(SaveSystem.Load(out Game file)){
-			DungeonMaster.DUNGEONMASTER_DATA.SetGame(file);
-		}
-		if(DungeonMaster.DUNGEONMASTER_DATA.GetGame().IsNull()){
-			_continue.interactable = false;
+		if(_INSTANCE == null){
+			_INSTANCE = this;
+			_continue.onClick.AddListener(OnContinue);
+			_newGame.onClick.AddListener(OnNewGame);
+			_options.onClick.AddListener(OnOptions);
+			_exit.onClick.AddListener(OnExit);
+			if(SaveSystem.Load(out Game file)){
+				DungeonMaster.DUNGEONMASTER_DATA.SetGame(file);
+			}
+			if(DungeonMaster.DUNGEONMASTER_DATA.GetGame().IsNull()){
+				_continue.interactable = false;
+			}
+		}else{
+			Destroy(this.gameObject);
 		}
 	}
 	public void OnContinue(){
@@ -33,12 +33,9 @@ public class MainManager : MonoBehaviour{
 		LoadSystem.Load(LoadSystem.Scene.Game, () => DungeonMaster.DUNGEONMASTER_DATA.SetGame(new Game.TOAGame()));
 	}
 	public void OnOptions(){
-		
+		//
 	}
 	public void OnExit(){
 		Application.Quit();
-	}
-	public static MainManager GetInstance(){
-		return _INSTANCE;
 	}
 }

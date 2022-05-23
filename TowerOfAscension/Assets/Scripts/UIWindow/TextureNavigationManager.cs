@@ -15,19 +15,19 @@ public class TextureNavigationManager :
 	//
 	private float _zoom;
 	private Vector3 _delta;
-	private Game _local = Game.GetNullGame();
-	private Unit _target = Unit.GetNullUnit();
+	private Game _game = Game.GetNullGame();
+	private Data _target = Data.GetNullData();
 	[SerializeField]private RawImage _image;
 	[SerializeField]private Button _resetButton;
 	public void Setup(CameraManager camera, UIWindowManager window){
 		Reset();
-		_local = DungeonMaster.GetInstance().GetLocalGame();
+		_game = DungeonMaster.GetInstance().GetGame();
 		_camera = camera;
 		_window = window;
 		_resetButton.onClick.AddListener(Reset);
 		_camera.Setup(GetPosition, GetZoom, true);
 	}
-	public void SetUnit(Unit target){
+	public void SetUnit(Data target){
 		_target = target;
 		Reset();
 		_camera.Setup(GetPosition, GetZoom, true);
@@ -46,7 +46,7 @@ public class TextureNavigationManager :
 		_window.SendWindowToFront();
 	}
 	public Vector3 GetPosition(){
-		return _delta + _target.GetTag(_local, Tag.ID.Position).GetIGetVector().GetVector(_local, _target);
+		return _delta + _target.GetBlock(_game, 1).GetIWorldPosition().GetPosition(_game);
 	}
 	public float GetZoom(){
 		return _zoom;

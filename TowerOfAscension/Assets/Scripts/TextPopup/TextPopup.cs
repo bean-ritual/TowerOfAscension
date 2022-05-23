@@ -3,24 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 public class TextPopup: MonoBehaviour{
-	public enum TextColour{
-		White,
-		Red,
-		Blue,
-		Green,
-	};
 	private float _timer;
-	private Color _color;
+	private Color _colour;
 	[SerializeField]private TextMeshPro _text;
-	public void Setup(string text, int sortingOrder){
-		Setup(text, sortingOrder, TextColour.White);
+	public void Setup(string text){
+		Setup(text, 0);
 	}
-	public void Setup(string text, int sortingOrder, TextColour colour){
+	public void Setup(string text, int colour){
 		const float TIMER = 0.5f;
 		_text.SetText(text);
-		_text.sortingOrder = sortingOrder;
 		_text.color = GetColour(colour);
-		_color = _text.color;
+		_colour = _text.color;
 		_timer = TIMER;
 	}
 	private void Update(){
@@ -29,19 +22,20 @@ public class TextPopup: MonoBehaviour{
 		_timer -= Time.deltaTime;
 		if(_timer < 0){
 			const float FADE_SPEED = 5f;
-			_color.a -= FADE_SPEED * Time.deltaTime;
-			_text.color = _color;
-			if(_color.a < 0){
+			_colour.a -= FADE_SPEED * Time.deltaTime;
+			_text.color = _colour;
+			if(_colour.a < 0){
 				Destroy(gameObject);
 			}
 		}
 	}
-	private Color GetColour(TextColour colour){
+	private Color GetColour(int colour){
 		switch(colour){
 			default: return Color.white;
-			case TextColour.Red: return Color.red;
-			case TextColour.Blue: return Color.blue;
-			case TextColour.Green: return Color.green;
+			case 0: return Color.white;
+			case 1: return Color.red;
+			case 2: return Color.blue;
+			case 3: return Color.green;
 		}
 	}
 }

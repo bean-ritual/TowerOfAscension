@@ -41,3 +41,15 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Tilemap
+    uniqueID: 2403809591
+    locked: 0
+  - name: WorldData
+    uniqueID: 1071485191
+    locked: 0
+  - name: Shadowmap
+    uniqueID: 880682259
+    locked: 0
+  - name: TextPopup
+    uniqueID: 1703778557
+    locked: 0

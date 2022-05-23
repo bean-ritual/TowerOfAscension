@@ -2,7 +2,17 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-public class MinimapUIManager : MonoBehaviour{
+public class MinimapUIManager : 
+	MonoBehaviour,
+	MinimapUIManager.IMinimapUIManager
+	{
+	public interface IMinimapUIManager{
+		void SetData(Data data);
+	}
+	[Serializable]
+	public class NullMinimapUIManager : IMinimapUIManager{
+		public void SetData(Data data){}
+	}
 	private static MinimapUIManager _INSTANCE;
 	private UIWindowManager _uiWindow;
 	private TextureNavigationManager _texNav;
@@ -14,11 +24,11 @@ public class MinimapUIManager : MonoBehaviour{
 		SettingsSystem.GetConfig().minimap = _uiWindow.GetUISizeData();
 	}
 	private void Awake(){
-		if(_INSTANCE != null){
+		if(_INSTANCE == null){
+			_INSTANCE = this;
+		}else{
 			Destroy(gameObject);
-			return;
 		}
-		_INSTANCE = this;
 	}
 	private void Start(){
 		BuildUI();
@@ -37,10 +47,15 @@ public class MinimapUIManager : MonoBehaviour{
 		_texNav = go2.GetComponent<TextureNavigationManager>();
 		_texNav.Setup(_minimapCamera, _uiWindow);
 	}
-	public void SetUnit(Unit unit){
-		_texNav.SetUnit(unit);
+	public void SetData(Data data){
+		_texNav.SetUnit(data);
 	}
-	public static MinimapUIManager GetInstance(){
-		return _INSTANCE;
+	private static NullMinimapUIManager _NULL_MINIMAP_UI_MANAGER = new NullMinimapUIManager();
+	public static IMinimapUIManager GetInstance(){
+		if(_INSTANCE == null){
+			return _NULL_MINIMAP_UI_MANAGER;
+		}else{
+			return _INSTANCE;
+		}
 	}
 }
