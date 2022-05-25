@@ -77,10 +77,18 @@ public abstract class GameWorld{
 			}
 		}
 		public override Data GetData(Game game, int index){
-			return game.GetGameData().Get(_data[index]);
+			if(index < 0 || index >= _data.Count){
+				return Data.GetNullData();
+			}else{
+				return game.GetGameData().Get(_data[index]);
+			}
 		}
 		public override Block GetBlock(Game game, int index){
-			return game.GetGameBlocks(Game.TOAGame.BLOCK_DOTURN).Get(game, _data[index]);
+			if(index < 0 || index >= _data.Count){
+				return Block.GetNullBlock();
+			}else{
+				return game.GetGameBlocks(Game.TOAGame.BLOCK_DOTURN).Get(game, _data[index]);
+			}
 		}
 		public override Data GetCurrentData(Game game){
 			if(_index < 0 || _index >= _data.Count){

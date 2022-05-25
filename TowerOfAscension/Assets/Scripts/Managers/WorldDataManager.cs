@@ -23,7 +23,7 @@ public class WorldDataManager :
 		Await,
 		Busy,
 	};
-	private static IAnimationManager _INSTANCE;
+	private static WorldDataManager _INSTANCE;
 	//
 	private Game _game = Game.GetNullGame();
 	private GameWorld _world = GameWorld.GetNullGameWorld();
@@ -43,6 +43,9 @@ public class WorldDataManager :
 	private void OnDestroy(){
 		_world.OnSpawn -= OnSpawn;
 		_world.OnDespawn -= OnDespawn;
+		while(_pool.Count > 0){
+			_pool.Dequeue();
+		}
 	}
 	private void Start(){
 		_game = DungeonMaster.GetInstance().GetGame();

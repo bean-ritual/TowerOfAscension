@@ -112,7 +112,7 @@ public abstract class Game{
 		/*
 			Priority
 			[0] Movement, turns, ai and control
-			[1] Gameover and floor up
+			[1] Gameover, floor up and light
 			[2] Health defensive stats and attackable
 			[3] Equipment and inventory
 			[4] Effects: temporary/equipment

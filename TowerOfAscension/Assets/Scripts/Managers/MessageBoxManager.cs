@@ -13,7 +13,7 @@ public class MessageBoxManager :
 	public class NullMessageBoxManager : IMessageBoxManager{
 		public void ShowMessage(string text){}
 	}
-	private static IMessageBoxManager _INSTANCE;
+	private static MessageBoxManager _INSTANCE;
 	private Queue<TextMessage> _messages;
 	[SerializeField]private RectTransform _contentRect;
 	[SerializeField]private GameObject _prefabMessage;

@@ -35,6 +35,7 @@ public class WorldPosition :
 		_x = x;
 		_y = y;
 		game.GetMap().Get(x, y).GetIDataTile().GetData(game).GetBlock(game, 0).GetIListData().AddData(game, GetSelf(game));
+		WorldDataManager.GetInstance().PlayAnimation(new WorldAnimation.PositionUpdateAnimation(game, GetSelf(game)));
 	}
 	public void ClearPosition(Game game){
 		game.GetMap().Get(_x, _y).GetIDataTile().GetData(game).GetBlock(game, 0).GetIListData().RemoveData(game, GetSelf(game));
@@ -46,6 +47,12 @@ public class WorldPosition :
 	}
 	public Vector3 GetPosition(Game game){
 		return game.GetMap().GetWorldPosition(_x, _y);
+	}
+	public int GetX(){
+		return _x;
+	}
+	public int GetY(){
+		return _y;
 	}
 	public override void Disassemble(Game game){
 		Despawn(game);

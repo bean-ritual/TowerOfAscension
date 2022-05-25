@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-public interface ICanWalk{
-	bool CanWalk(Game game);
+public interface IMovement{
+	void Move(Game game, Direction direction);
 }

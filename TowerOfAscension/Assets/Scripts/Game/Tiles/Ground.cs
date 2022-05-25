@@ -9,6 +9,7 @@ public class Ground :
 	IListData,
 	ICanPrint,
 	ICanConnect,
+	ICanWalk,
 	MapMeshManager.ITileMeshData
 	{
 	private int _x;
@@ -48,6 +49,9 @@ public class Ground :
 			return true;
 		}
 	}
+	public bool CanWalk(Game game){
+		return !(_data.Count > 0);
+	}
 	public int GetAtlasIndex(Game game){
 		return 1;
 	}
@@ -64,6 +68,9 @@ public class Ground :
 		return this;
 	}
 	public override ICanConnect GetICanConnect(){
+		return this;
+	}
+	public override ICanWalk GetICanWalk(){
 		return this;
 	}
 	public override MapMeshManager.ITileMeshData GetITileMeshData(){

@@ -7,8 +7,9 @@ public abstract class Data{
 	public static class DATA{
 		public static Data CreatePlayer(Game game){
 			Data data = game.GetGameData().Create();
-			data.AddBlock(game, 1, new WorldPosition());
+			data.AddBlock(game, 1, new MovePosition(1));
 			data.AddBlock(game, 2, new WorldVisual(3, 15));
+			data.AddBlock(game, 3, new PlayerControl());
 			return data;
 		}
 		public static Data CreateGroundTile(Game game, int x, int y){
@@ -33,6 +34,12 @@ public abstract class Data{
 			data.AddBlock(game, 0, new Ground(x, y));
 			data.AddBlock(game, 1, new PermaPosition(x, y));
 			data.AddBlock(game, 2, new WorldVisual(2, 0));
+			return data;
+		}
+		public static Data CreateRat(Game game){
+			Data data = game.GetGameData().Create();
+			data.AddBlock(game, 1, new MovePosition(1));
+			data.AddBlock(game, 2, new WorldVisual(4, 10));
 			return data;
 		}
 	}

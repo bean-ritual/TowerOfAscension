@@ -18,13 +18,13 @@ public class TileTargetManager :
 	private Game _game = Game.GetNullGame();
 	private Map _map = Map.GetNullMap();
 	private Map.Tile _tile = Map.Tile.GetNullTile();
-	[SerializeField]private Transform _target;
 	[SerializeField]private SpriteRenderer _renderer;
 	private void Awake(){
-		if(_INSTANCE != null){
+		if(_INSTANCE == null){
+			_INSTANCE = this;
+		}else{
 			Destroy(gameObject);
 		}
-		_INSTANCE = this;
 	}
 	private void Start(){
 		_game = DungeonMaster.GetInstance().GetGame();
@@ -34,7 +34,8 @@ public class TileTargetManager :
 	}
 	public void SetTile(Map.Tile tile){
 		_tile = tile;
-		_target.localPosition = _tile.GetPosition(_map) + _map.GetVector3TileOffset();
+		this.transform.localPosition = _tile.GetPosition(_map) + _map.GetVector3TileOffset();
+		this.gameObject.SetActive(!tile.IsNull());
 	}
 	//
 	private static NullTileTargetManager _NULL_TILE_TARGET_MANAGER = new NullTileTargetManager();

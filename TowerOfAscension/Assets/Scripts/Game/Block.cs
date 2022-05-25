@@ -14,9 +14,12 @@ public abstract class Block{
 		IListData,
 		ICanPrint,
 		ICanConnect,
+		ICanWalk,
 		IVisual,
 		IDoTurn,
 		IEndTurn,
+		IMovement,
+		IConclude,
 		MapMeshManager.ITileMeshData
 		{
 		//
@@ -48,6 +51,10 @@ public abstract class Block{
 			return false;
 		}
 		//
+		public bool CanWalk(Game game){
+			return false;
+		}
+		//
 		public void PlayAnimation(Game game, WorldAnimation animation){}
 		public int GetSprite(Game game){
 			return 0;
@@ -70,6 +77,10 @@ public abstract class Block{
 		}
 		//
 		public void EndTurn(Game game){}
+		//
+		public void Move(Game game, Direction direction){}
+		//
+		public void Conclude(Game game){}
 		//
 		public void AddData(Game game, Data data){}
 		public void RemoveData(Game game, Data data){}
@@ -137,6 +148,9 @@ public abstract class Block{
 	public virtual ICanConnect GetICanConnect(){
 		return _NULL_BLOCK;
 	}
+	public virtual ICanWalk GetICanWalk(){
+		return _NULL_BLOCK;
+	}
 	public virtual IVisual GetIVisual(){
 		return _NULL_BLOCK;
 	}
@@ -144,6 +158,12 @@ public abstract class Block{
 		return _NULL_BLOCK;
 	}
 	public virtual IEndTurn GetIEndTurn(){
+		return _NULL_BLOCK;
+	}
+	public virtual IMovement GetIMovement(){
+		return _NULL_BLOCK;
+	}
+	public virtual IConclude GetIConclude(){
 		return _NULL_BLOCK;
 	}
 	public virtual MapMeshManager.ITileMeshData GetITileMeshData(){

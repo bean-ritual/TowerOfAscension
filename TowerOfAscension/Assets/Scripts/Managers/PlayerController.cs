@@ -8,33 +8,23 @@ public class PlayerController :
 	PlayerController.IPlayerController
 	{
 	public interface IPlayerController{
-		void SetPlayer(Data data);
-		void ClearPlayer();
 		Data GetPlayer();
 	}
 	[Serializable]
 	public class NullPlayerController : IPlayerController{
-		public void SetPlayer(Data data){}
-		public void ClearPlayer(){}
 		public Data GetPlayer(){
 			return Data.GetNullData();
 		}
 	}
 	//
-	private static IPlayerController _INSTANCE;
+	private static PlayerController _INSTANCE;
 	//
 	private Game _game = Game.GetNullGame();
 	private GameWorld _world = GameWorld.GetNullGameWorld();
 	private Data _player = Data.GetNullData();
-	private Data _previous = Data.GetNullData();
+	private Data _active = Data.GetNullData();
 	private Direction _direction = Direction.GetNullDirection();
-	private const float _CAMERA_ZOOM = 10f;
-	private const float _CAMERA_SPEED = 10f;
-	private static Vector3 _CAMERA_OFFSET = new Vector3(0, 0, -10);
 	[SerializeField]private CameraManager _camera;
-	private void OnDestroy(){
-		_world.OnNextTurn -= OnNextTurn;
-	}
 	private void Awake(){
 		if(_INSTANCE == null){
 			_INSTANCE = this;
@@ -45,33 +35,46 @@ public class PlayerController :
 	private void Start(){
 		_game = DungeonMaster.GetInstance().GetGame();
 		_world = _game.GetGameWorld();
-		_world.OnNextTurn += OnNextTurn;
+		_player = _game.GetPlayer();
+		_camera.Setup(
+			() => _player.GetBlock(_game, 1).GetIWorldPosition().GetPosition(_game),
+			() => 0, 
+			true
+		);
+		//HUDUIManager.GetInstance().SetUnit(_player);
+		//InventoryUIManager.GetInstance().SetUnit(_player);
+		MinimapUIManager.GetInstance().SetData(_player);
 	}
 	private void Update(){
+		if(_world.GetCurrentDataID(_game) == _player.GetID()){
+			_active = _player;
+		}else{
+			_active = Data.GetNullData();
+		}
+		//
 		if(EventSystem.current.IsPointerOverGameObject()){
 			return;
 		}
 		_direction = MouseDirectionHandling();
 		TileTargetManager.GetInstance().SetTile(_direction.GetTile(_game.GetMap(), _player.GetBlock(_game, 1).GetIWorldPosition().GetTile(_game)));
-		/*
 		//
 		if(Input.GetMouseButtonDown(0)){
 			if(Input.GetKey(KeyCode.A)){
-				_player.GetTag(_local, Tag.ID.Attack_Slot).GetIInputDirection().Input(_local, _player, _direction);
+				//_player.GetTag(_local, Tag.ID.Attack_Slot).GetIInputDirection().Input(_local, _player, _direction);
 				return;
 			}
 			if(Input.GetKey(KeyCode.LeftShift)){
-				_player.GetTag(_local, Tag.ID.Interactor).GetIInputDirection().Input(_local, _player, _direction);
+				//_player.GetTag(_local, Tag.ID.Interactor).GetIInputDirection().Input(_local, _player, _direction);
 				return;
 			}
-			_player.GetTag(_local, Tag.ID.Move).GetIInputDirection().Input(_local, _player, _direction);
+			_active.GetBlock(_game, 1).GetIMovement().Move(_game, _direction);
+			//_player.GetTag(_local, Tag.ID.Move).GetIInputDirection().Input(_local, _player, _direction);
 			return;
 		}
 		if(Input.GetKeyDown(KeyCode.Space)){
-			_player.GetTag(_local, Tag.ID.AI).GetIClear().Clear(_local, _player);
+			//_player.GetTag(_local, Tag.ID.AI).GetIClear().Clear(_local, _player);
 			return;
 		}
-		*/
 	}
 	private Direction MouseDirectionHandling(){
 		Vector3 finalPosition = WorldSpaceUtils.MouseToWorldSpace(
@@ -81,6 +84,7 @@ public class PlayerController :
 		Vector3Int intgerPosition = Vector3Int.RoundToInt(finalPosition);
 		return Direction.IntToDirection(intgerPosition.x, intgerPosition.y);
 	}
+	/*
 	public void SetPlayer(Data player){
 		_player = player;
 		//PickupUIManager.GetInstance().SetTile(_player.GetTag(_local, Tag.ID.Position).GetIGetTile().GetTile(_local, _player));
@@ -88,27 +92,10 @@ public class PlayerController :
 			return;
 		}
 		_previous = _player;
-		_camera.Setup(
-			() => _previous.GetBlock(_game, 1).GetIWorldPosition().GetPosition(_game),
-			() => _CAMERA_ZOOM, 
-			true
-		);
-		//HUDUIManager.GetInstance().SetUnit(_previous);
-		//InventoryUIManager.GetInstance().SetUnit(_previous);
-		MinimapUIManager.GetInstance().SetData(_previous);
 	}
-	public void ClearPlayer(){
-		_player = Data.GetNullData();
-	}
+	*/
 	public Data GetPlayer(){
-		return _player;
-	}
-	private void OnNextTurn(object sender, Data.DataUpdateEventArgs e){
-		if(e.dataID == 0){
-			SetPlayer(_game.GetGameData().Get(e.dataID));
-		}else{
-			SetPlayer(Data.GetNullData());
-		}
+		return _active;
 	}
 	//
 	private static NullPlayerController _NULL_PLAYER_CONTROLLER = new NullPlayerController();

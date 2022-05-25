@@ -50,6 +50,9 @@ TagManager:
   - name: Shadowmap
     uniqueID: 880682259
     locked: 0
+  - name: TileTarget
+    uniqueID: 1769274439
+    locked: 0
   - name: TextPopup
     uniqueID: 1703778557
     locked: 0

@@ -13,5 +13,8 @@ public class TestingManager : MonoBehaviour{
 			Test();
 		}
 	}
-	public void Test(){}
+	public void Test(){
+		int active = PlayerController.GetInstance().GetPlayer().GetID();
+		UnityEngine.Debug.Log(_local.GetGameWorld().GetCurrentDataID(_local) + " " + active);
+	}
 }
