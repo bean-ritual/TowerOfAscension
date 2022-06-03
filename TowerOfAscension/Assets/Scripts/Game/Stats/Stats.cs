@@ -6,44 +6,46 @@ using UnityEngine;
 [Serializable]
 public class Stats : 
 	Block.BaseBlock,
-	IStats
+	IStats,
+	IKillable
 	{
+	private int _killer;
 	private bool _alive;
 	private int _level;
 	private int _health;
-	private int _baseHealth;
-	private int _scaleHealth;
-	public Stats(Game game, int level, int baseHealth, int scaleHealth){
+	private int _maxHealth;
+	public Stats(int level, int health){
+		_killer = -1;
 		_alive = true;
-		_baseHealth = baseHealth;
-		_scaleHealth = scaleHealth;
-		SetLevel(game, level);
-		SetHealth(game, GetMaxHealth(game));
+		_level = level;
+		_health = health;
+		_maxHealth = health;
 	}
-	public void SetLevel(Game game, int level){
-		const int MIN_LEVEL = 1;
-		const int MAX_LEVEL = 99;
-		_level = Mathf.Clamp(level, MIN_LEVEL, MAX_LEVEL);
-		SetHealth(game, GetHealth(game));
+	public bool GetAlive(Game game){
+		return _alive;
 	}
-	public void SetHealth(Game game, int health){
-		const int MIN_HEALTH = 0;
-		_health = Mathf.Clamp(health, MIN_HEALTH, GetMaxHealth(game));
-		if(_health <= MIN_HEALTH){
-			_alive = false;
-		}
-		FireBlockUpdateEvent(game);
+	public int GetLevel(Game game){
+		return _level;
 	}
 	public int GetHealth(Game game){
 		return _health;
 	}
 	public int GetMaxHealth(Game game){
-		return _baseHealth + (_scaleHealth * _level);
+		return _maxHealth;
+	}
+	public void Kill(Game game){
+		GetSelf(game).GetBlock(game, Game.TOAGame.BLOCK_WORLD).GetIWorldPosition().Despawn(game);
+	}
+	public void SetKiller(Game game, Data killer){
+		_killer = killer.GetID();
 	}
 	public override void Disassemble(Game game){
 		
 	}
 	public override IStats GetIStats(){
+		return this;
+	}
+	public override IKillable GetIKillable(){
 		return this;
 	}
 }

@@ -24,12 +24,20 @@ public abstract class GameBlocks{
 		public override Block Get(Game game, int id){
 			return Block.GetNullBlock();
 		}
+		public override Block GetIndex(Game game, int index){
+			return Block.GetNullBlock();
+		}
+		public override int GetBlockID(){
+			return -1;
+		}
 		public override int GetCount(){
 			return 0;
 		}
+		public override void Disassemble(Game game){}
 		public override bool IsNull(){
 			return true;
 		}
+		public override void FireGameBlockUpdateEvent(){}
 	}
 	[Serializable]
 	public class RealGameBlocks : GameBlocks{
@@ -58,19 +66,53 @@ public abstract class GameBlocks{
 				return Block.GetNullBlock();
 			}
 		}
+		public override Block GetIndex(Game game, int index){
+			if(_blocks.TryGetValue(index, out Block block)){
+				return block;
+			}else{
+				return Block.GetNullBlock();
+			}
+		}
+		public override int GetBlockID(){
+			return _id;
+		}
 		public override int GetCount(){
 			return _blocks.Count;
+		}
+		public override void Disassemble(Game game){
+			List<int> ids = new List<int>(_blocks.Count);
+			foreach(KeyValuePair<int, Block> keyValue in _blocks){
+				ids.Add(keyValue.Key);
+			}
+			for(int i = 0; i < ids.Count; i++){
+				game.GetGameData().Get(ids[i]).Disassemble(game);
+			}
+			ids = null;
 		}
 		public override bool IsNull(){
 			return false;
 		}
 	}
+	public class GameBlockUpdateEventArgs : EventArgs{
+		public int blockID;
+		public GameBlockUpdateEventArgs(int blockID){
+			this.blockID = blockID;
+		}
+	}
 	//
+	[field:NonSerialized]public event EventHandler<GameBlockUpdateEventArgs> OnGameBlockUpdate;
 	public abstract void Add(Game game, int id, Block block);
 	public abstract void Remove(Game game, int id);
 	public abstract Block Get(Game game, int id);
+	public abstract Block GetIndex(Game game, int index);
+	public abstract int GetBlockID();
 	public abstract int GetCount();
+	public abstract void Disassemble(Game game);
 	public abstract bool IsNull();
+	//
+	public virtual void FireGameBlockUpdateEvent(){
+		OnGameBlockUpdate?.Invoke(this, new GameBlockUpdateEventArgs(GetBlockID()));
+	}
 	//
 	public virtual ITick GetITick(){
 		return _NULL_GAME_BLOCKS;

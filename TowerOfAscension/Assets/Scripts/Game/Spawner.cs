@@ -113,7 +113,7 @@ public abstract class Spawner{
 			game.GetGeneration().Add(this, 2);
 		}
 		public override void Spawn(Game game){
-			//Unit.UNIT_DATA.GetLevelledMonster(game, game.GetFloor()).Spawn(game, _x, _y);
+			Data.DATA.CreateRat(game).GetBlock(game, 1).GetIWorldPosition().Spawn(game, GetX(), GetY());
 		}
 
 	}

@@ -27,7 +27,7 @@ public class TextureNavigationManager :
 		_resetButton.onClick.AddListener(Reset);
 		_camera.Setup(GetPosition, GetZoom, true);
 	}
-	public void SetUnit(Data target){
+	public void SetData(Data target){
 		_target = target;
 		Reset();
 		_camera.Setup(GetPosition, GetZoom, true);
@@ -52,7 +52,7 @@ public class TextureNavigationManager :
 		return _zoom;
 	}
 	public void Reset(){
-		const float DEFAULT_ZOOM = 10f;
+		const float DEFAULT_ZOOM = 0f;
 		_zoom = DEFAULT_ZOOM;
 		_delta = Vector3.zero;
 	}

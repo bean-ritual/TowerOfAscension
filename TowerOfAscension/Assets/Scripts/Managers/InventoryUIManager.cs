@@ -2,29 +2,23 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-public class InventoryUIManager : MonoBehaviour{
-	/*
+public class InventoryUIManager : 
+	MonoBehaviour,
+	InventoryUIManager.IInventoryUIManager
+	{
 	public interface IInventoryUIManager{
-		void SetUnit(Unit unit);
+		void SetData(Data data);
 	}
 	public class NullInventoryUIManager : IInventoryUIManager{
-		public void SetUnit(Unit unit){}
+		public void SetData(Data data){}
 	}
-	private static NullInventoryUIManager _NULL_INVENTORY_UI = new NullInventoryUIManager();
 	private static InventoryUIManager _INSTANCE;
-	private static Tag.ID[] _EQUIP_SLOTS = {
-		Tag.ID.Attack_Slot,
-		Tag.ID.Light,
-		Tag.ID.Chestplate,
-		Tag.ID.Boots,
-	};
-	private Game _local = Game.GetNullGame();
-	private Unit _unit = Unit.GetNullUnit();
-	private Register<Unit>.IRegisterEvents _inventory = Inventory.GetNullInventory();
-	private Tag _weapon = Tag.GetNullTag();
+	
+	private Game _game = Game.GetNullGame();
+	private Data _player = Data.GetNullData();
 	//
-	private Dictionary<Tag.ID, UIUnit> _tagUnits;
-	private Dictionary<Unit, UIUnit> _uiUnits;
+	private Dictionary<int, UIData> _equipment;
+	private Dictionary<int, UIData> _inventory;
 	private UIWindowManager _uiWindow;
 	private RectTransform _content;
 	[SerializeField]private GameObject _prefabUIWindow;
@@ -36,16 +30,16 @@ public class InventoryUIManager : MonoBehaviour{
 		UnsubcribeFromEvents();
 	}
 	private void Awake(){
-		if(_INSTANCE != null){
+		if(_INSTANCE == null){
+			_INSTANCE = this;
+		}else{
 			Destroy(gameObject);
-			return;
 		}
-		_INSTANCE = this;
 	}
 	private void Start(){
-		_local = DungeonMaster.GetInstance().GetLocalGame();
+		_game = DungeonMaster.GetInstance().GetGame();
 		BuildUI();
-		SetupTags();
+		//SetupTags();
 	}
 	public void BuildUI(){
 		GameObject go = Instantiate(_prefabUIWindow, this.transform);
@@ -60,21 +54,26 @@ public class InventoryUIManager : MonoBehaviour{
 		GameObject go2 = Instantiate(_prefabUIInventory, _uiWindow.GetContent().transform);
 		_content = go2.GetComponent<ContentManager>().GetContent();
 	}
-	public void SetUnit(Unit unit){
+	public void SetData(Data data){
 		UnsubcribeFromEvents();
-		Clear();
-		_unit = unit;
-		RefreshTags();
-		_inventory = unit.GetTag(_local, Tag.ID.Inventory).GetIGetRegisterEvents().GetRegisterEvents(_local, unit);
-		List<Unit> items = _inventory.GetAll();
-		for(int i = 0; i < items.Count; i++){
-			CreateUIUnit(items[i]);
+		_player = data;
+		_inventory = new Dictionary<int, UIData>();
+		//RefreshTags();
+		//_inventory = unit.GetTag(_local, Tag.ID.Inventory).GetIGetRegisterEvents().GetRegisterEvents(_local, unit);
+		IListData listData = data.GetBlock(_game, Game.TOAGame.BLOCK_INVENTORY).GetIListData();
+		//List<Unit> items = _inventory.GetAll();
+		for(int i = 0; i < listData.GetDataCount(); i++){
+			CreateUIData(listData.GetData(_game, i));
 		}
-		_inventory.OnObjectAdded += OnObjectAdded;
-		_inventory.OnObjectRemoved += OnObjectRemoved;
-		_unit.GetTag(_local, Tag.ID.Attack_Slot).OnTagUpdate += OnWeaponTagUpdate;
-		_unit.GetTag(_local, Tag.ID.Light).OnTagUpdate += OnLightTagUpdate;
+		_player.OnBlockUpdate += OnBlockUpdate;
+		_player.OnBlockDataAdd += OnBlockDataAdd;
+		_player.OnBlockDataRemove += OnBlockDataRemove;
+		//_inventory.OnObjectAdded += OnObjectAdded;
+		//_inventory.OnObjectRemoved += OnObjectRemoved;
+		//_unit.GetTag(_local, Tag.ID.Attack_Slot).OnTagUpdate += OnWeaponTagUpdate;
+		//_unit.GetTag(_local, Tag.ID.Light).OnTagUpdate += OnLightTagUpdate;
 	}
+	/*
 	public void SetupTags(){
 		_tagUnits = new Dictionary<Tag.ID, UIUnit>();
 		for(int i = 0; i < _EQUIP_SLOTS.Length; i++){
@@ -94,25 +93,32 @@ public class InventoryUIManager : MonoBehaviour{
 			uiUnit.Setup(_unit.GetTag(_local, id).GetIGetUnit().GetUnit(_local, _unit), EquipInteract);
 		}
 	}
-	public void CreateUIUnit(Unit unit){
+	*/
+	public void CreateUIData(Data data){
 		GameObject go = Instantiate(_prefabUIItem, _content);
-		UIUnit uiUnit = go.GetComponent<UIUnit>();
-		uiUnit.Setup(unit, InventoryInteract);
-		_uiUnits.Add(unit, uiUnit);
+		UIData uiData = go.GetComponent<UIData>();
+		uiData.Setup(data, InventoryInteract);
+		_inventory.Add(data.GetID(), uiData);
 	}
-	public void RemoveUIUnit(Unit unit){
-		if(!_uiUnits.TryGetValue(unit, out UIUnit uiUnit)){
+	public void RemoveUIData(int dataID){
+		if(!_inventory.TryGetValue(dataID, out UIData uiData)){
 			return;
 		}
-		_uiUnits.Remove(unit);
-		uiUnit.UnitDestroy();
+		_inventory.Remove(dataID);
+		uiData.Disassemble();
 	}
 	public void UnsubcribeFromEvents(){
+		_player.OnBlockUpdate -= OnBlockUpdate;
+		_player.OnBlockDataAdd -= OnBlockDataAdd;
+		_player.OnBlockDataRemove -= OnBlockDataRemove;
+		/*
 		_inventory.OnObjectAdded -= OnObjectAdded;
 		_inventory.OnObjectRemoved -= OnObjectRemoved;
 		_unit.GetTag(_local, Tag.ID.Attack_Slot).OnTagUpdate -= OnWeaponTagUpdate;
 		_unit.GetTag(_local, Tag.ID.Light).OnTagUpdate -= OnLightTagUpdate;
+		*/
 	}
+	/*
 	public void Clear(){
 		if(_uiUnits != null){
 			foreach(KeyValuePair<Unit, UIUnit> keyValue in _uiUnits){
@@ -121,27 +127,44 @@ public class InventoryUIManager : MonoBehaviour{
 		}
 		_uiUnits = new Dictionary<Unit, UIUnit>();
 	}
-	public void InventoryInteract(Unit item){
+	*/
+	public void InventoryInteract(Data item){
+		/*
 		Unit player = PlayerController.GetInstance().GetPlayer();
 		if(Input.GetKey(KeyCode.LeftShift)){
 			item.GetTag(_local, Tag.ID.Pickup).GetIRemoveUnit().Remove(_local, item, player);
 		}else{
 			item.GetTag(_local, Tag.ID.Equippable).GetIAddUnit().Add(_local, item, player);
 		}
+		*/
 	}
-	public void EquipInteract(Unit item){
+	public void EquipInteract(Data item){
+		/*
 		Unit player = PlayerController.GetInstance().GetPlayer();
 		item.GetTag(_local, Tag.ID.Equippable).GetIRemoveUnit().Remove(_local, item, player);
 		if(Input.GetKey(KeyCode.LeftShift)){
 			item.GetTag(_local, Tag.ID.Pickup).GetIRemoveUnit().Remove(_local, item, player);
 		}
+		*/
 	}
+	private void OnBlockUpdate(object sender, Data.BlockUpdateEventArgs e){
+		//
+	}
+	private void OnBlockDataAdd(object sender, Data.BlockDataUpdateEventArgs e){
+		CreateUIData(_game.GetGameData().Get(e.newDataID));
+	}
+	private void OnBlockDataRemove(object sender, Data.BlockDataUpdateEventArgs e){
+		RemoveUIData(e.newDataID);
+	}
+	/*
 	private void OnObjectAdded(object sender, Register<Unit>.OnObjectChangedEventArgs e){
 		CreateUIUnit(e.value);
 	}
 	private void OnObjectRemoved(object sender, Register<Unit>.OnObjectChangedEventArgs e){
 		RemoveUIUnit(e.value);
 	}
+	*/
+	/*
 	private void OnWeaponTagUpdate(object sender, EventArgs e){
 		SetTagUnit(Tag.ID.Attack_Slot);
 	}
@@ -154,6 +177,8 @@ public class InventoryUIManager : MonoBehaviour{
 	private void OnBootsTagUpdate(object sender, EventArgs e){
 		SetTagUnit(Tag.ID.Boots);
 	}
+	*/
+	private static NullInventoryUIManager _NULL_INVENTORY_UI = new NullInventoryUIManager();
 	public static IInventoryUIManager GetInstance(){
 		if(_INSTANCE == null){
 			return _NULL_INVENTORY_UI;
@@ -161,5 +186,4 @@ public class InventoryUIManager : MonoBehaviour{
 			return _INSTANCE;
 		}
 	}
-	*/
 }

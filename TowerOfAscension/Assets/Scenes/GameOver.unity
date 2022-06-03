@@ -135,6 +135,7 @@ GameObject:
   - component: {fileID: 211018716}
   - component: {fileID: 211018715}
   - component: {fileID: 211018718}
+  - component: {fileID: 211018719}
   m_Layer: 0
   m_Name: MainCamera
   m_TagString: MainCamera
@@ -241,6 +242,22 @@ MonoBehaviour:
   m_RequiresDepthTexture: 0
   m_RequiresColorTexture: 0
   m_Version: 2
+--- !u!114 &211018719
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 211018714}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1b5819389d7089469ed352b404d1109, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _camera: {fileID: 211018716}
+  _defaultPosition: {x: 0, y: 0, z: -10}
+  _defaultZoom: 10
+  _followSpeed: 5
 --- !u!1 &365537322
 GameObject:
   m_ObjectHideFlags: 0
@@ -293,7 +310,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 0, b: 0, a: 0.60784316}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -415,17 +432,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b31f16f75cf73546b3f0bd044809881, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _camera: {fileID: 211018717}
+  _camera: {fileID: 211018719}
   _meshFilter: {fileID: 507614746}
   _meshRenderer: {fileID: 507614745}
   _material: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   _width: 100
   _height: 100
-  _atlasID: 2
-  _uvIndex: 2
+  _atlasID: 1
+  _uvIndex: 1
   _cellSize: {x: 1, y: 1, z: 0}
   _offset: 0.5
-  _sortingOrder: 0
 --- !u!23 &507614745
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -522,10 +538,10 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 665896386}
   - {fileID: 1540212539}
   - {fileID: 1915896628}
   - {fileID: 923616103}
+  - {fileID: 665896386}
   m_Father: {fileID: 1915432527}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -630,7 +646,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 635738968}
-  m_RootOrder: 0
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -651,13 +667,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: de677611e18701049b47f057ec52a0ea, type: 3}
+  m_Sprite: {fileID: 21300000, guid: b8a849157934ff147ab83cc97b0902c7, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -666,7 +682,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
+  m_PixelsPerUnitMultiplier: 2
 --- !u!222 &665896388
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -729,7 +745,7 @@ RectTransform:
   m_Children:
   - {fileID: 1443108696}
   m_Father: {fileID: 635738968}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -800,7 +816,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 3ce80eedd170dc543a2d9d33f199a051, type: 3}
+  m_Sprite: {fileID: 21300000, guid: a5eabb338744c604caf27bfd50015065, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -809,7 +825,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
+  m_PixelsPerUnitMultiplier: 2
 --- !u!222 &923616106
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1055,7 +1071,7 @@ RectTransform:
   m_Children:
   - {fileID: 1564934202}
   m_Father: {fileID: 635738968}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -1096,13 +1112,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 525acbdfae3c1e5418a3758dc4e8c502, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 8e03a1a30fe103247bc9e3b759512006, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1111,7 +1127,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
+  m_PixelsPerUnitMultiplier: 2
 --- !u!222 &1540212542
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1538,7 +1554,7 @@ RectTransform:
   m_Children:
   - {fileID: 1558393962}
   m_Father: {fileID: 635738968}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}

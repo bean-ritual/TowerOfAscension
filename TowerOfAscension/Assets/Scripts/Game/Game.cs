@@ -30,6 +30,11 @@ public abstract class Game{
 		public override int GetGameBlocksCount(){
 			return 0;
 		}
+		public override int GetFloor(){
+			return -1;
+		}
+		public override void NextFloor(){}
+		public override void GameOver(){}
 		public override bool IsNull(){
 			return true;
 		}
@@ -64,6 +69,11 @@ public abstract class Game{
 		public override int GetGameBlocksCount(){
 			return 0;
 		}
+		public override int GetFloor(){
+			return -1;
+		}
+		public override void NextFloor(){}
+		public override void GameOver(){}
 		public override bool IsNull(){
 			return false;
 		}
@@ -111,13 +121,16 @@ public abstract class Game{
 		*/
 		/*
 			Priority
-			[0] Movement, turns, ai and control
-			[1] Gameover, floor up and light
-			[2] Health defensive stats and attackable
-			[3] Equipment and inventory
-			[4] Effects: temporary/equipment
+			//[0] Movement, turns, ai and control
+			//[1] Gameover, floor up and light
+			[2] Equipment inventory and stackables
+			[3] Effects: temporary/equipment
+			[4] Health defensive stats attacks melee and ranged
 			[5] Merchant floors
-			[6] Boss floors
+			//
+			[6] Traits and Spawners
+			[7] Boss floors
+			[8] Advancing mechanic
 		*/
 		private int _floor;
 		private GameData _data;
@@ -130,18 +143,35 @@ public abstract class Game{
 		public const int BLOCK_WORLD = 1;
 		public const int BLOCK_VISUAL = 2;
 		public const int BLOCK_DOTURN = 3;
-		public const int BLOCK_INVENTORY = 4;
-		public const int BLOCK_ITEM = 5;
-		public const int BLOCK_EQUIP = 6;
+		public const int BLOCK_LIGHT = 4;
+		public const int BLOCK_INVENTORY = 5;
+		public const int BLOCK_ITEM = 6;
+		public const int BLOCK_EQUIPMENT = 7;
+		public const int BLOCK_ACTIVE = 8;
+		public const int BLOCK_STATS = 9;
+		public const int BLOCK_EFFECTS = 10;
+		public const int BLOCK_TRIP = 11;
+		//
+		public const int BLOCK_COUNT = 12;
 		//
 		public TOAGame(){
-			const int BLOCKS = 10;
 			_floor = 0;
 			_data = new GameData.UnlimitedGameData(100);
-			_blocks = new GameBlocks[BLOCKS];
-			for(int i = 0; i < BLOCKS; i++){
-				_blocks[i] = new GameBlocks.RealGameBlocks(i);
-			}
+			//
+			_blocks = new GameBlocks[BLOCK_COUNT];
+			_blocks[BLOCK_TILE] = new GameBlocks.RealGameBlocks(BLOCK_TILE);
+			_blocks[BLOCK_WORLD] = new GameBlocks.RealGameBlocks(BLOCK_WORLD);
+			_blocks[BLOCK_VISUAL] = new GameBlocks.RealGameBlocks(BLOCK_VISUAL);
+			_blocks[BLOCK_DOTURN] = new GameBlocks.RealGameBlocks(BLOCK_DOTURN);
+			_blocks[BLOCK_LIGHT] = new ListedBlocks(BLOCK_LIGHT);
+			_blocks[BLOCK_INVENTORY] = new GameBlocks.RealGameBlocks(BLOCK_INVENTORY);
+			_blocks[BLOCK_ITEM] = new GameBlocks.RealGameBlocks(BLOCK_ITEM);
+			_blocks[BLOCK_EQUIPMENT] = new GameBlocks.RealGameBlocks(BLOCK_EQUIPMENT);
+			_blocks[BLOCK_ACTIVE] = new GameBlocks.RealGameBlocks(BLOCK_ACTIVE);
+			_blocks[BLOCK_STATS] = new GameBlocks.RealGameBlocks(BLOCK_STATS);
+			_blocks[BLOCK_EFFECTS] = new GameBlocks.RealGameBlocks(BLOCK_EFFECTS);
+			_blocks[BLOCK_TRIP] = new GameBlocks.RealGameBlocks(BLOCK_TRIP);
+			//
 			_world = new GameWorld.TOAGameWorld();
 			_map = new LevelMap(100, 100);
 			_master = Generation.GetNullGeneration();
@@ -149,6 +179,8 @@ public abstract class Game{
 			Generate();
 		}
 		private void Generate(){
+			_blocks[BLOCK_TILE].Disassemble(this);
+			_world.Disassemble(this);
 			_master = new Generation.ClassicGeneration(10);
 			while(!_master.IsFinished() && !_master.IsFailed()){
 				_master.Process(this);
@@ -181,7 +213,16 @@ public abstract class Game{
 			return _data.Get(0);
 		}
 		public override int GetGameBlocksCount(){
-			return _blocks.Length;
+			return BLOCK_COUNT;
+		}
+		public override int GetFloor(){
+			return _floor;
+		}
+		public override void NextFloor(){
+			DungeonMaster.GetInstance().QueueAction(() => LoadSystem.Load(LoadSystem.Scene.Game, Generate));
+		}
+		public override void GameOver(){
+			DungeonMaster.GetInstance().QueueAction(() => LoadSystem.Load(LoadSystem.Scene.GameOver, () => SaveSystem.Save(this)));
 		}
 		public override bool IsNull(){
 			return false;
@@ -195,6 +236,9 @@ public abstract class Game{
 	public abstract Generation GetGeneration();
 	public abstract Data GetPlayer();
 	public abstract int GetGameBlocksCount();
+	public abstract int GetFloor();
+	public abstract void NextFloor();
+	public abstract void GameOver();
 	public abstract bool IsNull();
 	//
 	private static NullGame _NULL_GAME = new NullGame();

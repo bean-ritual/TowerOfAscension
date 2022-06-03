@@ -6,6 +6,7 @@ using UnityEngine;
 [Serializable]
 public class Ground : 
 	Block.BaseBlock,
+	ITile,
 	IListData,
 	ICanPrint,
 	ICanConnect,
@@ -20,14 +21,18 @@ public class Ground :
 		_y = y;
 		_data = new List<int>();
 	}
+	public Map.Tile GetTile(Game game){
+		return game.GetMap().Get(_x, _y);
+	}
 	public void AddData(Game game, Data data){
-		_data.Add(data.GetID());
-		FireBlockUpdateEvent(game);
+		int id = data.GetID();
+		_data.Add(id);
+		FireBlockDataAddEvent(game, id);
 	}
 	public void RemoveData(Game game, Data data){
-		_data.Remove(data.GetID());
-		FireBlockUpdateEvent(game);
-		//data.GetMap().FireTileUpdateEvent(_x, _y);
+		int id = data.GetID();
+		_data.Remove(id);
+		FireBlockDataRemoveEvent(game, id);
 	}
 	public Data GetData(Game game, int index){
 		if(index < 0 || index >= _data.Count){
@@ -43,11 +48,14 @@ public class Ground :
 		return false;
 	}
 	public bool CanConnect(Game game){
+		return true;
+		/*
 		if(_data.Count > 0){
 			return false;
 		}else{
 			return true;
 		}
+		*/
 	}
 	public bool CanWalk(Game game){
 		return !(_data.Count > 0);
@@ -59,7 +67,15 @@ public class Ground :
 		return 1;
 	}
 	public override void Disassemble(Game game){
-		
+		game.GetMap().Get(_x, _y).GetIDataTile().ClearData(game);
+		int[] temp = _data.ToArray();
+		for(int i = 0; i < temp.Length; i++){
+			game.GetGameData().Get(temp[i]).Disassemble(game);
+		}
+		temp = null;
+	}
+	public override ITile GetITile(){
+		return this;
 	}
 	public override IListData GetIListData(){
 		return this;

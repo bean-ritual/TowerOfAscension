@@ -6,9 +6,7 @@ using UnityEngine;
 public abstract class WorldAnimation{
 	[Serializable]
 	public class NullWorldAnimation : WorldAnimation{
-		public override IEnumerator Animate(WorldData worldData){
-			yield return null;
-		}
+		public override void Animate(WorldData worldData){}
 		public override int GetID(){
 			return -1;
 		}
@@ -29,7 +27,10 @@ public abstract class WorldAnimation{
 			Map map = game.GetMap();
 			_position = tile.GetPosition(map) + map.GetVector3TileOffset();
 		}
-		public override IEnumerator Animate(WorldData worldData){
+		public override void Animate(WorldData worldData){
+			worldData.PlayCoroutine(MoveAnimation(worldData));
+		}
+		private IEnumerator MoveAnimation(WorldData worldData){
 			float duration = _moveSpeed * 0.1f;
 			float time = 0f;
 			Vector3 start = worldData.GetPosition();
@@ -61,7 +62,10 @@ public abstract class WorldAnimation{
 			_attackSpeed = attackSpeed;
 			_position = (direction.GetWorldDirection(game.GetMap()) * 0.5f) + position;
 		}
-		public override IEnumerator Animate(WorldData worldData){
+		public override void Animate(WorldData worldData){
+			worldData.PlayCoroutine(AttackAnimation(worldData));
+		}
+		private IEnumerator AttackAnimation(WorldData worldData){
 			float duration = _attackSpeed * 0.1f;
 			float time = 0f;
 			Vector3 start = worldData.GetPosition();
@@ -98,11 +102,11 @@ public abstract class WorldAnimation{
 		public PositionUpdateAnimation(Game game, Data data){
 			_id = data.GetID();
 			_position = data.GetBlock(game, 1).GetIWorldPosition().GetPosition(game) + game.GetMap().GetVector3TileOffset();
-			_render = data.GetBlock(game, 2).GetIVisual().GetRender(game);
+			_render = data.GetBlock(game, Game.TOAGame.BLOCK_VISUAL).GetIVisual().GetRender(game);
 		}
-		public override IEnumerator Animate(WorldData worldData){
+		public override void Animate(WorldData worldData){
 			worldData.SetPosition(_position);
-			yield return null;
+			worldData.SetVisible(_render);
 		}
 		public override int GetID(){
 			return _id;
@@ -117,11 +121,11 @@ public abstract class WorldAnimation{
 			_render = render;
 		}
 		public LightUpdateAnimation(Game game, Data data){
-			_render = data.GetBlock(game, 2).GetIVisual().GetRender(game);
+			_id = data.GetID();
+			_render = data.GetBlock(game, Game.TOAGame.BLOCK_VISUAL).GetIVisual().GetRender(game);
 		}
-		public override IEnumerator Animate(WorldData worldData){
+		public override void Animate(WorldData worldData){
 			worldData.SetVisible(_render);
-			yield return null;
 		}
 		public override int GetID(){
 			return _id;
@@ -148,18 +152,17 @@ public abstract class WorldAnimation{
 			_sortingOrder = data.GetBlock(game, 2).GetIVisual().GetSortingOrder(game);
 			_render = data.GetBlock(game, 2).GetIVisual().GetRender(game);
 		}
-		public override IEnumerator Animate(WorldData worldData){
+		public override void Animate(WorldData worldData){
 			worldData.SetPosition(_position);
 			worldData.SetSprite(_sprite);
 			worldData.SetSortingOrder(_sortingOrder);
 			worldData.SetVisible(_render);
-			yield return null;
 		}
 		public override int GetID(){
 			return _id;
 		}
 	}
-	public abstract IEnumerator Animate(WorldData worldData);
+	public abstract void Animate(WorldData worldData);
 	public abstract int GetID();
 	//
 	private static NullWorldAnimation _NULL_WORLD_ANIMATION = new NullWorldAnimation();

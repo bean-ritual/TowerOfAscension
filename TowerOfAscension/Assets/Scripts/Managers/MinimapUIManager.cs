@@ -43,12 +43,12 @@ public class MinimapUIManager :
 			SettingsSystem.GetConfig().minimap
 		);
 		PlayerMenusManager.GetInstance().AddMenu(_uiWindow);
-		GameObject go2 =  Instantiate(_prefabMinimap, _uiWindow.GetContent().transform);
+		GameObject go2 = Instantiate(_prefabMinimap, _uiWindow.GetContent().transform);
 		_texNav = go2.GetComponent<TextureNavigationManager>();
 		_texNav.Setup(_minimapCamera, _uiWindow);
 	}
 	public void SetData(Data data){
-		_texNav.SetUnit(data);
+		_texNav.SetData(data);
 	}
 	private static NullMinimapUIManager _NULL_MINIMAP_UI_MANAGER = new NullMinimapUIManager();
 	public static IMinimapUIManager GetInstance(){

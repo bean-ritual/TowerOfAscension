@@ -7,6 +7,7 @@ public abstract class Map{
 	public interface IMapmatics{
 		List<Tile> CalculateFov(int x, int y, int range, Func<int, Tile, bool> IsRayable);
 		List<Tile> Raycast(int startX, int startY, int endX, int endY, Func<Tile, bool> IsRayable);
+		bool RaycastHit(int startX, int startY, int endX, int endY, Func<Tile, bool> IsRayable);
 		List<Tile> GetCardinals(int x, int y);
 		List<Tile> GetCardinals(int x, int y, Func<Tile, bool> IsAvailable);
 		List<Tile> GetNeighbours(int x, int y);
@@ -33,6 +34,7 @@ public abstract class Map{
 			public void SetAltasIndex(Map map, int index){}
 			//
 			public void SetData(Game game, Data data){}
+			public void ClearData(Game game){}
 			public Data GetData(Game game){
 				return Data.GetNullData();
 			}
@@ -317,6 +319,9 @@ public abstract class Map{
 		public List<Tile> Raycast(int startX, int startY, int endX, int endY, Func<Tile, bool> IsRayable){
 			return new List<Tile>();
 		}
+		public bool RaycastHit(int startX, int startY, int endX, int endY, Func<Tile, bool> IsRayable){
+			return false;
+		}
 		public List<Tile> GetCardinals(int x, int y){
 			return new List<Tile>();
 		}
@@ -480,7 +485,7 @@ public abstract class Map{
 						tiles.Add(current);
 					}
 					if(!IsRayable(j, current)){
-						return tiles;
+						break;
 					}		
 				}
 			}
@@ -533,6 +538,32 @@ public abstract class Map{
 				}
 			}
 			return tiles;
+		}
+		public bool RaycastHit(int startX, int startY, int endX, int endY, Func<Tile, bool> IsRayable){
+			if(IsRayable == null){
+				IsRayable = NullIsWalkable;
+			}
+			Tile end = Get(endX, endY);
+			Vector2 angle = new Vector2Int((endX - startX), (endY - startY));
+			angle.Normalize();
+			float rayX, rayY;
+			rayX = (float)startX + RAY_LENGTH;
+			rayY = (float)startY + RAY_LENGTH;
+			for(int i = 0; i < _SANITY; i++){
+				rayX += angle.x;
+				rayY += angle.y;	
+				int tileX, tileY;
+				tileX = (int)rayX;
+				tileY = (int)rayY;
+				Tile current = Get(tileX, tileY);
+				if(!IsRayable(current)){
+					return false;
+				}
+				if(current == end){
+					return true;
+				}
+			}
+			return false;
 		}
 		/*
 		public List<Tile> Raycast(int startX, int startY, int endX, int endY, Func<Tile, bool> IsRayable){

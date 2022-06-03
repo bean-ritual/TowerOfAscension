@@ -15,7 +15,9 @@ public class WorldVisual :
 		_sortingOrder = sortingOrder;
 	}
 	public void PlayAnimation(Game game, WorldAnimation animation){
-		WorldDataManager.GetInstance().PlayAnimation(animation);
+		if(GetRender(game)){
+			WorldDataManager.GetInstance().PlayAnimation(animation);
+		}
 	}
 	public int GetSprite(Game game){
 		return _sprite;
@@ -23,7 +25,7 @@ public class WorldVisual :
 	public int GetSortingOrder(Game game){
 		return _sortingOrder;
 	}
-	public bool GetRender(Game game){
+	public virtual bool GetRender(Game game){
 		return true;
 	}
 	public override void Disassemble(Game game){

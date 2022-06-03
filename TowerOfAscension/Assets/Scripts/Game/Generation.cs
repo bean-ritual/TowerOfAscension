@@ -193,6 +193,7 @@ public abstract class Generation{
 				_start.GetXY(out int x, out int y);
 				game.GetMap().Get(x, y).GetIDataTile().SetData(game, Data.DATA.CreateEnterTile(game, x, y));
 				game.GetGameData().Get(0).GetBlock(game, 1).GetIWorldPosition().Spawn(game, x, y);
+				game.GetGameData().Get(0).GetBlock(game, 4).GetIProcess().Process(game);
 				game.GetGameWorld().Sort();
 				game.GetGameWorld().Reset();
 				return;

@@ -35,7 +35,8 @@ public class WorldPosition :
 		_x = x;
 		_y = y;
 		game.GetMap().Get(x, y).GetIDataTile().GetData(game).GetBlock(game, 0).GetIListData().AddData(game, GetSelf(game));
-		WorldDataManager.GetInstance().PlayAnimation(new WorldAnimation.PositionUpdateAnimation(game, GetSelf(game)));
+		FireBlockUpdateEvent(game);
+		//WorldDataManager.GetInstance().PlayAnimation(new WorldAnimation.PositionUpdateAnimation(game, GetSelf(game)));
 	}
 	public void ClearPosition(Game game){
 		game.GetMap().Get(_x, _y).GetIDataTile().GetData(game).GetBlock(game, 0).GetIListData().RemoveData(game, GetSelf(game));

@@ -53,8 +53,27 @@ public class GameTurns :
 			return Block.GetNullBlock();
 		}
 	}
+	public override Block GetIndex(Game game, int index){
+		if(index < 0 || index >= _indexes.Count){
+			return Block.GetNullBlock();
+		}else{
+			if(_blocks.TryGetValue(_indexes[index], out Block block)){
+				return block;
+			}else{
+				return Block.GetNullBlock();
+			}
+		}
+	}
+	public override int GetBlockID(){
+		return _id;
+	}
 	public override int GetCount(){
 		return _blocks.Count;
+	}
+	public override void Disassemble(Game game){
+		foreach(int id in _indexes.ToArray()){
+			game.GetGameData().Get(id).Disassemble(game);
+		}
 	}
 	public override bool IsNull(){
 		return false;

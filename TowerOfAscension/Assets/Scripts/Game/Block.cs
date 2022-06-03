@@ -20,6 +20,12 @@ public abstract class Block{
 		IEndTurn,
 		IMovement,
 		IConclude,
+		ICanOpaque,
+		ITileLight,
+		ITile,
+		IKillable,
+		IActive,
+		ITripwire,
 		MapMeshManager.ITileMeshData
 		{
 		//
@@ -82,6 +88,31 @@ public abstract class Block{
 		//
 		public void Conclude(Game game){}
 		//
+		public bool CanOpaque(Game game){
+			return false;
+		}
+		//
+		public void SetLight(Game game, int lightLevel){}
+		public int GetLight(Game game){
+			return 0;
+		}
+		public void Discover(Game game){}
+		public bool GetDiscovered(Game game){
+			return false;
+		}
+		//
+		/*
+		public Map.Tile GetTile(Game game){
+			return Map.Tile.GetNullTile();
+		}
+		*/
+		public void Kill(Game game){}
+		public void SetKiller(Game game, Data killer){}
+		//
+		public void Trigger(Game game, Direction direction){}
+		//
+		public void Trip(Game game, Data data){}
+		//
 		public void AddData(Game game, Data data){}
 		public void RemoveData(Game game, Data data){}
 		public Data GetData(Game game, int index){
@@ -120,8 +151,20 @@ public abstract class Block{
 		public override bool IsNull(){
 			return false;
 		}
+		protected void FireDataUpdateEvent(Game game){
+			GetSelf(game).FireDataUpdateEvent();
+		}
 		protected void FireBlockUpdateEvent(Game game){
 			GetSelf(game).FireBlockUpdateEvent(_blockID);
+		}
+		protected void FireBlockDataAddEvent(Game game, int newDataID){
+			GetSelf(game).FireBlockDataAddEvent(_blockID, newDataID);
+		}
+		protected void FireBlockDataRemoveEvent(Game game, int newDataID){
+			GetSelf(game).FireBlockDataRemoveEvent(_blockID, newDataID);
+		}
+		protected void FireGameBlockUpdateEvent(Game game){
+			GetGameBlocks(game).FireGameBlockUpdateEvent();
 		}
 	}
 	public abstract void SetIDs(int dataID, int blockID);
@@ -164,6 +207,24 @@ public abstract class Block{
 		return _NULL_BLOCK;
 	}
 	public virtual IConclude GetIConclude(){
+		return _NULL_BLOCK;
+	}
+	public virtual ICanOpaque GetICanOpaque(){
+		return _NULL_BLOCK;
+	}
+	public virtual ITileLight GetITileLight(){
+		return _NULL_BLOCK;
+	}
+	public virtual ITile GetITile(){
+		return _NULL_BLOCK;
+	}
+	public virtual IKillable GetIKillable(){
+		return _NULL_BLOCK;
+	}
+	public virtual IActive GetIActive(){
+		return _NULL_BLOCK;
+	}
+	public virtual ITripwire GetITripwire(){
 		return _NULL_BLOCK;
 	}
 	public virtual MapMeshManager.ITileMeshData GetITileMeshData(){

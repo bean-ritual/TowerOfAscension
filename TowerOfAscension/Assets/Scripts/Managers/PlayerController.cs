@@ -37,16 +37,16 @@ public class PlayerController :
 		_world = _game.GetGameWorld();
 		_player = _game.GetPlayer();
 		_camera.Setup(
-			() => _player.GetBlock(_game, 1).GetIWorldPosition().GetPosition(_game),
+			() => _player.GetBlock(_game, Game.TOAGame.BLOCK_WORLD).GetIWorldPosition().GetPosition(_game),
 			() => 0, 
 			true
 		);
 		//HUDUIManager.GetInstance().SetUnit(_player);
-		//InventoryUIManager.GetInstance().SetUnit(_player);
+		InventoryUIManager.GetInstance().SetData(_player);
 		MinimapUIManager.GetInstance().SetData(_player);
 	}
 	private void Update(){
-		if(_world.GetCurrentDataID(_game) == _player.GetID()){
+		if(_world.GetCurrentDataID(_game) == _player.GetID() && !WorldDataManager.GetInstance().IsBusy()){
 			_active = _player;
 		}else{
 			_active = Data.GetNullData();
@@ -60,26 +60,25 @@ public class PlayerController :
 		//
 		if(Input.GetMouseButtonDown(0)){
 			if(Input.GetKey(KeyCode.A)){
-				//_player.GetTag(_local, Tag.ID.Attack_Slot).GetIInputDirection().Input(_local, _player, _direction);
+				_active.GetBlock(_game, Game.TOAGame.BLOCK_ACTIVE).GetIActive().Trigger(_game, _direction);
 				return;
 			}
 			if(Input.GetKey(KeyCode.LeftShift)){
 				//_player.GetTag(_local, Tag.ID.Interactor).GetIInputDirection().Input(_local, _player, _direction);
 				return;
 			}
-			_active.GetBlock(_game, 1).GetIMovement().Move(_game, _direction);
-			//_player.GetTag(_local, Tag.ID.Move).GetIInputDirection().Input(_local, _player, _direction);
+			_active.GetBlock(_game, Game.TOAGame.BLOCK_WORLD).GetIMovement().Move(_game, _direction);
 			return;
 		}
 		if(Input.GetKeyDown(KeyCode.Space)){
-			//_player.GetTag(_local, Tag.ID.AI).GetIClear().Clear(_local, _player);
+			_active.GetBlock(_game, Game.TOAGame.BLOCK_DOTURN).GetIConclude().Conclude(_game);
 			return;
 		}
 	}
 	private Direction MouseDirectionHandling(){
 		Vector3 finalPosition = WorldSpaceUtils.MouseToWorldSpace(
 			_camera.GetCamera()) - 
-			_player.GetBlock(_game, 1).GetIWorldPosition().GetPosition(_game) - 
+			_player.GetBlock(_game, Game.TOAGame.BLOCK_WORLD).GetIWorldPosition().GetPosition(_game) - 
 			_game.GetMap().GetVector3TileOffset();
 		Vector3Int intgerPosition = Vector3Int.RoundToInt(finalPosition);
 		return Direction.IntToDirection(intgerPosition.x, intgerPosition.y);

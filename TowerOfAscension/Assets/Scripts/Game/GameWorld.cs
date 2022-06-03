@@ -29,6 +29,7 @@ public abstract class GameWorld{
 		public override int GetCount(){
 			return 0;
 		}
+		public override void Disassemble(Game game){}
 		public override bool IsNull(){
 			return true;
 		}
@@ -107,6 +108,11 @@ public abstract class GameWorld{
 		public override int GetCount(){
 			return _data.Count;
 		}
+		public override void Disassemble(Game game){
+			foreach(int id in _data.ToArray()){
+				game.GetGameData().Get(id).Disassemble(game);
+			}
+		}
 		public override bool IsNull(){
 			return false;
 		}
@@ -126,6 +132,7 @@ public abstract class GameWorld{
 	public abstract Data GetCurrentData(Game game);
 	public abstract int GetCurrentDataID(Game game);
 	public abstract int GetCount();
+	public abstract void Disassemble(Game game);
 	public abstract bool IsNull();
 	//
 	protected void FireSpawnEvent(int id){

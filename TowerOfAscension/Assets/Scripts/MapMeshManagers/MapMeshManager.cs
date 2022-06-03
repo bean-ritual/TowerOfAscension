@@ -25,6 +25,7 @@ public class MapMeshManager : MonoBehaviour{
 	private void OnDestroy(){
 		_map.OnMapUpdate -= OnMapUpdate;
 		_map.OnTileUpdate -= OnTileUpdate;
+		_game.GetGameBlocks(_blockID).OnGameBlockUpdate -= OnGameBlockUpdate;
 	}
 	private void Start(){
 		_game = DungeonMaster.GetInstance().GetGame();
@@ -37,6 +38,7 @@ public class MapMeshManager : MonoBehaviour{
 		MeshUtils.CreateEmptyMeshArrays(_map.GetArea(), out _vertices, out _uv, out _triangles);
 		_map.OnMapUpdate += OnMapUpdate;
 		_map.OnTileUpdate += OnTileUpdate;
+		_game.GetGameBlocks(_blockID).OnGameBlockUpdate += OnGameBlockUpdate;
 		Build();
 	}
 	private void LateUpdate(){
@@ -70,5 +72,8 @@ public class MapMeshManager : MonoBehaviour{
 	}
 	private void OnTileUpdate(object sender, Map.OnTileUpdateEventArgs e){
 		Build(e.x, e.y);
+	}
+	private void OnGameBlockUpdate(object sender, GameBlocks.GameBlockUpdateEventArgs e){
+		Build();
 	}
 }
