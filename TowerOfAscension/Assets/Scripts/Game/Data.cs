@@ -30,7 +30,7 @@ public abstract class Data{
 		public static Data CreateEnterTile(Game game, int x, int y){
 			Data data = game.GetGameData().Create();
 			data.AddBlock(game, 0, new Ground(x, y));
-			data.AddBlock(game, 1, new PermaPosition(x, y));
+			data.AddBlock(game, 1, new PermaPosition());
 			data.AddBlock(game, 2, new WorldVisual(1, 0));
 			data.AddBlock(game, 4, new TileLight());
 			return data;
@@ -38,7 +38,7 @@ public abstract class Data{
 		public static Data CreateExitTile(Game game, int x, int y){
 			Data data = game.GetGameData().Create();
 			data.AddBlock(game, 0, new Ground(x, y));
-			data.AddBlock(game, 1, new PermaPosition(x, y));
+			data.AddBlock(game, 1, new PermaPosition());
 			data.AddBlock(game, 2, new WorldVisual(2, 0));
 			data.AddBlock(game, 4, new TileLight());
 			data.AddBlock(game, Game.TOAGame.BLOCK_TRIP, new Stairs());
@@ -59,6 +59,14 @@ public abstract class Data{
 			data.AddBlock(game, 2, new LightVisual(4, 10));
 			data.AddBlock(game, 3, new MonsterAI());
 			data.AddBlock(game, 9, new Stats(10, 50));
+			return data;
+		}
+		public static Data CreateItem(Game game){
+			Data data = game.GetGameData().Create();
+			data.AddBlock(game, Game.TOAGame.BLOCK_TILE, new NoCollision());
+			data.AddBlock(game, Game.TOAGame.BLOCK_WORLD, new WorldPosition());
+			data.AddBlock(game, Game.TOAGame.BLOCK_VISUAL, new LightVisual(7, 5));
+			data.AddBlock(game, Game.TOAGame.BLOCK_ITEM, new ItemPickup());
 			return data;
 		}
 	}

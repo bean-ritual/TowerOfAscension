@@ -1,12 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-public class PickupUIManager : MonoBehaviour{
-	/*
+public class PickupUIManager : 
+	MonoBehaviour,
+	PickupUIManager.IPickupUIManager
+	{
+	public interface IPickupUIManager{
+		void SetData(Data data);
+	}
+	public class NullPickupUIManager : IPickupUIManager{
+		public void SetData(Data data){}
+	}
 	private static PickupUIManager _INSTANCE;
-	private Game _local = Game.GetNullGame();
+	private Game _game	= Game.GetNullGame();
+	private Data _player = Data.GetNullData();
 	private Data _tile = Data.GetNullData();
-	private Dictionary<Unit, UIData> _uiUnits;
+	private Dictionary<int, UIData> _floor;
 	private UIWindowManager _uiWindow;
 	private RectTransform _content;
 	[SerializeField]private GameObject _prefabUIWindow;
@@ -16,18 +25,18 @@ public class PickupUIManager : MonoBehaviour{
 	private void OnDisable(){
 		SettingsSystem.GetConfig().ground = _uiWindow.GetUISizeData();
 		UnsubcribeFromEvents();
+		_player.OnBlockUpdate -= OnPlayerBlockUpdate;
 	}
 	private void Awake(){
-		if(_INSTANCE != null){
+		if(_INSTANCE == null){
+			_INSTANCE = this;
+		}else{
 			Destroy(gameObject);
-			return;
 		}
-		_INSTANCE = this;
-		BuildUI();
 	}
 	private void Start(){
-		_local = DungeonMaster.GetInstance().GetLocalGame();
-		_level = _local.GetLevel();
+		_game = DungeonMaster.GetInstance().GetGame();
+		BuildUI();
 	}
 	public void BuildUI(){
 		GameObject go = Instantiate(_prefabUIWindow, this.transform);
@@ -41,59 +50,75 @@ public class PickupUIManager : MonoBehaviour{
 		GameObject go2 =  Instantiate(_prefabUIInventory, _uiWindow.GetContent().transform);
 		_content = go2.GetComponent<ContentManager>().GetContent();
 	}
-	public void SetTile(Tile tile){
-		if(_tile == tile){
-			return;
-		}
+	public void SetData(Data player){
+		_player.OnBlockUpdate -= OnPlayerBlockUpdate;
+		_player = player;
+		_player.OnBlockUpdate += OnPlayerBlockUpdate;
+		RefeshTile();
+	}
+	public void RefeshTile(){
+		_tile = _player.GetBlock(_game, Game.TOAGame.BLOCK_WORLD).GetIWorldPosition().GetTile(_game).GetIDataTile().GetData(_game);
 		UnsubcribeFromEvents();
-		_uiUnits = new Dictionary<Unit, UIUnit>();
+		_floor = new Dictionary<int, UIData>();
 		GameObjectUtils.DestroyAllChildren(_content);
-		_tile = tile;
-		List<Unit> units = _tile.GetHasUnits().GetUnits(_local);
-		for(int i = 0; i < units.Count; i++){
-			CreateUIUnit(units[i]);
+		IListData listData = _tile.GetBlock(_game, Game.TOAGame.BLOCK_TILE).GetIListData();
+		for(int i = 0; i < listData.GetDataCount(); i++){
+			CreateUIData(listData.GetData(_game, i));
 		}
-		CheckExistance();
-		_tile.GetHasUnits().OnUnitAdded += OnUnitAdded;
-		_tile.GetHasUnits().OnUnitRemoved += OnUnitRemoved;
-	}
-	public void CreateUIUnit(Unit unit){
-		if(unit.GetTag(_local, Tag.ID.Pickup).IsNull()){
-			return;
-		}
-		GameObject go = Instantiate(_prefabUIItem, _content);
-		UIUnit uiUnit = go.GetComponent<UIUnit>();
-		uiUnit.Setup(unit, PickupInteract);
-		_uiUnits.Add(unit, uiUnit);
+		_tile.OnBlockUpdate += OnBlockUpdate;
+		_tile.OnBlockDataAdd += OnBlockDataAdd;
+		_tile.OnBlockDataRemove += OnBlockDataRemove;
 		CheckExistance();
 	}
-	public void RemoveUIUnit(Unit unit){
-		if(!_uiUnits.TryGetValue(unit, out UIUnit uiUnit)){
+	public void CreateUIData(Data data){
+		if(!data.GetBlock(_game, Game.TOAGame.BLOCK_ITEM).IsNull()){
+			GameObject go = Instantiate(_prefabUIItem, _content);
+			UIData uiData = go.GetComponent<UIData>();
+			uiData.Setup(data, PickupInteract);
+			_floor.Add(data.GetID(), uiData);
+		}
+	}
+	public void RemoveUIData(int dataID){
+		if(!_floor.TryGetValue(dataID, out UIData uiData)){
 			return;
 		}
-		_uiUnits.Remove(unit);
-		uiUnit.UnitDestroy();
-		CheckExistance();
+		_floor.Remove(dataID);
+		uiData.Disassemble();
 	}
 	public void CheckExistance(){
-		_uiWindow.SetActive(_uiUnits.Count > 0);
+		_uiWindow.SetActive(_floor.Count > 0);
 	}
 	public void UnsubcribeFromEvents(){
-		_tile.GetHasUnits().OnUnitAdded -= OnUnitAdded;
-		_tile.GetHasUnits().OnUnitRemoved -= OnUnitRemoved;
+		_tile.OnBlockUpdate -= OnBlockUpdate;
+		_tile.OnBlockDataAdd -= OnBlockDataAdd;
+		_tile.OnBlockDataRemove -= OnBlockDataRemove;
 	}
-	public void PickupInteract(Unit item){
-		item.GetTag(_local, Tag.ID.Pickup).GetIAddUnit().Add(_local, item, PlayerController.GetInstance().GetPlayer());
+	public void PickupInteract(Data item){
+		item.GetBlock(_game, Game.TOAGame.BLOCK_ITEM).GetIPickup().Pickup(_game, PlayerController.GetInstance().GetPlayer());
+		//item.GetTag(_local, Tag.ID.Pickup).GetIAddUnit().Add(_local, item, PlayerController.GetInstance().GetPlayer());
 		//item.GetPickupable().TryPickup(_local, PlayerController.GetInstance().GetPlayer());
 	}
-	private void OnUnitAdded(object sender, Register<Unit>.OnObjectChangedEventArgs e){
-		CreateUIUnit(e.value);
+	private void OnPlayerBlockUpdate(object sender, Data.BlockUpdateEventArgs e){
+		if(e.blockID == Game.TOAGame.BLOCK_WORLD){
+			RefeshTile();
+		}
 	}
-	private void OnUnitRemoved(object sender, Register<Unit>.OnObjectChangedEventArgs e){
-		RemoveUIUnit(e.value);
+	private void OnBlockUpdate(object sender, Data.BlockUpdateEventArgs e){
+		//RefeshTile();
 	}
-	public static PickupUIManager GetInstance(){
-		return _INSTANCE;
+	private void OnBlockDataAdd(object sender, Data.BlockDataUpdateEventArgs e){
+		CreateUIData(_game.GetGameData().Get(e.newDataID));
 	}
-	*/
+	private void OnBlockDataRemove(object sender, Data.BlockDataUpdateEventArgs e){
+		RemoveUIData(e.newDataID);
+	}
+	//
+	private static NullPickupUIManager _NULL_PICKUP_UI_MANAGER = new NullPickupUIManager();
+	public static IPickupUIManager GetInstance(){
+		if(_INSTANCE == null){
+			return _NULL_PICKUP_UI_MANAGER;
+		}else{
+			return _INSTANCE;
+		}
+	}
 }

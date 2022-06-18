@@ -22,7 +22,6 @@ public class PlayerController :
 	private Game _game = Game.GetNullGame();
 	private GameWorld _world = GameWorld.GetNullGameWorld();
 	private Data _player = Data.GetNullData();
-	private Data _active = Data.GetNullData();
 	private Direction _direction = Direction.GetNullDirection();
 	[SerializeField]private CameraManager _camera;
 	private void Awake(){
@@ -44,14 +43,9 @@ public class PlayerController :
 		//HUDUIManager.GetInstance().SetUnit(_player);
 		InventoryUIManager.GetInstance().SetData(_player);
 		MinimapUIManager.GetInstance().SetData(_player);
+		PickupUIManager.GetInstance().SetData(_player);
 	}
 	private void Update(){
-		if(_world.GetCurrentDataID(_game) == _player.GetID() && !WorldDataManager.GetInstance().IsBusy()){
-			_active = _player;
-		}else{
-			_active = Data.GetNullData();
-		}
-		//
 		if(EventSystem.current.IsPointerOverGameObject()){
 			return;
 		}
@@ -60,18 +54,18 @@ public class PlayerController :
 		//
 		if(Input.GetMouseButtonDown(0)){
 			if(Input.GetKey(KeyCode.A)){
-				_active.GetBlock(_game, Game.TOAGame.BLOCK_ACTIVE).GetIActive().Trigger(_game, _direction);
+				GetPlayer().GetBlock(_game, Game.TOAGame.BLOCK_ACTIVE).GetIActive().Trigger(_game, _direction);
 				return;
 			}
 			if(Input.GetKey(KeyCode.LeftShift)){
 				//_player.GetTag(_local, Tag.ID.Interactor).GetIInputDirection().Input(_local, _player, _direction);
 				return;
 			}
-			_active.GetBlock(_game, Game.TOAGame.BLOCK_WORLD).GetIMovement().Move(_game, _direction);
+			GetPlayer().GetBlock(_game, Game.TOAGame.BLOCK_WORLD).GetIMovement().Move(_game, _direction);
 			return;
 		}
 		if(Input.GetKeyDown(KeyCode.Space)){
-			_active.GetBlock(_game, Game.TOAGame.BLOCK_DOTURN).GetIConclude().Conclude(_game);
+			GetPlayer().GetBlock(_game, Game.TOAGame.BLOCK_DOTURN).GetIConclude().Conclude(_game);
 			return;
 		}
 	}
@@ -83,18 +77,12 @@ public class PlayerController :
 		Vector3Int intgerPosition = Vector3Int.RoundToInt(finalPosition);
 		return Direction.IntToDirection(intgerPosition.x, intgerPosition.y);
 	}
-	/*
-	public void SetPlayer(Data player){
-		_player = player;
-		//PickupUIManager.GetInstance().SetTile(_player.GetTag(_local, Tag.ID.Position).GetIGetTile().GetTile(_local, _player));
-		if(_previous == _player){
-			return;
-		}
-		_previous = _player;
-	}
-	*/
 	public Data GetPlayer(){
-		return _active;
+		if(_world.GetCurrentDataID(_game) == _player.GetID() && !WorldDataManager.GetInstance().IsBusy()){
+			return _player;
+		}else{
+			return Data.GetNullData();
+		}
 	}
 	//
 	private static NullPlayerController _NULL_PLAYER_CONTROLLER = new NullPlayerController();

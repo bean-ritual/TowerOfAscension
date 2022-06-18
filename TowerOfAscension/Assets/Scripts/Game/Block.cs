@@ -26,6 +26,8 @@ public abstract class Block{
 		IKillable,
 		IActive,
 		ITripwire,
+		IPickup,
+		IListDataLogic,
 		MapMeshManager.ITileMeshData
 		{
 		//
@@ -113,6 +115,9 @@ public abstract class Block{
 		//
 		public void Trip(Game game, Data data){}
 		//
+		public void Pickup(Game game, Data holder){}
+		public void Drop(Game game){}
+		//
 		public void AddData(Game game, Data data){}
 		public void RemoveData(Game game, Data data){}
 		public Data GetData(Game game, int index){
@@ -120,6 +125,14 @@ public abstract class Block{
 		}
 		public int GetDataCount(){
 			return 0;
+		}
+		//
+		public bool DoData(Game game, Func<Data, bool> DoLogic){
+			return false;
+		}
+		public bool DoData(Game game, Func<Data, bool> DoLogic, out Data hit){
+			hit = Data.GetNullData();
+			return false;
 		}
 		//
 		public override void SetIDs(int dataID, int blockID){}
@@ -225,6 +238,12 @@ public abstract class Block{
 		return _NULL_BLOCK;
 	}
 	public virtual ITripwire GetITripwire(){
+		return _NULL_BLOCK;
+	}
+	public virtual IPickup GetIPickup(){
+		return _NULL_BLOCK;
+	}
+	public virtual IListDataLogic GetIListDataLogic(){
 		return _NULL_BLOCK;
 	}
 	public virtual MapMeshManager.ITileMeshData GetITileMeshData(){

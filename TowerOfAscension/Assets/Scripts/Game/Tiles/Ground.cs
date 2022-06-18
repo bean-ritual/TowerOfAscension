@@ -8,6 +8,7 @@ public class Ground :
 	Block.BaseBlock,
 	ITile,
 	IListData,
+	IListDataLogic,
 	ICanPrint,
 	ICanConnect,
 	ICanWalk,
@@ -44,6 +45,31 @@ public class Ground :
 	public int GetDataCount(){
 		return _data.Count;
 	}
+	public bool DoData(Game game, Func<Data, bool> DoLogic){
+		if(!DoLogic(GetSelf(game))){
+			return false;
+		}
+		for(int i = 0; i < _data.Count; i++){
+			if(!DoLogic(game.GetGameData().Get(_data[i]))){
+				return false;
+			}
+		}
+		return true;
+	}
+	public bool DoData(Game game, Func<Data, bool> DoLogic, out Data hit){
+		hit = GetSelf(game);
+		if(!DoLogic(hit)){
+			return false;
+		}
+		for(int i = 0; i < _data.Count; i++){
+			hit = game.GetGameData().Get(_data[i]);
+			if(!DoLogic(hit)){
+				return false;
+			}
+		}
+		hit = Data.GetNullData();
+		return true;
+	}
 	public bool CanPrint(Game game){
 		return false;
 	}
@@ -58,7 +84,7 @@ public class Ground :
 		*/
 	}
 	public bool CanWalk(Game game){
-		return !(_data.Count > 0);
+		return true;
 	}
 	public int GetAtlasIndex(Game game){
 		return 1;
@@ -69,6 +95,7 @@ public class Ground :
 	public override void Disassemble(Game game){
 		game.GetMap().Get(_x, _y).GetIDataTile().ClearData(game);
 		int[] temp = _data.ToArray();
+		_data.Clear();
 		for(int i = 0; i < temp.Length; i++){
 			game.GetGameData().Get(temp[i]).Disassemble(game);
 		}
@@ -78,6 +105,9 @@ public class Ground :
 		return this;
 	}
 	public override IListData GetIListData(){
+		return this;
+	}
+	public override IListDataLogic GetIListDataLogic(){
 		return this;
 	}
 	public override ICanPrint GetICanPrint(){

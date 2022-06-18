@@ -11,7 +11,7 @@ public class PermaPosition :
 	private int _x;
 	private int _y;
 	private bool _spawned;
-	public PermaPosition(int x, int y){
+	public PermaPosition(){
 		_x = -1;
 		_y = -1;
 		_spawned = false;
